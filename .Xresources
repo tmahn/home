@@ -1,0 +1,130 @@
+*MenuButton.shapeStyle: roundedRectangle
+*MenuButton.borderWidth: 1
+
+*beNiceToColormap:  False
+
+*VT100*colorMode: on
+*VT100*boldColors: on
+*VT100*dynamicColors: on
+
+! Uncomment this to use color for underline attribute
+! *VT100*colorULMode: on
+! *VT100*underLine: on
+! *VT100*colorBDMode: on
+! *VT100*colorAttrMode: on
+! *VT100*colorUL: red2
+! *VT100*colorBD: magenta2
+
+xterm.vt100.loginShell: true
+xterm.vt100.saveLines: 10000
+
+!xterm.vt100.font: -*-lucidatypewriter-medium-*-normal-*-14-*-*-*-*-*-*-*
+!xterm.vt100.font: -*-fixed-*-*-*-*-16-*-*-*-*-*-iso8859-*
+
+xterm.vt100.geometry: 80x35
+xterm*backarrowKeyIsErase : true
+xterm.vt100.backarrowKey: false
+xterm.vt100.background:  rgb:DF/DF/DF
+
+xterm*VT100.renderFont:  true
+xterm*VT100.faceName:  Lucida Console
+
+xterm.vt100.utf8: 2
+
+xterm.vt100.color1: red4
+xterm.vt100.color2: green4
+xterm.vt100.color3: yellow4
+xterm.vt100.color4: blue4
+xterm.vt100.color5: magenta4
+xterm.vt100.color6: cyan4
+
+/* bold versions of above */
+xterm.vt100.color9:  red3
+xterm.vt100.color10: green3
+xterm.vt100.color11: yellow3
+xterm.vt100.color12: blue3
+xterm.vt100.color13: magenta3
+xterm.vt100.color14: cyan3
+
+oclock.customization: -color
+
+*.shapeWindow: True
+
+xfontsel*menu.options.showUnselectable:False
+xfontsel*scaledFonts: true
+
+/* Ghostview spartan layout */
+!gv.control.MButton.font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+!gv.control.MButton.font:	-microsoft-microsoft sans serif-medium-r-normal-*-12-*-*-*-*-*-*-*
+gv*orientationButton*forcedWidth:	72
+gv*upsidedown.Label:			Up-Down
+gv.?.processButton.label:		\ working
+
+!##### Main Layout
+
+gv*control.layout:			\
+|v{					\
+  f=4					\
+  sss=2					\
+  pbh=(100*(|height processButton))	\
+  pbs1=($pbh/($pbh+1))			\
+  $f					\
+  |h{					\
+    $f					\
+    |v{ 				\
+      titleButton<+200-[1]*-100%>	\
+      1					\
+      dateButton<+200-[1]*-100%>	\
+      4					\
+      |h{				\
+        2<+[1]>				\
+        locator<*-100%>			\
+        1<+[1]>				\
+      }					\
+      4					\
+      fileButton<+50*-100%>		\
+      1					\
+      stateButton<+50*-100%>		\
+      1					\
+      pageButton<+50*-100%>		\
+      1					\
+      orientationButton<+50-100*-100%>	\
+      1					\
+      scaleButton<+50*-100%>		\
+      1					\
+      pagemediaButton<+50-[1]*-100%>	\
+      (4*$pbs1)				\
+      |h{				\
+        0<+[1]>				\
+        processButton<+50*-100%>	\
+        0<+[1]>				\
+      }					\
+      4					\
+      |h{				\
+        0<+[1]>				\
+        pannerFrame<*-100%>		\
+        0<+[1]>				\
+      }					\
+      4					\
+      |h{				\
+        prevPage<+60*-100%>		\
+        1				\
+        nextPage<+60*-100%>		\
+      }					\
+      4					\
+      |h{				\
+        0<+30>				\
+        newtocScroll<*+200[1]-[1]>	\
+        4				\
+        newtocFrame<-[1]*+200[1]-[1]>	\
+        0<+30>				\
+      }					\
+    }					\
+    $f					\
+    |v{					\
+      viewFrame<+[2]-100%*+9999-100%>	\
+    }					\
+    $f					\
+  }					\
+  $f					\
+}

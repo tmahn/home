@@ -1,19 +1,21 @@
-"\e[3~": delete-char
-# this is actually equivalent to "\C-?": delete-char
+set bell-style none
+set completion-ignore-case on
 
-# VT
-"\e[1~": beginning-of-line
-"\e[4~": end-of-line
-
-# kvt
-"\e[H":beginning-of-line
-"\e[F":end-of-line
-
-# rxvt and konsole (i.e. the KDE-app...)
-"\e[7~":beginning-of-line
-"\e[8~":end-of-line
-
+"\e[D": backward-char
+"\e[C": forward-char
 "\e[1;5D": backward-word
 "\e[1;5C": forward-word
 
-"\t":menu-complete
+"\C-?": backward-delete-char
+"\C-h": backward-delete-char
+"\e[3~": delete-char
+
+"\C-l": clear-screen
+
+"\e[B": next-history
+"\e[A": prev-history
+
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+
+"\t": menu-complete
