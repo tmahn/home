@@ -187,7 +187,7 @@ shopt -s cdspell checkwinsize dotglob
 umask 022 # rw-r--r--
 
 # Prompt
-THEHOST="foo.nyc.xyz.com"
+THEHOST="${HOSTNAME}"
 if [ "x${THEHOST:$((${#THEHOST}-4)):${#THEHOST}}" = "x.com" ]; then
   THEHOST="${THEHOST%.*.*}"
 fi
