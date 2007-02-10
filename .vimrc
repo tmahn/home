@@ -62,42 +62,56 @@ cmap <Esc>[3;2~ <C-h>
 
 "" Terminal stuff
 " Misc backspace/delete stuff
-set t_kD=<Esc>[3~
+set t_kD=[3~
 set t_kb=
-set t_ks=<Esc>[?1h t_ke=<Esc>[?1l
+set t_ks=[?1h t_ke=[?1l
 
 " make numpad keys work in linux, and turn off screen blinking when it
 " thinks it should beep
-set <k0>=<Esc>Op <k1>=<Esc>Oq <k2>=<Esc>Or
-set <k3>=<Esc>Os <k4>=<Esc>Ot <k5>=<Esc>Ou
-set <k6>=<Esc>Ov <k7>=<Esc>Ow <k8>=<Esc>Ox
-set <k9>=<Esc>Oy <kPoint>=<Esc>On
-set <Home>=<Esc>[H <End>=<Esc>Ow
-set <kPlus>=<Esc>Ol <kMinus>=<Esc>OS
-set <kDivide>=<Esc>OQ <kMultiply>=<Esc>OR
-set <kEnter>=<Esc>OM
+set <k0>=Op <k1>=Oq <k2>=Or
+set <k3>=Os <k4>=Ot <k5>=Ou
+set <k6>=Ov <k7>=Ow <k8>=Ox
+set <k9>=Oy <kPoint>=On
+set <Home>=[H <End>=Ow
+set <kPlus>=Ol <kMinus>=OS
+set <kDivide>=OQ <kMultiply>=OR
+set <kEnter>=OM
 
-set <kPlus>=<Esc>Ok
-set <kMinus>=<Esc>Om
-set <kMultiply>=<Esc>Oj
-set <kDivide>=<Esc>Oo
-set <k7>=<Esc>Ow
-set t_KJ=<Esc>Ow
-
+set <kPlus>=Ok
+set <kMinus>=Om
+set <kMultiply>=Oj
+set <kDivide>=Oo
 
 "" Settings
-set title
-set smartcase
-set mouse=a
-set showcmd
+set backspace=2
+set backup
+set backupdir=~/misc/bak
+set directory=$TMP
 set encoding=utf-8
 set expandtab
-set directory=$TMP
-set whichwrap+=h,l,<,>,[,] ignorecase
+set ffs=unix,dos
+set guioptions-=T
+set hidden
+set hlsearch
+set ignorecase
+set incsearch
+set mouse=a
+set nocompatible
+set nojoinspaces
+set ruler
+set scrolloff=3
+set shiftround
+set shiftwidth=2
+set showcmd
+set smartcase
 set statusline=%<%f\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P
-set backup backupdir=~/misc/bak
-set softtabstop=4 shiftwidth=4 tabstop=8
+set t_vb=
+set tabstop=8
+set title
+set vb
+set viminfo='20,\"50,%
 set visualbell t_vb=
+set whichwrap+=h,l,<,>,[,]
 
 " I hope this doesn't slow things down too much
 runtime! ftplugin/man.vim
