@@ -7,3 +7,6 @@ except ImportError:
 else:
     import rlcompleter
     readline.parse_and_bind("tab: complete")
+
+import sys, os, os.path, re
+import inspect

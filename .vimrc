@@ -47,10 +47,10 @@ map <C-Tab> <C-W>w
 map <C-F4> <C-W>c
 
 " Uncomment to turn off man search (too easy to hit accidentally)
-" map K k
+map K k
 
 " Uncomment to turn off command window (too easy to open accidentally)
-map q: :q
+" map q: :q
 
 " Thanks http://www.shallowsky.com/blog/index.cgi/linux/editors/index.html
 imap <Nul> <Space>
