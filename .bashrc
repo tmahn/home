@@ -192,13 +192,13 @@ if [ "x${THEHOST:$((${#THEHOST}-4)):${#THEHOST}}" = "x.com" ]; then
   THEHOST="${THEHOST%.*.*}"
 fi
 
-PS1='\u@${THEHOST}:\w>'
+#PS1='\u@${THEHOST}:\w>'
 PROMPT_COMMAND=check_exit_status
 
 # Xterm titles
 if [ "x${TERM}" = "xxterm" ]
 then
-    PS1="\[\e[94m\]${PS1}\[\e[0m\]\[\033]0;\$(date \"+%b %e %H:%M\") ${THEHOST}: \w\007\]"
+    #PS1="\[\e[94m\]${PS1}\[\e[0m\]\[\033]0;\$(date \"+%b %e %H:%M\") ${THEHOST}: \w\007\]"
     if [ "x${LOGNAME}" = "xroot" ]
     then
         PS1="\[\e[48;5;201m\]${PS1}\[\e[0m\] "
