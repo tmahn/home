@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -xv
-
 lines () {
   if [ "${yoff:0:1}" = + ]; then
     echo 28
