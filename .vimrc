@@ -15,6 +15,9 @@ autocmd BufReadPost *
 	\ if line("'\"") > 0 && line("'\"") <= line("$") |
 	\   exe "normal g`\"" |
 	\ endif
+" Check spelling everywhere
+autocmd BufReadPost *
+        \ syntax spell toplevel
 
 " Wrap when editing brand-new text files
 autocmd BufNewFile *.txt set tw=75 formatoptions+=t

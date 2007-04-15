@@ -177,7 +177,7 @@ export LESS='-iM'
 export CFLAGS='-Wall -lm'
 export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc
-export LC_ALL=en_US.utf8 # C
+export LC_ALL=en_CA.utf-8 # C
 
 ## Shell settings
 
