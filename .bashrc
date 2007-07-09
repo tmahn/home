@@ -178,6 +178,9 @@ export CFLAGS='-Wall -lm'
 export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc
 export LC_ALL=en_CA.utf-8 # C
+if [ "$OSTYPE" = "cygwin" ]; then
+    export SMLNJ_CYGWIN_RUNTIME=true
+fi
 
 ## Shell settings
 
