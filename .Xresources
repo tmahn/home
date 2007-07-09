@@ -20,14 +20,20 @@ xterm.vt100.saveLines: 10000
 
 !xterm.vt100.font: -*-lucidatypewriter-medium-*-normal-*-14-*-*-*-*-*-*-*
 !xterm.vt100.font: -*-fixed-*-*-*-*-16-*-*-*-*-*-iso8859-*
+XTerm*VT100.font2:	-misc-fixed-medium-r-normal--8-80-75-75-c-50-iso10646-1
+XTerm*VT100.font:	-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso10646-1
+XTerm*VT100.font3:	-misc-fixed-medium-r-normal--14-130-75-75-c-70-iso10646-1
+XTerm*VT100.font4:	-misc-fixed-medium-r-normal--13-120-75-75-c-80-iso10646-1
+XTerm*VT100.font5:	-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1
+XTerm**VT100font6:	-misc-fixed-medium-r-normal--20-200-75-75-c-100-iso10646-1
 
-xterm.vt100.geometry: 80x35
+!xterm.vt100.geometry: 80x35
 xterm*backarrowKeyIsErase : true
 xterm.vt100.backarrowKey: false
 xterm.vt100.background:  rgb:DF/DF/DF
 
-xterm*VT100.renderFont:  true
-xterm*VT100.faceName:  Lucida Console
+!xterm*VT100.renderFont:  true
+!xterm*VT100.faceName:  Consolas
 
 xterm.vt100.utf8: 2
 
