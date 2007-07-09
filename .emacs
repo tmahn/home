@@ -1,6 +1,10 @@
-(and (equal (getenv "TERM") "xterm")
-     (xterm-mouse-mode t))
-(defun up-slightly () (interactive) (scroll-up 1))
-(defun down-slightly () (interactive) (scroll-down 1))
-(global-set-key [mouse-4] 'down-slightly)
-(global-set-key [mouse-5] 'up-slightly)
+;;; XEmacs backwards compatibility file
+(setq user-init-file
+      (expand-file-name "init.el"
+			(expand-file-name ".xemacs" "~")))
+(setq custom-file
+      (expand-file-name "custom.el"
+			(expand-file-name ".xemacs" "~")))
+
+(load-file user-init-file)
+(load-file custom-file)
