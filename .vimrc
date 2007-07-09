@@ -104,7 +104,7 @@ set nojoinspaces
 set ruler
 set scrolloff=3
 set shiftround
-set shiftwidth=2
+set shiftwidth=4
 set showcmd
 set smartcase
 set statusline=%<%f\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P
