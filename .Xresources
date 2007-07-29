@@ -52,6 +52,8 @@ xterm.vt100.color12: blue3
 xterm.vt100.color13: magenta3
 xterm.vt100.color14: cyan3
 
+XTerm*metaSendsEscape: true
+
 oclock.customization: -color
 
 *.shapeWindow: True

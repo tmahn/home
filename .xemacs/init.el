@@ -21,8 +21,11 @@
        (define-key function-key-map "\e[1;5A" [(control up)])
        (define-key function-key-map "\e[1;5B" [(control down)])
        (define-key function-key-map "\e[1;5H" [(control home)])
-       (define-key function-key-map "\e[1;5F" [(control end)]))
-
+       (define-key function-key-map "\e[1;5F" [(control end)])
+       (define-key function-key-map "\e[1;3D" [(meta left)])
+       (define-key function-key-map "\e[1;3C" [(meta right)])
+       (define-key function-key-map "\e[1;3A" [(meta up)])
+       (define-key function-key-map "\e[1;3B" [(meta down)]))
 
      (custom-set-faces
        '(font-lock-builtin-face ((((type x mswindows)(class color)(background light))(:foreground "Purple"))(((type tty)(class color))(:foreground "magenta"))))
@@ -41,11 +44,32 @@
 ; syntax highlighting
 (require 'font-lock)
 
+; Key bindings and stuff
+
+; SML-mode
+(setq sml-program-name "sml")
+(add-hook 'sml-mode-hook
+          '(lambda ()
+             "Map C-c C-e to run code from the point to the end of the
+             buffer."
+             (define-key sml-mode-map
+                         (kbd "C-c C-e")
+                         '(lambda ()
+                            ""
+                            (interactive)
+                           (sml-send-region (point) (point-max))))))
+
 ; Enable scroll wheel
 ;(defun up-slightly () (interactive) (scroll-up 1))
 ;(defun down-slightly () (interactive) (scroll-down 1))
 ;(global-set-key [button-4] 'down-slightly)
 ;(global-set-key [button-5] 'up-slightly)
+
+; more scrolling
+(setq-default scroll-step 1)
+
+; match parens
+(paren-set-mode 'paren)
 
 ; Allow typing 'y' instead of 'yes' to exit
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -58,7 +82,7 @@
 (setq make-backup-files nil)
 
 ; Look up keybindings when running apropros
-(setq apropos-do-all t)
+;(setq apropos-do-all t)
 
 (line-number-mode 1)
 (column-number-mode 1)
@@ -66,9 +90,9 @@
 
 ; calendar keybindings
 (add-hook 'calendar-load-hook
-    '(lambda ()
-        (define-key calendar-mode-map ">" 'scroll-calendar-left)
-        (define-key calendar-mode-map "<" 'scroll-calendar-right)))
+          '(lambda ()
+             (define-key calendar-mode-map ">" 'scroll-calendar-left)
+             (define-key calendar-mode-map "<" 'scroll-calendar-right)))
 
 ; ===================
 ; From sample.init.el
