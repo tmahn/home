@@ -1,6 +1,11 @@
 ;(load "term/vt100.el" nil t)
 ;(load "xt-mouse-xmas.el" nil t)
 
+; For calendar
+(setq calendar-latitude 40.4)
+(setq calendar-longitude -74.0)
+(setq calendar-location-name "New York, NY")
+
 ; utf-8; from UTF-8 Setup Mini HOWTO (http://www.maruko.ca/i18n/)
 (require 'un-define)
 (set-coding-priority-list '(utf-8))
@@ -58,7 +63,12 @@
                             ""
                             (interactive)
                            (sml-send-region (point) (point-max))))))
-
+; command to insert date
+(defun insert-date ()
+  "Insert the date into the current buffer."
+  (interactive)
+  (insert-string (shell-command-to-string "date")))
+   
 ; Enable scroll wheel
 ;(defun up-slightly () (interactive) (scroll-up 1))
 ;(defun down-slightly () (interactive) (scroll-down 1))
@@ -86,7 +96,7 @@
 
 (line-number-mode 1)
 (column-number-mode 1)
-
+(auto-fill-mode)
 
 ; calendar keybindings
 (add-hook 'calendar-load-hook

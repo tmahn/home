@@ -145,4 +145,5 @@ set path+=/usr/include/c++/3.3.1/i686-pc-mingw32
 autocmd GUIEnter * set t_vb=
 if v:version>=700
     set spell
+    set spellfile=~/.vimspell.en.utf-8.add
 endif

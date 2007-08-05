@@ -184,7 +184,7 @@ fi
 
 ## Shell settings
 
-shopt -s cdspell checkwinsize dotglob
+shopt -s cdspell checkwinsize dotglob checkhash
 
 # Limits
 umask 022 # rw-r--r--
