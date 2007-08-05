@@ -4,12 +4,12 @@ lines () {
   if [ "${yoff:0:1}" = + ]; then
     echo 28
   else
-    echo 29
+    echo 27
   fi
 }
 
 for xoff in +0 +492; do
-  for yoff in +-8 -0; do
+  for yoff in +-8 -+26; do
     setsid xterm -geometry 80x$(lines)$xoff$yoff &
   done
 done

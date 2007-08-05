@@ -1,0 +1,29 @@
+#!/bin/bash
+
+MY_SSH_AUTH_DIR="${HOME}/.ssh/agent/${HOSTNAME}"
+SSH_AUTH_SOCK="$MY_SSH_AUTH_DIR/sock"
+MY_SSH_AUTH_PID_FILE="$MY_SSH_AUTH_DIR/pid"
+
+# Start an ssh agent if there's no working one
+if [ -z "$SSH_AUTH_SOCK" ] || ! [ -r "$SSH_AUTH_SOCK" ]; then
+    # Kill the old one
+    if [ -z "$SSH_AUTH_PID" ] && [ -r "$MY_SSH_AUTH_PID_FILE" ]; then
+        SSH_AUTH_PID="$(<${MY_SSH_AUTH_PID_FILE})"
+    fi
+    if [ -n "$SSH_AUTH_PID" ]; then
+        if ps | grep -q "${SSH_AUTH_PID}.*ssh-agent"; then
+            kill ${SSH_AUTH_PID}
+        fi
+    fi
+
+    if ! [ -d "$MY_SSH_AUTH_DIR" ]; then
+        mkdir -p "$MY_SSH_AUTH_DIR"
+        chmod 700 "$MY_SSH_AUTH_DIR"
+    fi
+    eval $(ssh-agent -a "$SSH_AUTH_SOCK")
+    echo $SSH_AGENT_PID > "$MY_SSH_AUTH_PID_FILE"
+
+    ssh-add
+fi
+
+SSH_AUTH_SOCK="$SSH_AUTH_SOCK" /usr/bin/ssh "$@"
