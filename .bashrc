@@ -173,7 +173,10 @@ unset LD_ASSUME_KERNEL
 export EDITOR=vim
 export VISUAL=vim
 export BLOCK_SIZE=1
-export LESS='-iM'
+export LESS='-iM -z-2'
+export CONFIG_SITE="$HOME/.config.site"
+export PERLDOC_PAGER="less -r"
+export RI="--format bs"
 export CFLAGS='-Wall -lm'
 export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc

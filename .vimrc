@@ -1,5 +1,3 @@
-map Q gq
-
 " Auto-commands
 filetype plugin indent on
 
@@ -7,10 +5,11 @@ augroup cprog
   au!
   autocmd BufRead *
 	\ set formatoptions=tcql autoindent tw=75 comments&
-  autocmd BufRead *.c,*.h set formatoptions=croql cindent comments=sr:/*,mb:*,el:*/,://
+  autocmd BufRead *.c,*.h
+        \ set formatoptions=croql cindent comments=sr:/*,mb:*,el:*/,://
 augroup END
 
-" Jump to last place in file
+" Jump to last visited location in file
 autocmd BufReadPost *
 	\ if line("'\"") > 0 && line("'\"") <= line("$") |
 	\   exe "normal g`\"" |
@@ -44,6 +43,7 @@ match Error /\s\+$/
 
 
 "" Key mappings
+map Q gq
 
 " Windows-style shortcuts for moving around multiple windows
 map <C-Tab> <C-W>w
@@ -62,6 +62,17 @@ imap <Nul> <Space>
 imap <Esc>[3;2~ <C-h>
 cmap <Esc>[3;2~ <C-h>
 
+" This makes tab and shift-tab indent and unindent
+" You might need to add \"Shift<Key>Tab: string(\033[Z) \n\" to your VT100
+" translations for S-Tab to work in an xterm
+" nnoremap <Tab> >>
+nnoremap <S-Tab> <LT><LT>
+vnoremap <Tab> >
+vnoremap <S-Tab> <LT>
+" Tab should indent (jump up to the next indent increment multiple), and
+" shift-tab should unindent
+inoremap <Tab> <C-T>
+inoremap <S-Tab> <C-D>
 
 "" Terminal stuff
 " Misc backspace/delete stuff
@@ -89,7 +100,7 @@ set <kDivide>=Oo
 set backspace=2
 set backup
 set backupdir=~/misc/bak
-set directory=$TMP
+set directory=~/tmp/vim
 set encoding=utf-8
 set expandtab
 set ffs=unix,dos
