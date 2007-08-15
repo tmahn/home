@@ -197,22 +197,6 @@ fi
 
 PROMPT_COMMAND=check_exit_status
 
-case "${HOSTNAME}" in
-    QZmaImLpJdfVhBzQ) ;;
-    *)
-        PS1='\u@${THEHOST}:\w>'
-        # Xterm titles
-        if [ "x${TERM}" = "xxterm" ]
-        then
-            PS1="\[\e[94m\]${PS1}\[\e[0m\]\[\033]0;"
-            PS1="${PS1}\$(date \"+%b %e %H:%M\") ${THEHOST}: \w\007\]"
-            if [ "x${LOGNAME}" = "xroot" ]
-            then
-                PS1="\[\e[48;5;201m\]${PS1}\[\e[0m\] "
-            fi
-        fi;;
-esac
-
 # Misc
 MAILCHECK=-1
 
@@ -223,6 +207,37 @@ if [ -t 0 ];
 then
     stty sane
 fi
+
+# For site-specific customizations, we map hostnames to 'sites', and then
+# source ~/.bashrc.site/$site
+#
+# Site-specific files may want to use functions defined here.
+function _bashrc_linux_style_prompt() {
+    PS1='\u@${THEHOST}:\w>'
+    # Xterm titles
+    if [ "x${TERM}" = "xxterm" ]
+    then
+        PS1="\[\e[94m\]${PS1}\[\e[0m\]\[\033]0;"
+        PS1="${PS1}\$(date \"+%b %e %H:%M\") ${THEHOST}: \w\007\]"
+        if [ "x${LOGNAME}" = "xroot" ]
+        then
+            PS1="\[\e[48;5;201m\]${PS1}\[\e[0m\] "
+        fi
+    fi
+}
+function _handle_site() {
+    local SITE="$1"
+    local SITE_FILE="~/.bashrc.site/$SITE.sh"
+    if [ -n "$SITE" ] && [ -r "$SITE_FILE" ]; then
+        . "$SITE_FILE"
+    fi
+}
+case "${HOSTNAME}" in
+    *.twosigma.com)
+        _handle_site ts;;
+    QZmaImLpJdfVhBzQ|*)
+        ;;
+esac
 
 # History settings
 HISTFILE=~/.bash_history
