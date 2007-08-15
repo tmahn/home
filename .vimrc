@@ -33,14 +33,23 @@ highlight Search ctermbg=190
 " Turn on 256 colours for xterms
 set t_Co=256 t_Sf=<Esc>[38;5;%p1%m t_Sb=<Esc>[48;5;%p1%m
 
-" Highlight trailing spaces in red in source code
+" Highlight trailing spaces, too-long lines in red in source code
+" the cino+= thing sets (mostly) Two Sigma indent rules
+" if your shiftwidth and tabstop and friends are set correctly
+" set verbose=9
 autocmd BufReadPost *.cc,*.cpp,*.cxx,*.C,*.java,*.c
-    \ set cino+=(s,W1,U1,u0 | syntax match Error /\s\+$/
+    \ set cino+=(s,W1,U1,u0
 autocmd BufReadPost *.java
     \ syntax region javaComment start=+/\*+ end=+\*/+
     \ contains=@javaCommentSpecial,javaTodo,@Spell,Error
-match Error /\s\+$/
-
+highlight TooLongLineError ctermbg=198
+autocmd BufReadPost * match TooLongLineError /\%>80v/
+autocmd BufReadPost *
+     \ hi link TrailingSpaceError TooLongLineError
+     \ | 2match TrailingSpaceError /\s\+$/
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                                                 Test lines               
+""""""""""""			""""""""""""""""""""""""""""""""""""""""""""""""""
 
 "" Key mappings
 map Q gq
