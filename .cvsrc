@@ -1,0 +1,3 @@
+cvs -q
+diff -u
+rdiff -u -kk

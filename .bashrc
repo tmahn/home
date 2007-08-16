@@ -4,6 +4,10 @@
 # Do not take the following lines out unless you're really sure of
 # what you are doing.
 
+# If this file is accidentally sourced multiple times, the next line will
+# print a warning. Run bash --login -xv to get a dump.
+readonly _HOME_BASHRC_ALREADY_READ=1
+
 defaultsdir=/usr/local/lib/initfiles
 if [ -r "$defaultsdir/system-bashrc" ]; then
    source "$defaultsdir/system-bashrc"
@@ -230,7 +234,7 @@ function _bashrc_linux_style_prompt() {
 }
 function _handle_site() {
     local SITE="$1"
-    local SITE_FILE="~/.bashrc.site/$SITE.sh"
+    local SITE_FILE="${HOME}/.bashrc.site/$SITE.sh"
     if [ -n "$SITE" ] && [ -r "$SITE_FILE" ]; then
         . "$SITE_FILE"
     fi

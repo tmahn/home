@@ -1,3 +1,7 @@
+# ts.sh
+
+_bashrc_linux_style_prompt
+
 add-ssh-agent() {
     local SOCK_CMD_FILE=~/.ssh/agent/${HOSTNAME}/sock
 
