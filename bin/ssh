@@ -1,15 +1,21 @@
 #!/bin/bash
 
 MY_SSH_AUTH_DIR="${HOME}/.ssh/agent/${HOSTNAME}"
-SSH_AUTH_SOCK="$MY_SSH_AUTH_DIR/sock"
 MY_SSH_AUTH_PID_FILE="$MY_SSH_AUTH_DIR/pid"
+SSH_AUTH_SOCK="$MY_SSH_AUTH_DIR/sock"
+export SSH_AUTH_SOCK
 
 # Start an ssh agent if there's no working one
-if [ -z "$SSH_AUTH_SOCK" ] || ! [ -r "$SSH_AUTH_SOCK" ]; then
+if [ -z "$SSH_AUTH_SOCK" ] || ! [ -S "$SSH_AUTH_SOCK" ] \
+    || ! ssh-add -l &>/dev/null;
+    # ^-- We can't test if a socket is valid from shell, so we make a test
+    # connection to the agent to verify there is one.
+then
     # Kill the old one
     if [ -z "$SSH_AUTH_PID" ] && [ -r "$MY_SSH_AUTH_PID_FILE" ]; then
         SSH_AUTH_PID="$(<${MY_SSH_AUTH_PID_FILE})"
     fi
+    rm -f "$SSH_AUTH_SOCK"
     if [ -n "$SSH_AUTH_PID" ]; then
         if ps | grep -q "${SSH_AUTH_PID}.*ssh-agent"; then
             kill ${SSH_AUTH_PID}
@@ -26,4 +32,4 @@ if [ -z "$SSH_AUTH_SOCK" ] || ! [ -r "$SSH_AUTH_SOCK" ]; then
     ssh-add
 fi
 
-SSH_AUTH_SOCK="$SSH_AUTH_SOCK" /usr/bin/ssh "$@"
+/usr/bin/ssh "$@"
