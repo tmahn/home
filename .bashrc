@@ -160,6 +160,9 @@ alias rm='rm -i'
 alias md='mkdir'
 alias ls='ls -AF --color=auto'
 alias view='vim -R'
+if [ "$OSTYPE" = "cygwin" ]; then
+    alias o=cygstart
+fi
 
 # builtins
 alias cd=cd_func
@@ -214,6 +217,12 @@ if [ -t 0 ];
 then
     stty sane
 fi
+
+if [ "${TERM}" = "xterm" ]; then
+    # http://nion.modprobe.de/blog/archives/572-less-colors-for-man-pages.html
+    export LESS_TERMCAP_md=$'\e[38;5;54m'
+fi
+
 
 # For site-specific customizations, we map hostnames to 'sites', and then
 # source ~/.bashrc.site/$site
