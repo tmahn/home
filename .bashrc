@@ -151,6 +151,18 @@ function _cd_ ()
     test $g -eq 0 && shopt -u extglob
 }
 
+add-ssh-agent() {
+    local SOCK_CMD_FILE=~/.ssh/agent/${HOSTNAME}/sock
+    if [ -S "$SOCK_CMD_FILE" ]; then
+        export SSH_AUTH_SOCK="$SOCK_CMD_FILE"
+        # disabled by default so that a stray 'ssh-agent -k' won't bring
+        # down the master ssh-agent
+        # export SSH_AGENT_PID="$(<${SOCK_CMD_FILE%sock}pid)"
+    elif [ -f "$SOCK_CMD_FILE" ] && [ -s "$SOCK_CMD_FILE" ]; then
+        . "$SOCK_CMD_FILE"
+    fi
+}
+
 ## Aliases
 
 alias erase=rm

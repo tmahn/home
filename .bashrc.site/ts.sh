@@ -2,11 +2,6 @@
 
 _bashrc_linux_style_prompt
 
-add-ssh-agent() {
-    local SOCK_CMD_FILE=~/.ssh/agent/${HOSTNAME}/sock
-
-    . "$SOCK_CMD_FILE"
-}
 alias ssh=sSh
 
 export LESSKEY="/u/aneitsch/.less"
