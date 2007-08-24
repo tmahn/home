@@ -172,9 +172,6 @@ alias rm='rm -i'
 alias md='mkdir'
 alias ls='ls -AF --color=auto'
 alias view='vim -R'
-if [ "$OSTYPE" = "cygwin" ]; then
-    alias o=cygstart
-fi
 
 # builtins
 alias cd=cd_func
