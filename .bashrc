@@ -193,10 +193,14 @@ export LESS='-iM -z-2'
 export CONFIG_SITE="$HOME/.config.site"
 export PERLDOC_PAGER="less -r"
 export RI="--format bs"
-export CFLAGS='-Wall -lm'
+export CFLAGS='-Wall'
+export LDFLAGS='-lm'
 export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc
 export LC_ALL=en_CA.utf-8 # C
+# nroff (a shell script) only looks for UTF-8 (all uppercase) in LC_ALL,
+# and then looks for utf-8 in LESSCHARSET
+export LESSCHARSET=utf-8
 if [ "$OSTYPE" = "cygwin" ]; then
     export SMLNJ_CYGWIN_RUNTIME=true
 fi
