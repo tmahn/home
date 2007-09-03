@@ -42,11 +42,12 @@ autocmd BufReadPost *.cc,*.cpp,*.cxx,*.C,*.java,*.c
 autocmd BufReadPost *.java
     \ syntax region javaComment start=+/\*+ end=+\*/+
     \ contains=@javaCommentSpecial,javaTodo,@Spell,Error
-highlight TooLongLineError ctermbg=198
-autocmd BufReadPost * match TooLongLineError /\%>80v/
-autocmd BufReadPost *
-     \ hi link TrailingSpaceError TooLongLineError
-     \ | 2match TrailingSpaceError /\s\+$/
+if $VIM_HIGHLIGHT_LONG_LINES != ""
+    highlight TooLongLineError ctermbg=198 ctermfg=190
+    autocmd BufReadPost * match TooLongLineError /\%>80v/
+endif
+highlight TrailingSpaceError ctermbg=196
+autocmd BufReadPost * 2match TrailingSpaceError /\s\+$/
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                                                 Test lines               
 """"""""""""			""""""""""""""""""""""""""""""""""""""""""""""""""
