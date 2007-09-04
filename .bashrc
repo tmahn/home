@@ -1,5 +1,6 @@
 # .bashrc
-#
+
+set +o allexport
 # Use "man initfiles" for more documentation.
 # Do not take the following lines out unless you're really sure of
 # what you are doing.
@@ -191,7 +192,7 @@ export VISUAL=vim
 export BLOCK_SIZE=1
 export LESS='-iM -z-2'
 export CONFIG_SITE="$HOME/.config.site"
-export PERLDOC_PAGER="less -r"
+export PERLDOC_PAGER="less -fr"
 export RI="--format bs"
 export CFLAGS='-Wall'
 export LDFLAGS='-lm'
@@ -261,18 +262,16 @@ function _handle_site() {
         . "$SITE_FILE"
     fi
 }
-case "${HOSTNAME}" in
-    *.twosigma.com)
-        _handle_site ts;;
-    QZmaImLpJdfVhBzQ|*)
-        ;;
-esac
+if [ -e "${HOME}/ts" ]; then
+    _handle_site ts
+fi
 
 # History settings
 HISTFILE=~/.bash_history
 HISTSIZE=10000000
 HISTFILESIZE=${HISTSIZE}
 HISTIGNORE=ignorespace
+export -n HISTFILE HISTSIZE HISTFILESIZE HISTIGNORE
 
 # Needs to be last command in file
 #
