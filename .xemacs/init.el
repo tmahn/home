@@ -49,7 +49,9 @@
 ; syntax highlighting
 (require 'font-lock)
 
-; Key bindings and stuff
+;; Key bindings and stuff
+; C-x C-b should active the buffer-list
+(define-key ctl-x-map "\C-b" 'buffer-menu)
 
 ; SML-mode
 (setq sml-program-name "sml")
