@@ -14,6 +14,8 @@ if [ -r "$defaultsdir/system-bashrc" ]; then
    source "$defaultsdir/system-bashrc"
 fi
 
+unalias -a
+
 function check_exit_status ()
 {
     local status="$?"
@@ -170,9 +172,7 @@ alias erase=rm
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
-alias md='mkdir'
 alias ls='ls -AF --color=auto'
-alias view='vim -R'
 
 # builtins
 alias cd=cd_func
@@ -214,11 +214,6 @@ shopt -s cdspell checkwinsize dotglob checkhash
 umask 022 # rw-r--r--
 
 # Prompt
-THEHOST="${HOSTNAME}"
-if [ "x${THEHOST:$((${#THEHOST}-4)):${#THEHOST}}" = "x.com" ]; then
-  THEHOST="${THEHOST%.*.*}"
-fi
-
 PROMPT_COMMAND=check_exit_status
 
 # Misc
@@ -243,7 +238,16 @@ fi
 #
 # Site-specific files may want to use functions defined here.
 function _bashrc_linux_style_prompt() {
-    PS1='\u@${THEHOST}:\w>'
+    local THEHOST="${HOSTNAME}"
+    if [ "x${THEHOST:$((${#THEHOST}-4)):${#THEHOST}}" = "x.com" ]; then
+        THEHOST="${THEHOST%.*.*}"
+    fi
+
+    PS1="${THEHOST}"':\w>'
+    case "${LOGNAME}" in
+        *neitsch) ;;
+        *) PS1='\u@'"${PS1}" ;;
+    esac
     # Xterm titles
     if [ "x${TERM}" = "xxterm" ]
     then

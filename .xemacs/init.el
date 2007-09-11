@@ -6,6 +6,8 @@
 (setq calendar-longitude -74.0)
 (setq calendar-location-name "New York, NY")
 
+(push '("python2.4" . python-mode) interpreter-mode-alist)
+
 ; utf-8; from UTF-8 Setup Mini HOWTO (http://www.maruko.ca/i18n/)
 (require 'un-define)
 (set-coding-priority-list '(utf-8))

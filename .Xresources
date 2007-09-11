@@ -17,6 +17,7 @@
 
 xterm.vt100.loginShell: true
 xterm.vt100.saveLines: 10000
+XTerm*scrollBar: false
 
 !xterm.vt100.font: -*-lucidatypewriter-medium-*-normal-*-14-*-*-*-*-*-*-*
 !xterm.vt100.font: -*-fixed-*-*-*-*-16-*-*-*-*-*-iso8859-*
