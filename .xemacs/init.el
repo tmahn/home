@@ -9,9 +9,11 @@
 (push '("python2.4" . python-mode) interpreter-mode-alist)
 
 ; utf-8; from UTF-8 Setup Mini HOWTO (http://www.maruko.ca/i18n/)
-(require 'un-define)
-(set-coding-priority-list '(utf-8))
-(set-coding-category-system 'utf-8 'utf-8)
+(if (not (emacs-version>= 21 5))
+    '((require 'un-define)
+      (set-coding-priority-list '(utf-8))
+      (set-coding-category-system 'utf-8 'utf-8))
+  (set-default-buffer-file-coding-system 'utf-8))
 
 (and (equal (format "%s" (console-type)) "tty")
      (equal (getenv "TERM") "xterm")
@@ -53,8 +55,12 @@
 (require 'font-lock)
 
 ;; Key bindings and stuff
-; C-x C-b should active the buffer-list
+; C-x C-b should activate the buffer-list
 (define-key ctl-x-map "\C-b" 'buffer-menu)
+
+; C-s search for regular expressions
+(define-key global-map [(control s)] 'isearch-forward-regexp)
+(define-key global-map [(control r)] 'isearch-backward-regexp)
 
 ; Ctrl-F5 reloads
 (defun revert-buffer-noconfirm ()
@@ -66,6 +72,9 @@
 (defun make.el ()
   "Load the make.el file" (interactive) (load-file "make.el"))
 (define-key global-map (kbd "C-c m") 'make.el)
+
+; Let tab do lisp-complete in eval-expression (M-:)
+(define-key read-expression-map [(tab)] 'lisp-complete-symbol)
 
 ; SML-mode
 (setq sml-program-name "sml")
@@ -98,6 +107,7 @@
 
 ; Allow typing 'y' instead of 'yes' to exit
 (fset 'yes-or-no-p 'y-or-n-p)
+(setq require-final-newline t)
 
 ; Set background color
 (set-face-background
