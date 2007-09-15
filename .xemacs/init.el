@@ -32,7 +32,8 @@
        (define-key function-key-map "\e[1;3D" [(meta left)])
        (define-key function-key-map "\e[1;3C" [(meta right)])
        (define-key function-key-map "\e[1;3A" [(meta up)])
-       (define-key function-key-map "\e[1;3B" [(meta down)]))
+       (define-key function-key-map "\e[1;3B" [(meta down)])
+       (define-key function-key-map "\e[15;5~"  [(control f5)]))
 
      (custom-set-faces
        '(font-lock-builtin-face ((((type x mswindows)(class color)(background light))(:foreground "Purple"))(((type tty)(class color))(:foreground "magenta"))))
@@ -55,6 +56,17 @@
 ; C-x C-b should active the buffer-list
 (define-key ctl-x-map "\C-b" 'buffer-menu)
 
+; Ctrl-F5 reloads
+(defun revert-buffer-noconfirm ()
+  "Revert the current buffer without confirming the action." (interactive)
+  (revert-buffer t t))
+(define-key global-map [(control f5)] 'revert-buffer-noconfirm)
+
+; If a make.el file exists, C-c m runs it
+(defun make.el ()
+  "Load the make.el file" (interactive) (load-file "make.el"))
+(define-key global-map (kbd "C-c m") 'make.el)
+
 ; SML-mode
 (setq sml-program-name "sml")
 (add-hook 'sml-mode-hook
@@ -62,11 +74,10 @@
              "Map C-c C-e to run code from the point to the end of the
              buffer."
              (define-key sml-mode-map
-                         (kbd "C-c C-e")
-                         '(lambda ()
-                            ""
-                            (interactive)
-                           (sml-send-region (point) (point-max))))))
+	       (kbd "C-c C-e")
+	       '(lambda () "" (interactive)
+		  (sml-send-region (point) (point-max))))))
+
 ; command to insert date
 (defun insert-date ()
   "Insert the date into the current buffer."
