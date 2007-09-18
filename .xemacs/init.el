@@ -1,6 +1,14 @@
 ;(load "term/vt100.el" nil t)
 ;(load "xt-mouse-xmas.el" nil t)
 
+;; TODO Features from vim that we like
+; [ ] Jump list (Tab and Ctrl-O)
+; [ ] Preserve point across sessions
+; [ ] Spell-check highlighting
+;     flyspell-incorrect-face ?
+; [ ] Search term highlighting
+; [ ] TODO XXX FIXME highlighting
+
 ; For calendar
 (setq calendar-latitude 40.4)
 (setq calendar-longitude -74.0)
@@ -54,9 +62,22 @@
 ; syntax highlighting
 (require 'font-lock)
 
+; External packages
+;(add-to-list 'load-path (concat user-init-directory "/external") t)
+;(load-file "~/.xemacs/session.el")
+;(require 'session)
+;(add-hook 'after-init-hook 'session-initialize)
+;(require 'ispell)
+(setq-default ispell-program-name "aspell")
+(require 'saveplace)
+(setq-default save-place t)
+
 ;; Key bindings and stuff
 ; C-x C-b should activate the buffer-list
-(define-key ctl-x-map "\C-b" 'buffer-menu)
+(define-key ctl-x-map [(control b)] 'buffer-menu)
+; Use iswitchb-buffer
+(require 'iswitchb)
+(define-key ctl-x-map [(b)] 'iswitchb-buffer)
 
 ; C-s search for regular expressions
 (define-key global-map [(control s)] 'isearch-forward-regexp)
@@ -71,7 +92,12 @@
 ; If a make.el file exists, C-c m runs it
 (defun make.el ()
   "Load the make.el file" (interactive) (load-file "make.el"))
-(define-key global-map (kbd "C-c m") 'make.el)
+(define-key global-map [(control c) (m)] 'make.el)
+(defun make-dash-k ()
+  "(compile \"make -k\""
+  (interactive)
+  (compile "make -k"))
+(define-key global-map [(control c) (M)] 'make-dash-k)
 
 ; Let tab do lisp-complete in eval-expression (M-:)
 (define-key read-expression-map [(tab)] 'lisp-complete-symbol)
@@ -87,11 +113,14 @@
 	       '(lambda () "" (interactive)
 		  (sml-send-region (point) (point-max))))))
 
+(defun insert-shell-command (cmd)
+  "Insert the output of the command into the current buffer."
+  (interactive "sCommand: ")
+  (insert-string (shell-command-to-string cmd)))
+
 ; command to insert date
 (defun insert-date ()
-  "Insert the date into the current buffer."
-  (interactive)
-  (insert-string (shell-command-to-string "date")))
+  (insert-string (format-time-string "%c")))
    
 ; Enable scroll wheel
 ;(defun up-slightly () (interactive) (scroll-up 1))
@@ -114,7 +143,20 @@
   'default (make-color-specifier "rgb:DF/DF/DF"))
 
 ; Don't leave backup files all over
-(setq make-backup-files nil)
+(push (cons "." (expand-file-name "~/misc/bak")) backup-directory-alist)
+
+; Stop going into overwrite mode
+(overwrite-mode nil)
+(put 'overwrite-mode 'disabled t)
+
+(defun view-emacs-source-file (file)
+  "Open the a file in the emacs source tree.
+e.g. (view-emacs-source-file \"simple.el\")"
+  (interactive
+   (list (read-file-name "Source file: " (concat source-directory "/"))))
+  (find-file (if (string-match (concat "^" source-directory) file)
+		 file
+	       (concat source-directory "/" file))))
 
 ; Look up keybindings when running apropros
 ;(setq apropos-do-all t)
@@ -185,3 +227,12 @@
 
 ; End sample.init.el
 ; ==================
+
+(defun autocompile nil
+  "compile self if ~/.xemacs/init.el"
+  (interactive)
+  (require 'bytecomp)
+  (if (equal buffer-file-name user-init-file)
+      (byte-compile-file (buffer-file-name))))
+
+(add-hook 'after-save-hook 'autocompile)
