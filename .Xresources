@@ -55,9 +55,33 @@ xterm.vt100.color14: cyan3
 
 XTerm*metaSendsEscape: true
 
+/* In order to be able to use Control-x where x is outside "a-z@[]_\", we
+ * have to make up our own control codes. */
 XTerm*VT100.translations: #override \
-        ~Meta Shift<Key>Tab: string(\033[Z)\n
-
+	~Meta Shift<Key>Tab:	string(\033[Z) \n\
+	~Shift Ctrl<Key>1:	string(\033[[c1) \n\
+	~Shift Ctrl<Key>2:	string(\033[[c2) \n\
+	~Shift Ctrl<Key>3:	string(\033[[c3) \n\
+	~Shift Ctrl<Key>4:	string(\033[[c4) \n\
+	~Shift Ctrl<Key>5:	string(\033[[c5) \n\
+	~Shift Ctrl<Key>6:	string(\033[[c6) \n\
+	~Shift Ctrl<Key>7:	string(\033[[c7) \n\
+	~Shift Ctrl<Key>8:	string(\033[[c8) \n\
+	~Shift Ctrl<Key>9:	string(\033[[c9) \n\
+	~Shift Ctrl<Key>0:	string(\033[[c0) \n\
+	~Shift Ctrl<Key>-:	string(\033[[c-) \n\
+	~Shift Ctrl<Key>=:	string(\033[[c=) \n\
+	Shift Ctrl<Key>1:	string(\033[[C1) \n\
+	Shift Ctrl<Key>2:	string(\033[[C2) \n\
+	Shift Ctrl<Key>3:	string(\033[[C3) \n\
+	Shift Ctrl<Key>4:	string(\033[[C4) \n\
+	Shift Ctrl<Key>5:	string(\033[[C5) \n\
+	Shift Ctrl<Key>6:	string(\033[[C6) \n\
+	Shift Ctrl<Key>7:	string(\033[[C7) \n\
+	Shift Ctrl<Key>8:	string(\033[[C8) \n\
+	Shift Ctrl<Key>9:	string(\033[[C9) \n\
+	Shift Ctrl<Key>0:	string(\033[[C0) \n\
+	Shift Ctrl<Key>=:	string(\033[[C+) \n
 
 oclock.customization: -color
 

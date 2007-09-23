@@ -43,7 +43,27 @@
        (define-key function-key-map "\e[1;3C" [(meta right)])
        (define-key function-key-map "\e[1;3A" [(meta up)])
        (define-key function-key-map "\e[1;3B" [(meta down)])
-       (define-key function-key-map "\e[15;5~"  [(control f5)]))
+       (define-key function-key-map "\e[15;5~"  [(control f5)])
+       
+       ; We want the key 'Ctrl-+' to be available inside an
+       ; xterm. There's not standard character sequence for it, so we
+       ; make one up, add it here and in the xterm translations
+       ; resource, and hope there are no conflicts.
+       ; With help from 
+       ; http://lists.gnu.org/archive/html/help-gnu-emacs/2005-03/msg00102.html
+       (defvar control-key-map (make-sparse-keymap) "Control keymap.")
+       (define-prefix-command 'control-key-map)
+       (define-key function-key-map "\e[[" 'control-key-map)
+       (define-key control-key-map "C+" [(control +)])
+       (define-key control-key-map "c=" [(control =)]))
+;       ; Attempts to use Ctrl-[Shift]-Digit ar raising the error
+;       ; "keysym char must be printable: ?\^G"
+;       (let ((n 0))
+;	 (while (< n 10)
+;	   (define-key control-key-map (format "C%d" n)
+;	     (vector (list 'control n)))
+;	   (setq n (1+ n))))
+
 
      (custom-set-faces
        '(font-lock-builtin-face ((((type x mswindows)(class color)(background light))(:foreground "Purple"))(((type tty)(class color))(:foreground "magenta"))))
@@ -78,6 +98,9 @@
 ; Use iswitchb-buffer
 (require 'iswitchb)
 (define-key ctl-x-map [(b)] 'iswitchb-buffer)
+; Use redo
+(require 'redo)
+(define-key global-map [(control +)] 'redo)
 
 ; C-s search for regular expressions
 (define-key global-map [(control s)] 'isearch-forward-regexp)
