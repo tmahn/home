@@ -270,6 +270,21 @@ if [ -e "${HOME}/ts" ]; then
     _handle_site ts
 fi
 
+function _bashrc_clean_path() {
+    # Given the name of a variable that contains a colon-separated list,
+    # remove duplicates and blanks from that list and export it.
+    eval local PATHTOCLEAN="\${${1}}"
+    PATHTOCLEAN="$(echo -n "${PATHTOCLEAN}" | awk '
+            BEGIN	  		{ RS = ":" }
+            !seen[$0] && $0 != "" 	{ seen[$0] = 1;
+                                          printf("%s:", $0)}')"
+    PATHTOCLEAN="${PATHTOCLEAN%:}"
+    eval export "${1}=\${PATHTOCLEAN}"
+}
+_bashrc_clean_path PATH
+_bashrc_clean_path MANPATH
+_bashrc_clean_path INFOPATH
+
 # History settings
 HISTFILE=~/.bash_history
 HISTSIZE=10000000
