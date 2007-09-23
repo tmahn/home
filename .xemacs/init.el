@@ -18,10 +18,10 @@
 
 ; utf-8; from UTF-8 Setup Mini HOWTO (http://www.maruko.ca/i18n/)
 (if (not (emacs-version>= 21 5))
-    '((require 'un-define)
-      (set-coding-priority-list '(utf-8))
-      (set-coding-category-system 'utf-8 'utf-8))
-  (set-default-buffer-file-coding-system 'utf-8))
+    (require 'un-define))
+;      (set-coding-priority-list '(utf-8))
+;      (set-coding-category-system 'utf-8 'utf-8)))
+(set-default-buffer-file-coding-system 'utf-8)
 
 (and (equal (format "%s" (console-type)) "tty")
      (equal (getenv "TERM") "xterm")
@@ -82,6 +82,11 @@
 ; C-s search for regular expressions
 (define-key global-map [(control s)] 'isearch-forward-regexp)
 (define-key global-map [(control r)] 'isearch-backward-regexp)
+;
+(add-hook 'isearch-mode-hook
+	  (lambda ()
+	    (define-key isearch-mode-map [(up)] 'isearch-ring-advance)
+	    (define-key isearch-mode-map [(down)] 'isearch-ring-retreat)))
 
 ; Ctrl-F5 reloads
 (defun revert-buffer-noconfirm ()
@@ -136,24 +141,37 @@
 
 ; Allow typing 'y' instead of 'yes' to exit
 (fset 'yes-or-no-p 'y-or-n-p)
-(setq require-final-newline t)
+(setq-default require-final-newline t)
 
 ; Set background color
 (set-face-background
   'default (make-color-specifier "rgb:DF/DF/DF"))
 
 ; Don't leave backup files all over
-(push (cons "." (expand-file-name "~/misc/bak")) backup-directory-alist)
+(if (boundp 'backup-directory-alist)
+    (push (cons "." (expand-file-name "~/misc/bak")) backup-directory-alist)
+    (defun make-backup-file-name (file)
+       (expand-file-name
+	(concat
+	 "~/misc/bak"
+	 (char-to-string directory-sep-char)
+	 (file-name-nondirectory file)
+	 "~"))))
 
 ; Stop going into overwrite mode
 (overwrite-mode nil)
 (put 'overwrite-mode 'disabled t)
 
+(if (not (boundp 'source-directory))
+    (setq source-directory 
+	  (expand-file-name (concat lisp-directory
+				    ".."))))
 (defun view-emacs-source-file (file)
   "Open the a file in the emacs source tree.
 e.g. (view-emacs-source-file \"simple.el\")"
   (interactive
-   (list (read-file-name "Source file: " (concat source-directory "/"))))
+   (let ((insert-default-directory nil))
+     (read-file-name "Source file: " (concat source-directory "/"))))
   (find-file (if (string-match (concat "^" source-directory) file)
 		 file
 	       (concat source-directory "/" file))))
@@ -228,11 +246,11 @@ e.g. (view-emacs-source-file \"simple.el\")"
 ; End sample.init.el
 ; ==================
 
-(defun autocompile nil
-  "compile self if ~/.xemacs/init.el"
-  (interactive)
-  (require 'bytecomp)
-  (if (equal buffer-file-name user-init-file)
-      (byte-compile-file (buffer-file-name))))
+;(defun autocompile nil
+;  "compile self if ~/.xemacs/init.el"
+;  (interactive)
+;  (require 'bytecomp)
+;  (if (equal buffer-file-name user-init-file)
+;      (byte-compile-file (buffer-file-name))))
 
-(add-hook 'after-save-hook 'autocompile)
+;(add-hook 'after-save-hook 'autocompile)
