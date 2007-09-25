@@ -83,7 +83,8 @@
 (require 'font-lock)
 
 ; External packages
-;(add-to-list 'load-path (concat user-init-directory "/external") t)
+(add-to-list 'load-path (concat user-init-directory "/external") t)
+(require 'findlib)
 ;(load-file "~/.xemacs/session.el")
 ;(require 'session)
 ;(add-hook 'after-init-hook 'session-initialize)
