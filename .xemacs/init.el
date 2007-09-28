@@ -26,6 +26,17 @@
      (equal (getenv "TERM") "xterm")
 
      (list
+
+      ; We want the frame title to be displayed in an xterm, but there's no
+      ; way to format the frame-title-format from lisp. So we fake it.
+      (require 'xterm-title)
+      (defun xterm-title-update ()
+	(if (eq (minibuffer-depth) 0)
+	    (xterm-set-window-title
+	     (concat "XEmacs: " (buffer-name)
+		     " (" (default-directory) ")"))))
+      (xterm-title-mode t)
+
        (load-file "~/.xemacs/xt-mouse-xmas.el")
        ; This loads all the colours that xterm, supports, but for
        ; as-yet-unknown reasons, they don't get picked up properly.
@@ -294,3 +305,5 @@ e.g. (view-emacs-source-file \"simple.el\")"
 ;      (byte-compile-file (buffer-file-name))))
 
 ;(add-hook 'after-save-hook 'autocompile)
+
+(setq-default enable-recursive-minibuffers t)

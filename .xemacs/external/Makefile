@@ -1,7 +1,9 @@
 include ~/.Makefile
 
 LIBS = findlib \
-       session
+       session \
+       xterm-title \
+       xterm-frobs
 
 all: ${LIBS:%=%.elc}
 
@@ -19,6 +21,16 @@ session-${SESSION_VERSION}.tar.gz:
 	wget ${SESSION_URL}
 session.el: session-${SESSION_VERSION}.tar.gz
 	tar -x session/lisp/$@ --strip-components=2 -f $<
+	touch $@
+
+FRIEDMAN_URL = http://www.splode.com/~friedman/software/emacs-lisp/src
+xterm-title.elc: xterm-frobs.el
+xterm-title.elc: BYTE_COMPILE_ARGS += -load xterm-frobs.el
+xterm-title.el: URL = ${FRIEDMAN_URL}/xterm-title.el
+xterm-frobs.el: URL = ${FRIEDMAN_URL}/xterm-frobs.el
+
+%.el:
+	wget ${URL}
 
 #
 clean:
