@@ -3,7 +3,6 @@
 
 ;; TODO Features from vim that we like
 ; [ ] Jump list (Tab and Ctrl-O)
-; [ ] Preserve point across sessions
 ; [ ] Spell-check highlighting
 ;     flyspell-incorrect-face ?
 ; [ ] Search term highlighting
@@ -44,6 +43,7 @@
        (define-key function-key-map "\e[1;3A" [(meta up)])
        (define-key function-key-map "\e[1;3B" [(meta down)])
        (define-key function-key-map "\e[15;5~"  [(control f5)])
+       (define-key function-key-map [(meta escape) O S] [(meta f4)])
        
        ; We want the key 'Ctrl-+' to be available inside an
        ; xterm. There's not standard character sequence for it, so we
@@ -85,13 +85,18 @@
 ; External packages
 (add-to-list 'load-path (concat user-init-directory "/external") t)
 (require 'findlib)
-;(load-file "~/.xemacs/session.el")
-;(require 'session)
-;(add-hook 'after-init-hook 'session-initialize)
+(require 'session)
+(add-hook 'after-init-hook 'session-initialize)
+(setq-default session-undo-check -1)
+
+
 ;(require 'ispell)
 (setq-default ispell-program-name "aspell")
-(require 'saveplace)
-(setq-default save-place t)
+;(require 'saveplace)
+;(setq-default save-place t)
+
+(require 'rsz-minibuf)
+(setq-default resize-minibuffer-mode t)
 
 ;; Key bindings and stuff
 ; C-x C-b should activate the buffer-list
@@ -102,6 +107,8 @@
 ; Use redo
 (require 'redo)
 (define-key global-map [(control +)] 'redo)
+(define-key global-map [f3] 'kill-this-buffer)
+(global-set-key [(meta f4)] 'kill-this-buffer)
 
 ; C-s search for regular expressions
 (define-key global-map [(control s)] 'isearch-forward-regexp)
@@ -149,6 +156,8 @@
 
 ; command to insert date
 (defun insert-date ()
+  "Insert the current date into the buffer."
+  (interactive)
   (insert-string (format-time-string "%c")))
    
 ; Enable scroll wheel
@@ -205,13 +214,20 @@ e.g. (view-emacs-source-file \"simple.el\")"
 
 (line-number-mode 1)
 (column-number-mode 1)
-(auto-fill-mode)
+(add-hook 'text-mode-hook
+	  (lambda ()
+	    (auto-fill-mode)))
+(setq-default default-fill-column 78)
 
 ; calendar keybindings
 (add-hook 'calendar-load-hook
           '(lambda ()
              (define-key calendar-mode-map ">" 'scroll-calendar-left)
              (define-key calendar-mode-map "<" 'scroll-calendar-right)))
+
+; random stuff
+(defun adn-active-key-count
+  (apply '+ (mapcar 'keymap-fullness (current-keymaps))))
 
 ; ===================
 ; From sample.init.el
