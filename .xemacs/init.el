@@ -7,6 +7,9 @@
 ;     flyspell-incorrect-face ?
 ; [ ] Search term highlighting
 ; [ ] TODO XXX FIXME highlighting
+; [ ] Highlight trailing space
+; [ ] Automatically trim trailing space on source code (write-contents-hooks?)
+
 
 (add-to-list 'load-path (concat user-init-directory "/external") t)
 
@@ -36,9 +39,12 @@
 	(if (eq (minibuffer-depth) 0)
 	    ; don't want to see Minibuffer0 as the title
 	    (xterm-set-window-title
-	     (concat "XEmacs: " (buffer-name)
+	     (format "XEmacs: %s%s" (buffer-name)
 		     (if (buffer-file-name)
-			 (concat " (" (default-directory) ")"))))))
+			 (format " (%s)"
+				 (abbreviate-file-name
+				  (directory-file-name default-directory) 1))
+		       "")))))
       (xterm-title-mode t)
 
        (load-file "~/.xemacs/xt-mouse-xmas.el")
