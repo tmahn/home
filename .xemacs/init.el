@@ -8,6 +8,8 @@
 ; [ ] Search term highlighting
 ; [ ] TODO XXX FIXME highlighting
 
+(add-to-list 'load-path (concat user-init-directory "/external") t)
+
 ; For calendar
 (setq calendar-latitude 40.4)
 (setq calendar-longitude -74.0)
@@ -32,9 +34,11 @@
       (require 'xterm-title)
       (defun xterm-title-update ()
 	(if (eq (minibuffer-depth) 0)
+	    ; don't want to see Minibuffer0 as the title
 	    (xterm-set-window-title
 	     (concat "XEmacs: " (buffer-name)
-		     " (" (default-directory) ")"))))
+		     (if (buffer-file-name)
+			 (concat " (" (default-directory) ")"))))))
       (xterm-title-mode t)
 
        (load-file "~/.xemacs/xt-mouse-xmas.el")
@@ -94,7 +98,6 @@
 (require 'font-lock)
 
 ; External packages
-(add-to-list 'load-path (concat user-init-directory "/external") t)
 (require 'findlib)
 (require 'session)
 (add-hook 'after-init-hook 'session-initialize)
@@ -237,7 +240,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
              (define-key calendar-mode-map "<" 'scroll-calendar-right)))
 
 ; random stuff
-(defun adn-active-key-count
+(defun adn-active-key-count ()
   (apply '+ (mapcar 'keymap-fullness (current-keymaps))))
 
 ; ===================
@@ -306,4 +309,10 @@ e.g. (view-emacs-source-file \"simple.el\")"
 
 ;(add-hook 'after-save-hook 'autocompile)
 
+
 (setq-default enable-recursive-minibuffers t)
+(defun byte-recompile-user-init-directory ()
+  "Recompile everything in the user init directory that needs it."
+  (interactive)
+  (byte-recompile-directory user-init-directory 0))
+(add-hook 'kill-emacs-hook 'byte-recompile-user-init-directory)
