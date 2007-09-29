@@ -7,7 +7,7 @@ set completion-ignore-case on
 "\e[1;5C": forward-word
 
 "\C-?": backward-delete-char
-"\C-h": backward-delete-char
+"\C-H": backward-delete-char
 "\e[3~": delete-char
 
 "\C-l": clear-screen

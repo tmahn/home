@@ -341,6 +341,11 @@ e.g. (view-emacs-source-file \"simple.el\")"
 ; Handle escapes in shell (currently only works well in GUI)
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+(setq-default shell-file-name "/bin/bash")
+(add-hook 'shell-mode-hook 
+	  (lambda ()
+	    (message "shell-mode-hook")
+	    (pushnew "--login" explicit-bash-args)))
 
 ; Needs rewrite
 (defun adn-file-complete ()

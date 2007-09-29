@@ -31,7 +31,9 @@ set background=light
 " Very bright search highlighting
 highlight Search ctermbg=190
 " Turn on 256 colours for xterms
-set t_Co=256 t_Sf=<Esc>[38;5;%p1%m t_Sb=<Esc>[48;5;%p1%m
+if &term == "xterm"
+    set t_Co=256 t_Sf=<Esc>[38;5;%p1%m t_Sb=<Esc>[48;5;%p1%m
+endif
 
 " Highlight trailing spaces, too-long lines in red in source code
 " the cino+= thing sets (mostly) Two Sigma indent rules

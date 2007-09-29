@@ -227,10 +227,15 @@ then
     stty sane
 fi
 
-if [ "${TERM}" = "xterm" ]; then
+case "${TERM}" in
+    xterm*)
     # http://nion.modprobe.de/blog/archives/572-less-colors-for-man-pages.html
-    export LESS_TERMCAP_md=$'\e[38;5;54m'
-fi
+	    export LESS_TERMCAP_md=$'\e[38;5;54m';;
+    dumb)
+	    # The default cygwin prompt sets the xterm title, which gets
+	    # mangled in xemacs shell mode.
+	    PS1="${PS1#\\[\\e\]0;\\w\\a\\\]}";;
+esac
 
 
 # For site-specific customizations, we map hostnames to 'sites', and then
@@ -259,16 +264,6 @@ function _bashrc_linux_style_prompt() {
         fi
     fi
 }
-function _handle_site() {
-    local SITE="$1"
-    local SITE_FILE="${HOME}/.bashrc.site/$SITE.sh"
-    if [ -n "$SITE" ] && [ -r "$SITE_FILE" ]; then
-        . "$SITE_FILE"
-    fi
-}
-if [ -e "${HOME}/ts" ]; then
-    _handle_site ts
-fi
 
 function _bashrc_clean_path() {
     # Given the name of a variable that contains a colon-separated list,
@@ -281,6 +276,19 @@ function _bashrc_clean_path() {
     PATHTOCLEAN="${PATHTOCLEAN%:}"
     eval export "${1}=\${PATHTOCLEAN}"
 }
+
+function _handle_site() {
+    local SITE="$1"
+    local SITE_FILE="${HOME}/.bashrc.site/$SITE.sh"
+    if [ -n "$SITE" ] && [ -r "$SITE_FILE" ]; then
+        . "$SITE_FILE"
+    fi
+}
+
+if [ -e "${HOME}/ts" ]; then
+    _handle_site ts
+fi
+
 _bashrc_clean_path PATH
 _bashrc_clean_path MANPATH
 _bashrc_clean_path INFOPATH
