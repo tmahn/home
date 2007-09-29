@@ -1,6 +1,3 @@
-;(load "term/vt100.el" nil t)
-;(load "xt-mouse-xmas.el" nil t)
-
 ;; TODO Features from vim that we like
 ; [ ] Jump list (Tab and Ctrl-O)
 ; [ ] Spell-check highlighting
@@ -9,7 +6,6 @@
 ; [ ] TODO XXX FIXME highlighting
 ; [ ] Highlight trailing space
 ; [ ] Automatically trim trailing space on source code (write-contents-hooks?)
-
 
 (add-to-list 'load-path (concat user-init-directory "/external") t)
 
@@ -27,10 +23,14 @@
 ;      (set-coding-category-system 'utf-8 'utf-8)))
 (set-default-buffer-file-coding-system 'utf-8)
 
-(and (equal (format "%s" (console-type)) "tty")
-     (equal (getenv "TERM") "xterm")
-
-     (list
+(defadvice load-terminal-library (after run-terminal-library-hooks activate)
+  """We do many custom things with xterm, so we apply this after the default
+xterm.el is sourced."""
+  (overwrite-mode nil)
+  (and (equal (format "%s" (console-type)) "tty")
+       (equal (getenv "TERM") "xterm")
+       
+       (list
 
       ; We want the frame title to be displayed in an xterm, but there's no
       ; way to format the frame-title-format from lisp. So we fake it.
@@ -47,7 +47,7 @@
 		       "")))))
       (xterm-title-mode t)
 
-       (load-file "~/.xemacs/xt-mouse-xmas.el")
+       (require 'xt-mouse-xmas)
        ; This loads all the colours that xterm, supports, but for
        ; as-yet-unknown reasons, they don't get picked up properly.
        ;(load-file "~/.xemacs/xmas-tty-faces256.el")
@@ -64,6 +64,10 @@
        (define-key function-key-map "\e[1;3A" [(meta up)])
        (define-key function-key-map "\e[1;3B" [(meta down)])
        (define-key function-key-map "\e[15;5~"  [(control f5)])
+       (define-key function-key-map "\e\e[1;3A" [(meta up)])
+       (define-key function-key-map "\e\e[1;3B" [(meta down)])
+       (define-key function-key-map "\e\e[1;3C" [(meta right)])
+       (define-key function-key-map "\e\e[1;3D" [(meta left)])
        (define-key function-key-map [(meta escape) O S] [(meta f4)])
        
        ; We want the key 'Ctrl-+' to be available inside an
@@ -77,7 +81,7 @@
        (define-key function-key-map "\e[[" 'control-key-map)
        (define-key control-key-map "C+" [(control +)])
        (define-key control-key-map "c=" [(control =)]))
-;       ; Attempts to use Ctrl-[Shift]-Digit ar raising the error
+;       ; Attempts to use Ctrl-[Shift]-Digit are raising the error
 ;       ; "keysym char must be printable: ?\^G"
 ;       (let ((n 0))
 ;	 (while (< n 10)
@@ -98,7 +102,19 @@
        '(font-lock-string-face ((((type x mswindows)(class color)(background light))(:foreground "green4"))(((type tty)(class color))(:foreground "green" :bold))))
        '(font-lock-type-face ((((type x mswindows)(class color)(background light))(:foreground "steelblue"))(((type tty)(class color))(:foreground "cyan" :bold))))
        '(font-lock-variable-name-face ((((type x mswindows)(class color)(background light))(:foreground "magenta4"))(((type tty)(class color))(:foreground "magenta" :bold))))
-       '(font-lock-warning-face ((((type x mswindows)(class color)(background light))(:foreground "Red" :bold))(((type tty)(class color))(:foreground "red" :bold))))))
+       '(font-lock-warning-face ((((type x mswindows)(class color)(background light))(:foreground "Red" :bold))(((type tty)(class color))(:foreground "red" :bold)))))))
+
+; (defun load-terminal-library ()
+;   (message "loaded terminal library")
+;   (when term-file-prefix
+;     (let ((term (getenv "TERM"))
+;           hyphend)
+;       (while (and term
+;                   (not (load (concat term-file-prefix term) t t)))
+;         ;; Strip off last hyphen and what follows, then try again
+;         (if (setq hyphend (string-match "[-_][^-_]+\\'" term))
+;             (setq term (substring term 0 hyphend))
+;           (setq term nil))))))
 
 ; syntax highlighting
 (require 'font-lock)
@@ -149,11 +165,8 @@
 (defun make.el ()
   "Load the make.el file" (interactive) (load-file "make.el"))
 (define-key global-map [(control c) (m)] 'make.el)
-(defun make-dash-k ()
-  "(compile \"make -k\""
-  (interactive)
-  (compile "make -k"))
-(define-key global-map [(control c) (M)] 'make-dash-k)
+(setq-default compilation-read-command nil)
+(define-key global-map [(control c) (M)] 'compile)
 
 ; Let tab do lisp-complete in eval-expression (M-:)
 (define-key read-expression-map [(tab)] 'lisp-complete-symbol)
@@ -213,7 +226,10 @@
 
 ; Stop going into overwrite mode
 (overwrite-mode nil)
-(put 'overwrite-mode 'disabled t)
+(defun overwrite-mode (&rest ignored)
+  "Disabled due to abuse."
+  (interactive)
+  (message "Attempt to switch into overwrite-mode ignored."))
 
 (if (not (boundp 'source-directory))
     (setq source-directory 
@@ -315,8 +331,49 @@ e.g. (view-emacs-source-file \"simple.el\")"
 
 ;(add-hook 'after-save-hook 'autocompile)
 
+; Clean up GUI: no menubar, toolbar, scrollbars, or tabs
+(customize-set-variable 'toolbar-visible-p nil)
+(customize-set-variable 'gutter-buffers-tab-visible-p nil)
+(set-specifier vertical-scrollbar-visible-p nil)
+(set-specifier horizontal-scrollbar-visible-p nil)
+(set-specifier menubar-visible-p nil)
+
+; Handle escapes in shell (currently only works well in GUI)
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+; Needs rewrite
+(defun adn-file-complete ()
+  "Perform completion on file name preceding point (stolen from wid-edit.el)"
+  (interactive)
+  (let* ((end (point))
+	 (beg (save-excursion
+		; TODO use syntax tables
+		(skip-chars-backward "^ \n\"")
+		(point)))
+	 (pattern (buffer-substring beg end))
+;	 (dummy (message (concat "filename is "  pattern)))
+	 (name-part (file-name-nondirectory pattern))
+	 (directory (file-name-directory pattern))
+	 (completion (file-name-completion name-part directory)))
+    (cond ((eq completion t))
+	  ((null completion)
+	   (message "Can't find completion for \"%s\"" pattern)
+	   (ding))
+	  ((not (string= name-part completion))
+	   (delete-region beg end)
+	   (insert (expand-file-name completion directory)))
+	  (t
+	   (message "Making completion list...")
+	   (with-output-to-temp-buffer "*Completions*"
+	     (display-completion-list
+	      (sort (file-name-all-completions name-part directory)
+		    'string<)))
+	   (message "Making completion list...%s" "done")))))
+(global-set-key [(control c) f] 'adn-file-complete)
 
 (setq-default enable-recursive-minibuffers t)
+
 (defun byte-recompile-user-init-directory ()
   "Recompile everything in the user init directory that needs it."
   (interactive)
