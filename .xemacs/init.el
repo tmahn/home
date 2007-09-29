@@ -6,6 +6,7 @@
 ; [ ] TODO XXX FIXME highlighting
 ; [ ] Highlight trailing space
 ; [ ] Automatically trim trailing space on source code (write-contents-hooks?)
+; [ ] More right-justification in modeline
 
 (add-to-list 'load-path (concat user-init-directory "/external") t)
 
@@ -248,12 +249,45 @@ e.g. (view-emacs-source-file \"simple.el\")"
 ; Look up keybindings when running apropros
 ;(setq apropos-do-all t)
 
-(line-number-mode 1)
-(column-number-mode 1)
 (add-hook 'text-mode-hook
 	  (lambda ()
 	    (auto-fill-mode)))
 (setq-default default-fill-column 78)
+
+;; Custom modeline
+(setq-default modeline-modified '("%1*"))
+(setq-default modeline-buffer-identification '(" %21b"))
+; Don't show always-on modes in the modeline
+(defvar minor-mode-alist-ignore
+  '(xterm-title-mode font-lock-mode xterm-mouse-mode filladapt-mode))
+(setq-default
+ modeline-format
+ (list
+  (list (- (frame-width) 3)
+	(cons modeline-modified-extent 'modeline-modified)
+	(cons modeline-buffer-id-extent 'modeline-buffer-identification)
+	" "
+	(let ((mode-string global-mode-string))
+	  (if mode-string (list mode-string " ")))
+	"%[("
+	(cons modeline-minor-mode-extent
+	      ; XXX There has to be a better way to strip out elements from
+	      ; a list
+	      (list "" 'mode-name
+		    (progn
+		      (mapcar
+		       (lambda (mode)
+			 (setq minor-mode-alist
+			       (remassoc mode minor-mode-alist)))
+		       minor-mode-alist-ignore)
+		      minor-mode-alist)))
+	(cons modeline-narrowed-extent "%n")
+	'modeline-process
+	")%] %l,%c")
+  (list 3 "%p")))
+; These are actually always on now
+(line-number-mode 1)
+(column-number-mode 1)
 
 ; calendar keybindings
 (add-hook 'calendar-load-hook
@@ -290,7 +324,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
         auto-save-interval 2000
         )
   )
-
+(setq-default auto-save-list-file-prefix "~/.autosave/.saves-")
 
 ;;; ********************
 ;;; Filladapt is an adaptive text-filling package.  When it is enabled it
