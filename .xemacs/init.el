@@ -7,8 +7,14 @@
 ; [ ] Highlight trailing space
 ; [ ] Automatically trim trailing space on source code (write-contents-hooks?)
 ; [ ] More right-justification in modeline
+;     [ ] Line length
+;     [ ] Show region size while marking
+; [ ] Wrap output of hyper-apropos
+;     We can set truncate-lines to nil, but then the docstrings wrap into the
+;     list of symbol names.
 
-(add-to-list 'load-path (concat user-init-directory "/external") t)
+(eval-and-compile
+  (add-to-list 'load-path (concat user-init-directory "/external") t))
 
 ; For calendar
 (setq calendar-latitude 40.4)
@@ -37,10 +43,19 @@ xterm.el is sourced."""
       ; way to format the frame-title-format from lisp. So we fake it.
       (require 'xterm-title)
       (defun xterm-title-update ()
+	"Update xterm window title with the name of the selected buffer."
+	; we don't want to see Minibuffer0 as the title
 	(if (eq (minibuffer-depth) 0)
-	    ; don't want to see Minibuffer0 as the title
 	    (xterm-set-window-title
-	     (format "XEmacs: %s%s" (buffer-name)
+	     (format "XEmacs: %s%s"
+	             ; Some modes (e.g. Hyper Apropos) put a more descriptive
+	             ; title in modeline-buffer-identification, but have a
+		     ; blah buffer name.
+		     (if (not (eq modeline-buffer-identification
+				  (default-value
+				    'modeline-buffer-identification)))
+			 (mapconcat 'cdr modeline-buffer-identification "")
+		       (buffer-name))
 		     (if (buffer-file-name)
 			 (format " (%s)"
 				 (abbreviate-file-name
@@ -52,6 +67,7 @@ xterm.el is sourced."""
        ; This loads all the colours that xterm, supports, but for
        ; as-yet-unknown reasons, they don't get picked up properly.
        ;(load-file "~/.xemacs/xmas-tty-faces256.el")
+       (load "xmas-tty-faces")
        (set-terminal-coding-system 'utf-8)
        (xterm-mouse-mode t)
        (define-key function-key-map "\e[1;5D" [(control left)])
@@ -89,33 +105,26 @@ xterm.el is sourced."""
 ;	   (define-key control-key-map (format "C%d" n)
 ;	     (vector (list 'control n)))
 ;	   (setq n (1+ n))))
+       ))
 
-
-     (custom-set-faces
-       '(font-lock-builtin-face ((((type x mswindows)(class color)(background light))(:foreground "Purple"))(((type tty)(class color))(:foreground "magenta"))))
-       '(font-lock-comment-face ((((type x mswindows)(class color)(background light))(:foreground "blue4"))(((type tty)(class color))(:foreground "blue"))))
-       '(font-lock-constant-face ((((type x mswindows)(class color)(background light))(:foreground "CadetBlue"))(((type tty)(class color))(:foreground "cyan"))))
-       '(font-lock-doc-string-face ((((type x mswindows)(class color)(background light))(:foreground "green4"))(((type tty)(class color))(:foreground "green"))))
-       '(font-lock-function-name-face ((((type x mswindows)(class color)(background light))(:foreground "brown4"))(((type tty)(class color))(:foreground "cyan" :bold))))
-       '(font-lock-keyword-face ((((type x mswindows)(class color)(background light))(:foreground "red4"))(((type tty)(class color))(:foreground "red" :bold))))
-       '(font-lock-preprocessor-face ((((type x mswindows)(class color)(background light))(:foreground "blue3"))(((type tty)(class color))(:foreground "cyan" :bold))))
-       '(font-lock-reference-face ((((type x mswindows)(class color)(background light))(:foreground "red3"))(((type tty)(class color))(:foreground "red"))))
-       '(font-lock-string-face ((((type x mswindows)(class color)(background light))(:foreground "green4"))(((type tty)(class color))(:foreground "green" :bold))))
-       '(font-lock-type-face ((((type x mswindows)(class color)(background light))(:foreground "steelblue"))(((type tty)(class color))(:foreground "cyan" :bold))))
-       '(font-lock-variable-name-face ((((type x mswindows)(class color)(background light))(:foreground "magenta4"))(((type tty)(class color))(:foreground "magenta" :bold))))
-       '(font-lock-warning-face ((((type x mswindows)(class color)(background light))(:foreground "Red" :bold))(((type tty)(class color))(:foreground "red" :bold)))))))
-
-; (defun load-terminal-library ()
-;   (message "loaded terminal library")
-;   (when term-file-prefix
-;     (let ((term (getenv "TERM"))
-;           hyphend)
-;       (while (and term
-;                   (not (load (concat term-file-prefix term) t t)))
-;         ;; Strip off last hyphen and what follows, then try again
-;         (if (setq hyphend (string-match "[-_][^-_]+\\'" term))
-;             (setq term (substring term 0 hyphend))
-;           (setq term nil))))))
+(defun set-frame-background-mode (frame color)
+  "Attempt to convey that the FRAME background COLOR is 'light or
+'dark. Should only be used on a TTY."
+  (setq-default frame-background-mode color)
+  (set-frame-property (selected-frame)
+		      'background-mode frame-background-mode)
+  (let ((frame (selected-frame)))
+    (set-frame-property frame 'custom-properties
+			(mapcar
+			 (lambda (symbol)
+			   (if (memq symbol '(light dark))
+			       frame-background-mode
+			     symbol))
+			 (frame-property frame 'custom-properties))))
+  (defun get-frame-background-mode (frame)
+    frame-background-mode))
+(if (eq (device-type) 'tty)
+    (set-frame-background-mode (selected-frame) 'light))
 
 ; syntax highlighting
 (require 'font-lock)
@@ -146,6 +155,9 @@ xterm.el is sourced."""
 (define-key global-map [(control +)] 'redo)
 (define-key global-map [f3] 'kill-this-buffer)
 (global-set-key [(meta f4)] 'kill-this-buffer)
+(global-set-key 'home 'beginning-of-line-text)
+(define-key help-map [F] 'find-function)
+(define-key help-map [V] 'find-variable)
 
 ; C-s search for regular expressions
 (define-key global-map [(control s)] 'isearch-forward-regexp)
@@ -249,14 +261,16 @@ e.g. (view-emacs-source-file \"simple.el\")"
 ; Look up keybindings when running apropros
 ;(setq apropos-do-all t)
 
-(add-hook 'text-mode-hook
-	  (lambda ()
-	    (auto-fill-mode)))
+(add-hook 'text-mode-hook 'auto-fill-mode)
+(add-hook 'emacs-lisp-mode-hook 'auto-fill-mode)
 (setq-default default-fill-column 78)
+(line-number-mode 1)
+(column-number-mode 1)
+(setq-default column-number-start-at-one t)
 
 ;; Custom modeline
-(setq-default modeline-modified '("%1*"))
-(setq-default modeline-buffer-identification '(" %21b"))
+(setq-default modeline-modified '("%1* "))
+(setq-default modeline-buffer-identification '("%21b"))
 ; Don't show always-on modes in the modeline
 (defvar minor-mode-alist-ignore
   '(xterm-title-mode font-lock-mode xterm-mouse-mode filladapt-mode))
@@ -283,11 +297,14 @@ e.g. (view-emacs-source-file \"simple.el\")"
 		      minor-mode-alist)))
 	(cons modeline-narrowed-extent "%n")
 	'modeline-process
-	")%] %l,%c")
+	")%] %l,%c"
+;	; Total line count
+;       ; XXX Need to find hook to update or something; right now this is only
+;       ; evaluated once at init time so just shows the length of init.el in
+;       ; every buffer.
+;         "/" (int-to-string (count-lines (point-min) (point-max))))
+	)
   (list 3 "%p")))
-; These are actually always on now
-(line-number-mode 1)
-(column-number-mode 1)
 
 ; calendar keybindings
 (add-hook 'calendar-load-hook
