@@ -14,7 +14,11 @@
 ;     list of symbol names.
 
 (eval-and-compile
-  (add-to-list 'load-path (concat user-init-directory "/external") t))
+  (mapcar (lambda (user-init-subdirectory)
+	    (add-to-list 'load-path (concat user-init-directory
+					    user-init-subdirectory) t))
+	  '("local" "external")))
+(load "internal-hacks")
 
 ; For calendar
 (setq calendar-latitude 40.4)
@@ -33,10 +37,10 @@
 (defadvice load-terminal-library (after run-terminal-library-hooks activate)
   """We do many custom things with xterm, so we apply this after the default
 xterm.el is sourced."""
-  (overwrite-mode nil)
   (and (equal (device-type) 'tty)
        (equal (getenv "TERM") "xterm")
-       
+       (require 'xterm-256-color)
+
        (list
 
       ; We want the frame title to be displayed in an xterm, but there's no
@@ -105,7 +109,6 @@ xterm.el is sourced."""
 ;	   (setq n (1+ n))))
        ))
 
-(load "xmas-tty-faces")
 (defun set-frame-background-mode (frame color)
   "Attempt to convey that the FRAME background COLOR is 'light or
 'dark. Should only be used on a TTY."
