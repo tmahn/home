@@ -21,7 +21,7 @@
 (setq calendar-longitude -74.0)
 (setq calendar-location-name "New York, NY")
 
-(push '("python2.4" . python-mode) interpreter-mode-alist)
+(push '("python[0-9.]*" . python-mode) interpreter-mode-alist)
 
 ; utf-8; from UTF-8 Setup Mini HOWTO (http://www.maruko.ca/i18n/)
 (if (not (emacs-version>= 21 5))
@@ -34,7 +34,7 @@
   """We do many custom things with xterm, so we apply this after the default
 xterm.el is sourced."""
   (overwrite-mode nil)
-  (and (equal (format "%s" (console-type)) "tty")
+  (and (equal (device-type) 'tty)
        (equal (getenv "TERM") "xterm")
        
        (list
@@ -61,15 +61,13 @@ xterm.el is sourced."""
 				 (abbreviate-file-name
 				  (directory-file-name default-directory) 1))
 		       "")))))
-      (xterm-title-mode t)
-
+       (xterm-title-mode t)
+      
        (require 'xt-mouse-xmas)
-       ; This loads all the colours that xterm, supports, but for
-       ; as-yet-unknown reasons, they don't get picked up properly.
-       ;(load-file "~/.xemacs/xmas-tty-faces256.el")
-       (load "xmas-tty-faces")
-       (set-terminal-coding-system 'utf-8)
        (xterm-mouse-mode t)
+
+       (set-terminal-coding-system 'utf-8)
+       
        (define-key function-key-map "\e[1;5D" [(control left)])
        (define-key function-key-map "\e[1;5C" [(control right)])
        (define-key function-key-map "\e[1;5A" [(control up)])
@@ -107,6 +105,7 @@ xterm.el is sourced."""
 ;	   (setq n (1+ n))))
        ))
 
+(load "xmas-tty-faces")
 (defun set-frame-background-mode (frame color)
   "Attempt to convey that the FRAME background COLOR is 'light or
 'dark. Should only be used on a TTY."
@@ -138,8 +137,6 @@ xterm.el is sourced."""
 
 ;(require 'ispell)
 (setq-default ispell-program-name "aspell")
-;(require 'saveplace)
-;(setq-default save-place t)
 
 (require 'rsz-minibuf)
 (setq-default resize-minibuffer-mode t)
@@ -269,6 +266,21 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (setq-default column-number-start-at-one t)
 
 ;; Custom modeline
+(defvar line-count-string ""
+  "Used to show the toal line count in the modeline.")
+(make-variable-buffer-local 'line-count-string)
+(defun update-line-count-after-change (&optional start end length)
+  (let ((old-line-count-string line-count-string))
+    (setq line-count-string 
+	  (format "/%d" (count-lines (point-min) (point-max))))
+    (unless (equal line-count-string old-line-count-string)
+      (redraw-modeline)))
+  line-count-string)
+(add-hook 'find-file-hooks
+	  (lambda ()
+	    (update-line-count-after-change)
+	    (pushnew 'update-line-count-after-change after-change-functions)))
+
 (setq-default modeline-modified '("%1* "))
 (setq-default modeline-buffer-identification '("%21b"))
 ; Don't show always-on modes in the modeline
@@ -298,12 +310,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
 	(cons modeline-narrowed-extent "%n")
 	'modeline-process
 	")%] %l,%c"
-;	; Total line count
-;       ; XXX Need to find hook to update or something; right now this is only
-;       ; evaluated once at init time so just shows the length of init.el in
-;       ; every buffer.
-;         "/" (int-to-string (count-lines (point-min) (point-max))))
-	)
+	'line-count-string)
   (list 3 "%p")))
 
 ; calendar keybindings
@@ -393,6 +400,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (setq-default shell-file-name "/bin/bash")
+(eval-when-compile (require 'shell))
 (add-hook 'shell-mode-hook 
 	  (lambda ()
 	    (message "shell-mode-hook")
