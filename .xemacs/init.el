@@ -223,6 +223,10 @@ xterm.el is sourced."""
 (set-face-background
   'default (make-color-specifier "rgb:DF/DF/DF"))
 
+; Silence warnings about backup-directory-alist when compiling with earlier
+; versions
+(eval-when-compile (if (not (emacs-version>= 21 5))
+      (defvar backup-directory-alist)))
 ; Don't leave backup files all over
 (if (boundp 'backup-directory-alist)
     (push (cons "." (expand-file-name "~/misc/bak")) backup-directory-alist)
@@ -289,6 +293,9 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (setq-default
  modeline-format
  (list
+  ; XXX since frame-width is evaluated once at the beginning, right
+  ; justification will be lost if the window is resized or a window is
+  ; split horizontally
   (list (- (frame-width) 3)
 	(cons modeline-modified-extent 'modeline-modified)
 	(cons modeline-buffer-id-extent 'modeline-buffer-identification)
