@@ -23,5 +23,5 @@ for word in "$@"; do
   push WORDS "\"${word/\"/\\\"}\""
 done
 
-xemacs -batch -no-autoloads -load regexp-opt \
-    -eval '(message (regexp-opt (list '"${WORDS[*]}"')))'
+exec xemacs -batch -no-autoloads -load regexp-opt \
+    -eval '(message (regexp-opt (list '"${WORDS[*]}"')))' 2>&1
