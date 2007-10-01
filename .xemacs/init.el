@@ -128,6 +128,11 @@ xterm.el is sourced."""
 (if (eq (device-type) 'tty)
     (set-frame-background-mode (selected-frame) 'light))
 
+(defadvice iconify-frame (before iconify-tty activate)
+  "If on a tty, try to iconify with XTerm's iconifiy control sequence."
+  (if (eq (device-type) 'tty)
+      (send-string-to-terminal "\e[2t")))
+ 
 ; syntax highlighting
 (require 'font-lock)
 
@@ -453,3 +458,4 @@ e.g. (view-emacs-source-file \"simple.el\")"
   (interactive)
   (byte-recompile-directory user-init-directory 0))
 (add-hook 'kill-emacs-hook 'byte-recompile-user-init-directory)
+(global-set-key [f24] 'byte-recompile-user-init-directory)

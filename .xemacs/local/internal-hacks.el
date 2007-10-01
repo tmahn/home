@@ -1,6 +1,9 @@
 ; Things that come with XEmacs that we don't like and can't easily change with
 ; advice.
 
+;;; XXX we need a more general patching-function; copy and paste is not
+;;; maintainable.
+
 ;; Many colors have numbers in their names, so let's not strip them out, OK?
 (require 'facemenu)
 (defun list-colors-display (&optional list)
@@ -33,3 +36,44 @@ of colors that the current display can handle."
 				   (facemenu-get-face 
 				    (intern (concat "fg:" (car list)))))))
 	  (setq list (cdr list)))))))
+
+;; eval-pretty-print-last-sexp
+(require 'cl-extra)
+(defun eval-prettyprint-last-sexp ()
+  "Evaluate sexp before point; print value into current buffer."
+  (interactive)
+  (let ((standard-output (current-buffer)))
+    (cl-prettyprint (adn-eval-last-sexp))
+    (terpri)))
+
+;; XEmacs change, based on Bob Weiner suggestion
+(defun adn-eval-last-sexp ()
+  "Evaluate sexp before point."
+  (interactive "P")
+  (let ((opoint (point))
+	ignore-quotes)
+    (eval-interactive
+	    (letf (((syntax-table) emacs-lisp-mode-syntax-table))
+	      (save-excursion
+		;; If this sexp appears to be enclosed in `...' then
+		;; ignore the surrounding quotes.
+		(setq ignore-quotes (or (eq (char-after) ?\')
+					(eq (char-before) ?\')))
+		(forward-sexp -1)
+		;; vladimir@cs.ualberta.ca 30-Jul-1997: skip ` in
+		;; `variable' so that the value is returned, not the
+		;; name.
+		(if (and ignore-quotes
+			 (eq (char-after) ?\`))
+		    (forward-char))
+		(save-restriction
+		  (narrow-to-region (point-min) opoint)
+		  (let ((expr (read (current-buffer))))
+		    (if (eq (car-safe expr) 'interactive)
+			;; If it's an (interactive ...) form, it's
+			;; more useful to show how an interactive call
+			;; would use it.
+			`(call-interactively
+			  (lambda (&rest args)
+			    ,expr args))
+		      expr))))))))
