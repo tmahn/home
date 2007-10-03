@@ -10,4 +10,6 @@
 PATH=/usr/local/bin:/usr/bin:/bin:/usr/X11R6/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem
 export PATH
 
+cd "${HOME}"
+
 exec xterm -display 127.0.0.1:0.0 -ls
