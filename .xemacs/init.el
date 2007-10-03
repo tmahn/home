@@ -99,7 +99,9 @@ xterm.el is sourced."""
        (define-prefix-command 'control-key-map)
        (define-key function-key-map "\e[[" 'control-key-map)
        (define-key control-key-map "C+" [(control +)])
-       (define-key control-key-map "c=" [(control =)]))
+       (define-key control-key-map "c=" [(control =)])
+       (define-key control-key-map "c/" [(control /)])
+       (define-key control-key-map "C/" [(control ?\?)]))
 ;       ; Attempts to use Ctrl-[Shift]-Digit are raising the error
 ;       ; "keysym char must be printable: ?\^G"
 ;       (let ((n 0))
@@ -163,6 +165,14 @@ xterm.el is sourced."""
 (global-set-key 'home 'beginning-of-line-text)
 (define-key help-map [F] 'find-function)
 (define-key help-map [V] 'find-variable)
+
+; From eclipse key bindings: Ctrl-/ and Ctrl-Shift-/ to comment and uncomment
+(global-set-key [(control /)] 'comment-region)
+(defun uncomment-region (start end)
+  "Uncomment region. See `comme;nt-region'."
+  (interactive "r")
+  (comment-region start end (cons nil nil)))
+(global-set-key [(control ?\?)] 'uncomment-region)
 
 ; C-s search for regular expressions
 (define-key global-map [(control s)] 'isearch-forward-regexp)

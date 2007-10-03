@@ -83,6 +83,8 @@ XTerm*VT100.translations: #override \
 	! Shift Ctrl<Key>9:	string(\033[[C9) \n\
 	! Shift Ctrl<Key>0:	string(\033[[C0) \n\
 	! Shift Ctrl<Key>=:	string(\033[[C+) \n\
+	! Shift Ctrl<Key>?:	string(\033[[C?) \n\
+	! Shift Ctrl<Key>/:	string(\033[[C/) \n\
         /* We bind Alt-Space [n,x,r] to minimize, maximize, and restore,
          * because that's what we've been doing every since windows 3.1
          * The '$ ' is funky; according to the manual,
@@ -91,18 +93,28 @@ XTerm*VT100.translations: #override \
          *    the Control modifier, a dollar sign ($) is an abbreviation
          *    for Meta, and a backslash (\) can be used to quote any
          *    character, in particular a double quote ("), a circumflex
-         *    (^), a dollar sign ($), and another backslash (\)." */ \
+         *    (^), a dollar sign ($), and another backslash (\)."
+         *
+         * Unfortunately, until we figure out more about X, this causes us
+         * to lose the Alt-Space key. */ \
         "$ n": 	                iconify() \n\
         "$ x": 	                maximize() \n\
         "$ r": 	                restore() \n\
-        "$ ": 	                insert() \n\
+        /* We might not need these if we used #augment... not sure. */ \
         "n": 	                insert() \n\
         "x": 	                insert() \n\
         "r": 	                insert() \n\
         /* Just playing around here */ \
         "$ t":                  set-altscreen(toggle) \n\
         "t":                    insert() \n\
-
+        "$ v":                  insert-selection(PRIMARY) \n\
+        "$ d":                  spawn-new-terminal() \n\
+        "$ f":                  hard-reset() \n\
+        "$ /":                  dabbrev-expand() \n\
+        "v":                    insert() \n\
+        "d":                    insert() \n\
+        "f":                    insert() \n\
+        "/":                    insert() \n\
 
 oclock.customization: -color
 
