@@ -34,6 +34,12 @@
 ;      (set-coding-category-system 'utf-8 'utf-8)))
 (set-default-buffer-file-coding-system 'utf-8)
 
+(defun define-keys (keymap &rest key-def-plist)
+  "Like `define-key', but you can pass in mulitiple pairs of keys and defs."
+  (while key-def-plist
+    (define-key keymap (pop key-def-plist) (pop key-def-plist)))
+  t)
+
 (defadvice load-terminal-library (after run-terminal-library-hooks activate)
   """We do many custom things with xterm, so we apply this after the default
 xterm.el is sourced."""
@@ -71,7 +77,7 @@ xterm.el is sourced."""
        (xterm-mouse-mode t)
 
        (set-terminal-coding-system 'utf-8)
-       
+
        (define-key function-key-map "\e[1;5D" [(control left)])
        (define-key function-key-map "\e[1;5C" [(control right)])
        (define-key function-key-map "\e[1;5A" [(control up)])
@@ -87,8 +93,11 @@ xterm.el is sourced."""
        (define-key function-key-map "\e\e[1;3B" [(meta down)])
        (define-key function-key-map "\e\e[1;3C" [(meta right)])
        (define-key function-key-map "\e\e[1;3D" [(meta left)])
-       (define-key function-key-map [(meta escape) O S] [(meta f4)])
-       
+
+       (define-keys function-key-map
+	 "\e[1;2H" [(shift home)]
+	 "\e[1;2F" [(shift end)])
+              
        ; We want the key 'Ctrl-+' to be available inside an
        ; xterm. There's not standard character sequence for it, so we
        ; make one up, add it here and in the xterm translations
@@ -198,6 +207,20 @@ xterm.el is sourced."""
 
 ; Let tab do lisp-complete in eval-expression (M-:)
 (define-key read-expression-map [(tab)] 'lisp-complete-symbol)
+
+; Let TAB = Ctrl-I in help-map
+(define-key help-map [tab]
+  (lookup-key help-map [(control i)]))
+
+
+(defun mark-beginning-of-line (arg)
+  "Put mark at beginning of line. Arg works as in `beginning-of-line'."
+  (interactive "p")
+  (mark-something 'mark-beginning-of-line 'beginning-of-line arg))
+	 
+(define-keys global-map
+  [(shift end)] 'mark-end-of-line
+  [(shift home)] 'mark-beginning-of-line)
 
 ; SML-mode
 (setq sml-program-name "sml")
