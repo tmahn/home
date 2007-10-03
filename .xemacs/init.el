@@ -199,6 +199,10 @@ xterm.el is sourced."""
 	       (kbd "C-c C-e")
 	       '(lambda () "" (interactive)
 		  (sml-send-region (point) (point-max))))))
+(add-hook 'emacs-lisp-mode-hook
+	  '(lambda ()
+	     (define-key emacs-lisp-mode-map
+	       [linefeed] 'eval-print-last-sexp)))
 
 (defun insert-shell-command (cmd)
   "Insert the output of the command into the current buffer."

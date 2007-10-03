@@ -58,30 +58,51 @@ XTerm*metaSendsEscape: true
 /* In order to be able to use Control-x where x is outside "a-z@[]_\", we
  * have to make up our own control codes. */
 XTerm*VT100.translations: #override \
-	~Meta Shift<Key>Tab:	string(\033[Z) \n\
-	~Shift Ctrl<Key>1:	string(\033[[c1) \n\
-	~Shift Ctrl<Key>2:	string(\033[[c2) \n\
-	~Shift Ctrl<Key>3:	string(\033[[c3) \n\
-	~Shift Ctrl<Key>4:	string(\033[[c4) \n\
-	~Shift Ctrl<Key>5:	string(\033[[c5) \n\
-	~Shift Ctrl<Key>6:	string(\033[[c6) \n\
-	~Shift Ctrl<Key>7:	string(\033[[c7) \n\
-	~Shift Ctrl<Key>8:	string(\033[[c8) \n\
-	~Shift Ctrl<Key>9:	string(\033[[c9) \n\
-	~Shift Ctrl<Key>0:	string(\033[[c0) \n\
-	~Shift Ctrl<Key>-:	string(\033[[c-) \n\
-	~Shift Ctrl<Key>=:	string(\033[[c=) \n\
-	Shift Ctrl<Key>1:	string(\033[[C1) \n\
-	Shift Ctrl<Key>2:	string(\033[[C2) \n\
-	Shift Ctrl<Key>3:	string(\033[[C3) \n\
-	Shift Ctrl<Key>4:	string(\033[[C4) \n\
-	Shift Ctrl<Key>5:	string(\033[[C5) \n\
-	Shift Ctrl<Key>6:	string(\033[[C6) \n\
-	Shift Ctrl<Key>7:	string(\033[[C7) \n\
-	Shift Ctrl<Key>8:	string(\033[[C8) \n\
-	Shift Ctrl<Key>9:	string(\033[[C9) \n\
-	Shift Ctrl<Key>0:	string(\033[[C0) \n\
-	Shift Ctrl<Key>=:	string(\033[[C+) \n
+	! Shift<Key>Tab:	string(\033[Z) \n\
+	! Ctrl<Key>1:	string(\033[[c1) \n\
+	! Ctrl<Key>2:	string(\033[[c2) \n\
+	! Ctrl<Key>3:	string(\033[[c3) \n\
+	! Ctrl<Key>4:	string(\033[[c4) \n\
+	! Ctrl<Key>5:	string(\033[[c5) \n\
+	! Ctrl<Key>6:	string(\033[[c6) \n\
+	! Ctrl<Key>7:	string(\033[[c7) \n\
+	! Ctrl<Key>8:	string(\033[[c8) \n\
+	! Ctrl<Key>9:	string(\033[[c9) \n\
+	! Ctrl<Key>0:	string(\033[[c0) \n\
+	! Ctrl<Key>-:	string(\033[[c-) \n\
+	! Ctrl<Key>=:	string(\033[[c=) \n\
+	! Ctrl<Key>/:	string(\033[[c/) \n\
+	! Shift Ctrl<Key>1:	string(\033[[C1) \n\
+	! Shift Ctrl<Key>2:	string(\033[[C2) \n\
+	! Shift Ctrl<Key>3:	string(\033[[C3) \n\
+	! Shift Ctrl<Key>4:	string(\033[[C4) \n\
+	! Shift Ctrl<Key>5:	string(\033[[C5) \n\
+	! Shift Ctrl<Key>6:	string(\033[[C6) \n\
+	! Shift Ctrl<Key>7:	string(\033[[C7) \n\
+	! Shift Ctrl<Key>8:	string(\033[[C8) \n\
+	! Shift Ctrl<Key>9:	string(\033[[C9) \n\
+	! Shift Ctrl<Key>0:	string(\033[[C0) \n\
+	! Shift Ctrl<Key>=:	string(\033[[C+) \n\
+        /* We bind Alt-Space [n,x,r] to minimize, maximize, and restore,
+         * because that's what we've been doing every since windows 3.1
+         * The '$ ' is funky; according to the manual,
+         *
+         *   "In key sequences, a circumflex (^) is an abbreviation for
+         *    the Control modifier, a dollar sign ($) is an abbreviation
+         *    for Meta, and a backslash (\) can be used to quote any
+         *    character, in particular a double quote ("), a circumflex
+         *    (^), a dollar sign ($), and another backslash (\)." */ \
+        "$ n": 	                iconify() \n\
+        "$ x": 	                maximize() \n\
+        "$ r": 	                restore() \n\
+        "$ ": 	                insert() \n\
+        "n": 	                insert() \n\
+        "x": 	                insert() \n\
+        "r": 	                insert() \n\
+        /* Just playing around here */ \
+        "$ t":                  set-altscreen(toggle) \n\
+        "t":                    insert() \n\
+
 
 oclock.customization: -color
 
