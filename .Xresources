@@ -19,6 +19,12 @@ xterm.vt100.loginShell: true
 xterm.vt100.saveLines: 10000
 XTerm*scrollBar: false
 
+/* True-type font support */
+XTerm*VT100.renderFont: false
+XTerm*VT100.faceName: Consolas
+XTerm*VT100.faceSize: 10
+Xterm*VT100.italicULMode: true
+
 !xterm.vt100.font: -*-lucidatypewriter-medium-*-normal-*-14-*-*-*-*-*-*-*
 !xterm.vt100.font: -*-fixed-*-*-*-*-16-*-*-*-*-*-iso8859-*
 XTerm*VT100.font2:	-misc-fixed-medium-r-normal--8-80-75-75-c-50-iso10646-1
@@ -55,6 +61,8 @@ xterm.vt100.color14: cyan3
 
 XTerm*metaSendsEscape: true
 
+/** XXX If I were doing this again, I'd use the modifyOtherKeys resource
+ ** and use the same escape sequences that that ouputs */
 /* In order to be able to use Control-x where x is outside "a-z@[]_\", we
  * have to make up our own control codes. */
 XTerm*VT100.translations: #override \

@@ -172,12 +172,13 @@ xterm.el is sourced."""
 (define-key global-map [f3] 'kill-this-buffer)
 (global-set-key [(meta f4)] 'kill-this-buffer)
 (global-set-key 'home 'beginning-of-line-text)
+(global-set-key [(meta Z)] 'zap-up-to-char)
 (define-key help-map [F] 'find-function)
 (define-key help-map [V] 'find-variable)
 
 ; From eclipse key bindings: Ctrl-/ and Ctrl-Shift-/ to comment and uncomment
 (global-set-key [(control /)] 'comment-region)
-(defun uncomment-region (start end)
+(defun-when-void uncomment-region (start end)
   "Uncomment region. See `comme;nt-region'."
   (interactive "r")
   (comment-region start end (cons nil nil)))
@@ -207,6 +208,7 @@ xterm.el is sourced."""
 
 ; Let tab do lisp-complete in eval-expression (M-:)
 (define-key read-expression-map [(tab)] 'lisp-complete-symbol)
+(define-key global-map [(meta escape) tab] 'lisp-complete-symbol)
 
 ; Let TAB = Ctrl-I in help-map
 (define-key help-map [tab]
@@ -236,6 +238,51 @@ xterm.el is sourced."""
 	  '(lambda ()
 	     (define-key emacs-lisp-mode-map
 	       [linefeed] 'eval-print-last-sexp)))
+
+;; Faces
+
+; Cyan is really bright, guys.
+(eval-when-compile
+  (require 'python-mode))
+(add-hook 'python-mode
+	  (lambda()
+	    (set-face-foreground
+	     py-builtins-face (make-color-specifier "steelblue"))
+	    (set-face-foreground
+	     py-pseudo-keyword-face (make-color-specifier "mediumpurple"))))
+
+(setq-default flyspell-mode-line-string nil)
+(autoload 'flyspell-mode "flyspell" "spell checker" t)
+(add-hook 'text-mode-hook
+	  (lambda()
+	    (flyspell-mode)
+	    (set-face-foreground
+	     'flyspell-incorrect-face (make-color-specifier []))
+	    (set-face-background
+	     'flyspell-incorrect-face (make-color-specifier "thistle1"))
+	    (set-face-underline-p 'flyspell-incorrect-face nil)
+	    (set-face-highlight-p 'flyspell-incorrect-face nil)
+	    (save-excursion
+	      (flyspell-buffer))))
+
+; Since we have all the X colors on our tty, let's use them
+(set-face-background 'isearch '((tty . "paleturquoise")))
+(set-face-foreground 'isearch '((tty . "black")))
+(set-face-background 'isearch-secondary '((tty . "yellow")))
+
+(set-face-background 'paren-mismatch "DeepPink")
+(set-face-background 'paren-match "seagreen3")
+(set-face-highlight-p 'paren-match nil)
+
+; We want search highlighting to persist after we're done searching
+(defadvice isearch-done (after isearch-highlight-when-done activate)
+  (isearch-highlight-all-update))
+; but we want to be able to turn it off too
+(defun nohls ()
+  "Alias for people used to typing :nohls in vim. Calls
+`isearch-highlight-all-cleanup'."
+  (interactive)
+  (isearch-highlight-all-cleanup))
 
 (defun insert-shell-command (cmd)
   "Insert the output of the command into the current buffer."
