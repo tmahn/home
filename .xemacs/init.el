@@ -20,6 +20,8 @@
 	  '("local" "external")))
 (load "internal-hacks")
 
+(setq-default gc-cons-threshold 10000000)
+
 ; For calendar
 (setq calendar-latitude 40.4)
 (setq calendar-longitude -74.0)
@@ -29,9 +31,9 @@
 
 ; utf-8; from UTF-8 Setup Mini HOWTO (http://www.maruko.ca/i18n/)
 (if (not (emacs-version>= 21 5))
-    (require 'un-define))
-;      (set-coding-priority-list '(utf-8))
-;      (set-coding-category-system 'utf-8 'utf-8)))
+    (require 'un-define)
+      (set-coding-priority-list '(utf-8))
+      (set-coding-category-system 'utf-8 'utf-8))
 (set-default-buffer-file-coding-system 'utf-8)
 
 (defun define-keys (keymap &rest key-def-plist)
@@ -256,20 +258,26 @@ xterm.el is sourced."""
 (add-hook 'text-mode-hook
 	  (lambda()
 	    (flyspell-mode)
-	    (set-face-foreground
-	     'flyspell-incorrect-face (make-color-specifier []))
-	    (set-face-background
-	     'flyspell-incorrect-face (make-color-specifier "thistle1"))
-	    (set-face-underline-p 'flyspell-incorrect-face nil)
-	    (set-face-highlight-p 'flyspell-incorrect-face nil)
-	    (save-excursion
-	      (flyspell-buffer))))
+	    (loop for face in
+	      (list 'flyspell-incorrect-face 'flyspell-duplicate-face)
+	      do
+	      (set-face-foreground
+	       face (make-color-specifier []))
+	      (set-face-background
+	       face (make-color-specifier "thistle1"))
+	      (set-face-underline-p face nil)
+	      (set-face-highlight-p face nil))
+	    ; Too slow.
+	    ; (save-excursion
+            ;   (flyspell-buffer))
+	      ))
 
 ; Since we have all the X colors on our tty, let's use them
 (set-face-background 'isearch '((tty . "paleturquoise")))
 (set-face-foreground 'isearch '((tty . "black")))
 (set-face-background 'isearch-secondary '((tty . "yellow")))
 
+(require 'paren)
 (set-face-background 'paren-mismatch "DeepPink")
 (set-face-background 'paren-match "seagreen3")
 (set-face-highlight-p 'paren-match nil)
@@ -346,7 +354,8 @@ xterm.el is sourced."""
 e.g. (view-emacs-source-file \"simple.el\")"
   (interactive
    (let ((insert-default-directory nil))
-     (read-file-name "Source file: " (concat source-directory "/"))))
+     (list
+      (read-file-name "Source file: " (concat source-directory "/")))))
   (find-file (if (string-match (concat "^" source-directory) file)
 		 file
 	       (concat source-directory "/" file))))
@@ -543,3 +552,29 @@ e.g. (view-emacs-source-file \"simple.el\")"
   (byte-recompile-directory user-init-directory 0))
 (add-hook 'kill-emacs-hook 'byte-recompile-user-init-directory)
 (global-set-key [f24] 'byte-recompile-user-init-directory)
+
+; We have this earlier too, but it gets overridden...
+(set-coding-priority-list '(utf-8))
+
+;    (global-set-key "%" 'match-paren)
+;      (defun match-paren (arg)
+;        "Go to the matching paren if on a paren; otherwise insert %."
+;        (interactive "p")
+;        (cond ((string-match "[[{(<]"  next-char) (forward-sexp 1))
+;              ((string-match "[\]})>]" prev-char) (backward-sexp 1))
+;              (t (self-insert-command (or arg 1)))))
+
+(defun getclip ()
+  "Retrieve clipboard contents."
+  (interactive)
+  (insert-shell-command "getclip"))
+
+(defun dos2unix ()
+  "Remove all linefeeds from buffer."
+  (interactive)
+  ; Following the advice of the `perform-replace' docstring
+  (save-excursion
+    (setf (point) (point-min))
+    (while (re-search-forward "" nil t)
+      (replace-match "" nil nil))))
+  

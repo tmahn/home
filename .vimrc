@@ -112,7 +112,7 @@ set <kDivide>=Oo
 set backspace=2
 set backup
 set backupdir=~/misc/bak
-set directory=~/tmp/vim
+set directory=~/.vimtmp
 set encoding=utf-8
 set expandtab
 set ffs=unix,dos
