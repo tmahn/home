@@ -228,14 +228,20 @@ xterm.el is sourced."""
 
 ; SML-mode
 (setq sml-program-name "sml")
-(add-hook 'sml-mode-hook
-          '(lambda ()
-             "Map C-c C-e to run code from the point to the end of the
-             buffer."
-             (define-key sml-mode-map
-	       (kbd "C-c C-e")
-	       '(lambda () "" (interactive)
-		  (sml-send-region (point) (point-max))))))
+(defun my-sml-mode-hook ()
+  "Local customizations for SML mode"
+  (setq indent-tabs-mode nil)
+
+  ;; shift-tab should decrease indent
+  (define-key sml-mode-map [(backtab)] 'sml-back-to-outer-indent)
+  
+  ;; Map C-c C-e to run code from the point to the end of the buffer
+  (define-key sml-mode-map
+    (kbd "C-c C-e")
+    '(lambda () "" (interactive)
+       (sml-send-region (point) (point-max)))))
+(add-hook 'sml-mode-hook 'my-sml-mode-hook)
+          
 (add-hook 'emacs-lisp-mode-hook
 	  '(lambda ()
 	     (define-key emacs-lisp-mode-map
@@ -578,3 +584,10 @@ e.g. (view-emacs-source-file \"simple.el\")"
     (while (re-search-forward "" nil t)
       (replace-match "" nil nil))))
   
+(defun revisit-file-in-dos-mode ()
+  "Reopen the current file in dos mode. This is almost certainly not the
+right way to hide those ^M's, but it seems to work."
+  (interactive)
+  (let ((this-buffer-file-name (buffer-file-name)))
+    (kill-buffer (current-buffer))
+    (find-file this-buffer-file-name (get-coding-system 'iso-8859-1-dos))))
