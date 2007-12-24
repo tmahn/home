@@ -189,6 +189,7 @@ export LS_COLORS='no=00:fi=00:di=34:ln=36:pi=40;33:so=35:do=35:bd=40;33;01:cd=40
 unset LD_ASSUME_KERNEL
 export EDITOR=vim
 export VISUAL=vim
+mkdir -p -m 700 ~/.vimtmp
 export BLOCK_SIZE=1
 export LESS='-iM -z-2'
 export CONFIG_SITE="$HOME/.config.site"
@@ -243,12 +244,7 @@ esac
 #
 # Site-specific files may want to use functions defined here.
 function _bashrc_linux_style_prompt() {
-    local THEHOST="${HOSTNAME}"
-    if [ "x${THEHOST:$((${#THEHOST}-4)):${#THEHOST}}" = "x.com" ]; then
-        THEHOST="${THEHOST%.*.*}"
-    fi
-
-    PS1="${THEHOST}"':\w>'
+    PS1="${HOSTNAME%.*.*}"':\w>'
     case "${LOGNAME}" in
         *neitsch) ;;
         *) PS1='\u@'"${PS1}" ;;
@@ -285,6 +281,9 @@ function _handle_site() {
     fi
 }
 
+if [ "${OSTYPE#linux}" != "${OSTYPE}" ]; then
+    _handle_site linux
+fi
 if [ -e "${HOME}/ts" ]; then
     _handle_site ts
 fi
