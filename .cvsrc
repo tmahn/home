@@ -1,3 +1,5 @@
-cvs -q
-diff -u
+cvs -q -z3
+checkout -P
+update -dP
+diff -upN
 rdiff -u -kk
