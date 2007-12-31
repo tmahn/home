@@ -1,0 +1,1 @@
+_bashrc_linux_style_prompt
