@@ -19,7 +19,10 @@ if test "$prefix" = NONE; then
     fi
 fi
 
-if test "$cache_file" = /dev/null; then
-    cache_file="${HOME}/.config.cache.$ARCH"
-    CC=gcc
+# Naïve caching breaks pkgsrc, because buildlinks modified {C,CPP,LD}FLAGS
+if test -z "${_PKGSRCDIR}"; then
+    if test "$cache_file" = /dev/null; then
+        cache_file="${HOME}/.config.cache.$ARCH"
+        CC=gcc
+    fi
 fi

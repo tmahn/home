@@ -190,6 +190,7 @@ unset LD_ASSUME_KERNEL
 export EDITOR=vim
 export VISUAL=vim
 mkdir -p -m 700 ~/.vimtmp
+mkdir -p -m 700 ~/misc/bak
 export BLOCK_SIZE=1
 export LESS='-iM -z-2'
 export CONFIG_SITE="$HOME/.config.site"
