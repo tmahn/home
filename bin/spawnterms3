@@ -1,0 +1,7 @@
+#!/bin/bash
+
+xterm -geometry x25+100 &
+sleep 0.2
+xterm -geometry x25 &
+xterm -geometry x25+100+353 &
+xterm -geometry x25 &
