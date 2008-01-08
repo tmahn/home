@@ -8,6 +8,11 @@ MAX_FORWARD_SESSIONS="100"
 
 PROG="$(basename -- "${0}")"
 
+if [ -z "${SSH_AUTH_SOCK}" ]; then
+    echo "${PROG}: No ssh agent found." 1>&2
+    exit 1
+fi
+
 MY_SSH_AUTH_DIR="${HOME}/.ssh/agent/${HOSTNAME}"
 
 # The filesystem location of the active auth socket
