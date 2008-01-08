@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Point ~/.ssh/agent/${HOSTNAME}/sock at the current value of SSH_AUTH_SOCK,
+# until this script terminates.
+
+MAX_FORWARD_SESSIONS="10"
+
+MY_SSH_AUTH_DIR="${HOME}/.ssh/agent/${HOSTNAME}"
+
+# The filesystem location of the active auth socket
+MY_SSH_AUTH_SOCK="${MY_SSH_AUTH_DIR}/sock"
+
+SAVED_SSH_AUTH_SOCK="${MY_SSH_AUTH_DIR}/sock.saved"
+for (( n = 0; n < MAX_FORWARD_SESSIONS; n++ )); do
+    if [ -f "${SAVED_SSH_AUTH_SOCK}" ]; then
+        SAVED_SSH_AUTH_SOCK="${SAVED_SSH_AUTH_SOCK%.[0-9]*}.${n}"
+    fi
+done
+
+# The auth socket inherited from the environment
+FORWARDED_SSH_AUTH_SOCK="${SSH_AUTH_SOCK}"
+
+trap "mv '${SAVED_SSH_AUTH_SOCK}' '${MY_SSH_AUTH_SOCK}'" EXIT
+
+mv "${MY_SSH_AUTH_SOCK}" "${SAVED_SSH_AUTH_SOCK}"
+ln -s "${FORWARDED_SSH_AUTH_SOCK}" "${MY_SSH_AUTH_SOCK}"
+
+sleep 999d
