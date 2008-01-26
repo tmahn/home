@@ -29,7 +29,7 @@ START="${1}"
 if [ "${#}" -lt 2 ]; then
     END="today 00:00"
 else
-    END="${@}"
+    END="${2}"
 fi
 
 START_EPOCH="$(date +%s -d "${START}")"
