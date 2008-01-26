@@ -10,7 +10,7 @@ function ssh_agent_is_missing() {
     # connection to the agent to verify there is one.
 }
 
-if [ -n "$SSH_AUTH_SOCK" ] && ssh_agent_is_missing; then
+if ssh_agent_is_missing; then
     SSH_AUTH_SOCK="$MY_SSH_AUTH_DIR/sock"
     export SSH_AUTH_SOCK
 fi
