@@ -1,0 +1,11 @@
+# Global apache configuration directives
+
+AddDefaultCharset utf-8
+
+IndexOptions FancyIndexing DescriptionWidth=* NameWidth=*
+ReadmeName .footer.html
+HeaderName .header.html
+
+AddType application/rss+xml .rss
+AddType text/xml            .opml
+AddType audio/mp4           .m4a
