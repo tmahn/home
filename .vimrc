@@ -15,8 +15,10 @@ autocmd BufReadPost *
 	\   exe "normal g`\"" |
 	\ endif
 " Check spelling everywhere
-autocmd BufReadPost *
-        \ syntax spell toplevel
+if v:version>=700
+    autocmd BufReadPost *
+            \ syntax spell toplevel
+endif
 
 " Wrap when editing brand-new text files
 autocmd BufNewFile *.txt set tw=75 formatoptions+=t
@@ -49,7 +51,9 @@ if $VIM_HIGHLIGHT_LONG_LINES != ""
     autocmd BufReadPost * match TooLongLineError /\%>80v/
 endif
 highlight TrailingSpaceError ctermbg=196
-autocmd BufReadPost * 2match TrailingSpaceError /\s\+$/
+if v:version>=700
+    autocmd BufReadPost * 2match TrailingSpaceError /\s\+$/
+endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                                                 Test lines               
 """"""""""""			""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -166,6 +170,7 @@ set path+=/usr/include/c++/3.3.1
 set path+=/usr/include/c++/3.3.1/i686-pc-mingw32
 
 autocmd GUIEnter * set t_vb=
+
 if v:version>=700
     set spell
     set spellfile=~/.vimspell.en.utf-8.add
