@@ -10,7 +10,6 @@ AddType application/rss+xml .rss
 AddType text/xml            .opml
 AddType audio/mp4           .m4a
 
-<Files ~ "\.py$">
-# I use .py for source code, which I'd prefer not to be world-executable.
+<Files ~ "\.(py|pl|txt)$">
 SetHandler default-handler
 </Files>
