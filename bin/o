@@ -1,3 +1,14 @@
 #!/bin/bash
 
-exec cygstart "$@"
+set -eu
+
+PROG="$(basename -- "${0}")"
+
+case "${OSTYPE}" in
+    (cygwin) O=(cygstart);;
+    (linux)  O=(kfmclient exec);;
+    (*)      echo "${PROG}: uhh..." 1>&2
+             exit 1
+esac
+
+exec "${O[@]}" "$@"
