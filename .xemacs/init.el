@@ -247,6 +247,19 @@ xterm.el is sourced."""
 	     (define-key emacs-lisp-mode-map
 	       [linefeed] 'eval-print-last-sexp)))
 
+(defun decrease-line-left-margin ()
+  "Run `decrease-left-margin' on the current line."
+  (interactive)
+  (decrease-left-margin (point-at-bol) (point-at-bol 2) nil))
+
+; bibtex-mode uses some very questionable keybindings. Let's fix that.
+(add-hook 'bibtex-mode-hook
+	  '(lambda ()
+	     (define-keys bibtex-mode-map
+	       [tab] 'indent-for-tab-command
+	       [backtab] 'decrease-line-left-margin
+               [(meta backspace)] 'backward-kill-word)))
+
 ;; Faces
 
 ; Cyan is really bright, guys.
