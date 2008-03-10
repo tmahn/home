@@ -3,6 +3,7 @@
 """Like sort -nr, but take suffices like '15M' into account. Meant to be put in a pipe after a 'du -h'."""
 
 import re
+import signal
 import sys
 
 SUFFICES = "KMGTEPZY"
@@ -30,5 +31,6 @@ for line in sys.stdin:
 
 lines.sort(cmp = lambda x, y: cmp(y[1], x[1]) or cmp(y[0], x[0]))
 
+signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 for line in lines:
     print line[0],

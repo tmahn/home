@@ -10,6 +10,7 @@ in the shell."""
 import collections
 import os
 import os.path
+import signal
 import sys
 
 PROG = os.path.basename(sys.argv[0])
@@ -42,6 +43,7 @@ def usage():
     return "Usage: %s [DIR...]\n%s" % (PROG, __doc__)
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     extension_count_map = None
     for root in sys.argv[1:] or ['.']:
         if not os.path.isdir(root):
