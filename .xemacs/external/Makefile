@@ -8,7 +8,7 @@ LIBS := \
        xterm-title \
        xmas-tty-faces \
 
-all: ${LIBS:%=%.elc}
+all: ${LIBS:%=%.elc} slime
 
 findlib.el: findlib.el.txt
 	grep -A 1000 '\$$Id' $< |grep -B 1000 '^;;;.*ends here' > $@
@@ -40,6 +40,13 @@ xmas-tty-faces.el: URL := http://nijino.homelinux.net/emacs/xmas-tty-faces.el
 %.el:
 	wget ${URL}
 
+slime:
+	cvs -d \
+	  :pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot \
+	  co slime
+clean::
+	rm -rf slime
+
 #
-clean:
+clean::
 	rm -f ${LIBS:%=%.el} ${LIBS:%=%.elc} ${LIBS:%=%.el.txt}

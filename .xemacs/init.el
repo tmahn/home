@@ -17,7 +17,7 @@
   (mapcar (lambda (user-init-subdirectory)
 	    (add-to-list 'load-path (concat user-init-directory
 					    user-init-subdirectory) t))
-	  '("local" "external")))
+	  '("local" "external" "external/slime")))
 (load "internal-hacks")
 
 (setq-default gc-cons-threshold 10000000)
@@ -95,6 +95,10 @@ xterm.el is sourced."""
        (define-key function-key-map "\e\e[1;3B" [(meta down)])
        (define-key function-key-map "\e\e[1;3C" [(meta right)])
        (define-key function-key-map "\e\e[1;3D" [(meta left)])
+       (define-key function-key-map "\e[1;2A" [(shift up)])
+       (define-key function-key-map "\e[1;2B" [(shift down)])
+       (define-key function-key-map "\e[1;2C" [(shift right)])
+       (define-key function-key-map "\e[1;2D" [(shift left)])
 
        (define-keys function-key-map
 	 "\e[1;2H" [(shift home)]
@@ -155,12 +159,14 @@ xterm.el is sourced."""
 (add-hook 'after-init-hook 'session-initialize)
 (setq-default session-undo-check -1)
 
-
 ;(require 'ispell)
 (setq-default ispell-program-name "aspell")
 
 (require 'rsz-minibuf)
 (setq-default resize-minibuffer-mode t)
+
+(require 'slime)
+(slime-setup)
 
 ;; Key bindings and stuff
 ; C-x C-b should activate the buffer-list
