@@ -2,3 +2,4 @@ nbproject
 .classpath
 .project
 tslib.pm
+*.lo

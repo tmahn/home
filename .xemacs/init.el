@@ -257,6 +257,7 @@ xterm.el is sourced."""
   "Run `decrease-left-margin' on the current line."
   (interactive)
   (decrease-left-margin (point-at-bol) (point-at-bol 2) nil))
+(define-key global-map [backtab] 'decrease-line-left-margin)
 
 ; bibtex-mode uses some very questionable keybindings. Let's fix that.
 (add-hook 'bibtex-mode-hook
@@ -271,7 +272,7 @@ xterm.el is sourced."""
 ; Cyan is really bright, guys.
 (eval-when-compile
   (require 'python-mode))
-(add-hook 'python-mode
+(add-hook 'python-mode-hook
 	  (lambda()
 	    (set-face-foreground
 	     py-builtins-face (make-color-specifier "steelblue"))
