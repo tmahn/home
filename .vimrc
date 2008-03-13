@@ -90,6 +90,17 @@ vnoremap <S-Tab> <LT>
 inoremap <Tab> <C-T>
 inoremap <S-Tab> <C-D>
 
+" Emacs compatibility
+nnoremap <C-x>o <C-w>w
+nnoremap <C-x>1 :only<return>
+nnoremap <C-x>0 :close<return>
+" Don't know how to get this in search of command mode...
+inoremap <Esc><Backspace> <Esc>ldBi
+
+"Ctrl-home/end
+noremap <Esc>[1;5H gg
+noremap <Esc>[1;5F G
+
 "" Terminal stuff
 " Misc backspace/delete stuff
 set t_kD=[3~
