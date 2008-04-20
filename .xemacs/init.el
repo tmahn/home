@@ -17,7 +17,7 @@
   (mapcar (lambda (user-init-subdirectory)
 	    (add-to-list 'load-path (concat user-init-directory
 					    user-init-subdirectory) t))
-	  '("local" "external" "external/slime")))
+	  '("local" "external" "external/slime" "external/slime/contrib")))
 (load "internal-hacks")
 
 (setq-default gc-cons-threshold 10000000)
@@ -267,6 +267,10 @@ xterm.el is sourced."""
 	       [backtab] 'decrease-line-left-margin
                [(meta backspace)] 'backward-kill-word)))
 
+(add-hook 'slime-mode-hook
+	  '(lambda ()
+	     (define-keys slime-mode-map
+	       [(control c) (control h)] #'slime-documentation)))
 ;; Faces
 
 ; Cyan is really bright, guys.

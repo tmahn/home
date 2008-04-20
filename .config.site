@@ -11,11 +11,11 @@ fi
 # stow(1) to our code. It lets us uninstall and change versions with
 # minimal hassle.
 if test "$prefix" = NONE; then
-    if test -d "${HOME}"'/usr/local/stow'; then
-        prefix="${HOME}"'/usr/local/stow/'"${PKGNAME}"
-        bindir='${exec_prefix}/bin/'"${ARCH}"
+    if test -d "${HOME}"'/usr/stow'; then
+        prefix="${HOME}"'/usr/stow/'"${PKGNAME}"
+        exec_prefix="${HOME}"'/usr/stow/'"${PKGNAME}/arch/${ARCH}"
     else
-        prefix='/usr/local/stow/'"${PKGNAME}"
+        prefix='/usr/stow/'"${PKGNAME}"
     fi
 fi
 

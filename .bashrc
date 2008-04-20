@@ -219,6 +219,19 @@ if [ "$OSTYPE" = "cygwin" ]; then
     export SMLNJ_CYGWIN_RUNTIME=true
 fi
 
+# Personal time zone
+PERSONAL_TZ="${HOME}/Andrew_Neitsch"
+PERSONAL_TZC="${PERSONAL_TZ}.tzc"
+if [ "${PERSONAL_TZ}" -nt "${PERSONAL_TZC}" ] \
+    && type -p personaltz > /dev/null
+then
+    personaltz "${PERSONAL_TZ}"
+fi
+if [ -f "${PERSONAL_TZC}" ]; then
+    export TZ="${PERSONAL_TZC}"
+fi
+
+
 ## Shell settings
 
 shopt -s cdspell checkwinsize dotglob checkhash
@@ -303,6 +316,7 @@ fi
 _bashrc_clean_path PATH
 _bashrc_clean_path MANPATH
 _bashrc_clean_path INFOPATH
+_bashrc_clean_path LD_LIBRARY_PATH
 
 # History settings
 HISTFILE=~/.bash_history

@@ -1,12 +1,20 @@
 # Python startup file
 
+import calendar
+import datetime
+import inspect
+import os
+import os.path
+import pickle
+import re
+import sys
+import time
+import warnings
+
 try:
     import readline
 except ImportError:
-    print "Module readline not available."
+     warnings.warn("Module readline not available.")
 else:
     import rlcompleter
     readline.parse_and_bind("tab: complete")
-
-import sys, os, os.path, re
-import inspect

@@ -9,6 +9,9 @@ augroup cprog
         \ set formatoptions=croql cindent comments=sr:/*,mb:*,el:*/,://
 augroup END
 
+autocmd BufRead *.kid
+        \ setfiletype xml
+
 " Jump to last visited location in file
 autocmd BufReadPost *
 	\ if line("'\"") > 0 && line("'\"") <= line("$") |
@@ -22,7 +25,6 @@ endif
 
 " Wrap when editing brand-new text files
 autocmd BufNewFile *.txt set tw=75 formatoptions+=t
-
 
 "" Syntax highlighting
 
@@ -136,6 +138,7 @@ set hidden
 set hlsearch
 set ignorecase
 set incsearch
+set modelines=5
 set mouse=a
 set nocompatible
 set nojoinspaces

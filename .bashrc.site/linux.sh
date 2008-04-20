@@ -1,2 +1,5 @@
 _bashrc_linux_style_prompt
-PATH="${HOME}/bin:${HOME}/bin/linux:${PATH}"
+ARCH="$(arch)"
+PATH="${HOME}/bin:${HOME}/bin/linux:${HOME}/usr/arch/${ARCH}/bin:${PATH}"
+MANPATH="${HOME}/usr/share/man:${MANPATH}"
+LD_LIBRARY_PATH="${HOME}/usr/arch/${ARCH}/lib:${LD_LIBRARY_PATH}"
