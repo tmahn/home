@@ -1,15 +1,31 @@
 #!/bin/bash
 
-lines () {
-  if [ "${yoff:0:1}" = + ]; then
-    echo 28
-  else
-    echo 27
-  fi
-}
+set -eu
 
-for xoff in +0 +492; do
-  for yoff in +-8 -+26; do
-    setsid xterm -geometry 80x$(lines)$xoff$yoff &
-  done
-done
+if xdpyinfo |grep "^vendor string" |grep -q Cygwin; then
+    for xoff in +0 +492; do
+        for yoff in +-8 -+26; do
+            if [ "${yoff:0:1}" = "+" ]; then
+                LINES=28
+            else
+                LINES=27
+            fi
+            xterm -geometry "80x${LINES}$xoff$yoff" &
+        done
+    done
+else
+    HEIGHT="$(xwininfo -root -stats |awk '/Height:/ {print $2}')"
+
+    if (( HEIGHT < 900 )); then
+        LINES=25
+        YOFF2=+353
+    else
+        LINES=35
+        YOFF2=+479
+    fi
+    for X in 100 588; do
+        for Y in "" "${YOFF2}"; do
+            xterm -geometry "80x${LINES}+${X}${Y}" &
+        done
+    done
+fi
