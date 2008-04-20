@@ -211,6 +211,7 @@ export CFLAGS='-Wall'
 export LDFLAGS='-lm'
 export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc
+export PYTHONPATH=~/.python
 export LC_ALL=en_CA.utf-8 # C
 # nroff (a shell script) only looks for UTF-8 (all uppercase) in LC_ALL,
 # and then looks for utf-8 in LESSCHARSET
