@@ -7,14 +7,8 @@ import os
 import os.path
 import pickle
 import re
+# The binding is done in ~/.inputrc
+import rlcompleter
 import sys
 import time
 import warnings
-
-try:
-    import readline
-except ImportError:
-     warnings.warn("Module readline not available.")
-else:
-    import rlcompleter
-    readline.parse_and_bind("tab: complete")
