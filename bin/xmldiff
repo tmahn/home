@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eu
+
+A="${1}"
+shift
+B="${1}"
+shift
+
+set +u
+
+diff -u "${@}" <(xmllint --format "${A}") <(xmllint --format "${B}")
