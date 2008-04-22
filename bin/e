@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -eu
+
+function user_running_command() {
+    CMD_NAME="${1}"
+    ps h -o user $(pidof "${CMD_NAME}") | grep -q "${LOGNAME}"
+}
+
+declare -a EDITOR
+if user_running_command "gnuserv"; then
+    EDITOR=(gnuclient -nw)
+else
+    EDITOR=(xemacs -nw)
+fi
+
+set +u
+
+exec "${EDITOR[@]}" "${@}"
