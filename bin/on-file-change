@@ -17,7 +17,12 @@ USAGE = "%prog [options] CMD [ARGS...]"
 #     Returned 1.
 #
 # You may have better luck.
+#
+# Addendum: I installed pamd and started it, and there's a global option
+# where by default it will just poll every four seconds. I thought it would
+# do something useful like hook file system calls, but nope.
 
+import errno
 from   optparse import OptionParser
 import os
 from   subprocess import Popen
@@ -32,7 +37,16 @@ class FileSystemWatcher(object):
         self.files[filename] = self._filetime(filename)
 
     def _filetime(self, filename):
-        return os.stat(filename).st_mtime
+        # Due to the way editors save files the filename may not exist
+        # while it's being written out. So if a file disappears, pretend
+        # it's still there with the previous modification time.
+        try:
+            mtime = os.stat(filename).st_mtime
+            return mtime
+        except OSError, e:
+            if e.errno == errno.ENOENT and filename in self.files:
+                return self.files[filename]
+            raise
 
     def has_changed(self):
         for filename, oldtime in self.files.items():
@@ -61,7 +75,9 @@ contain newlines. Corresponds to find's '-print0' option.""")
     parser.add_option("-t", "--sleeptime",  action="store", type="float",
             dest="sleeptime", metavar="TIME",
             help="Wait TIME seconds between checking for updates; TIME "
-            "default to 1", default=1)
+            "default to 1. File timestamps are usually limited to 1 second "
+            "of resolution, so multiple changes per second will not "
+            "be detected.", default=1)
     (options, cmd) = parser.parse_args(args=args)
 
     if not cmd:
