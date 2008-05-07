@@ -61,6 +61,7 @@ def main(args=None):
         args = sys.argv[1:]
 
     parser = OptionParser(description=__doc__.strip(), usage=USAGE)
+    parser.allow_interspersed_args = False
     parser.add_option("-s", "--stdin",  action="store_true", dest="stdin",
             help="""Read the list of files to watch, separated by
 newlines, from standard input. This is the default if no
@@ -100,8 +101,11 @@ contain newlines. Corresponds to find's '-print0' option.""")
     try:
         while 1:
             if fsw.has_changed():
-                process = Popen(cmd)
-                retcode = process.wait()
+                try:
+                    process = Popen(cmd)
+                    retcode = process.wait()
+                except OSError, e:
+                    print >> sys.stderr, e
                 if retcode:
                     print >> sys.stderr, "Returned %d." % retcode
             time.sleep(options.sleeptime)
