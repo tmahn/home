@@ -122,7 +122,7 @@ def tohms(secs):
     mins = abs(secs / 60) % 60
     secs %= 60
     return "%d%s" % (hours,
-            ":%02d%s" % (mins, "%02d" % secs if secs else '') if mins else '')
+            ":%02d%s" % (mins, ":%02d" % secs if secs else '') if mins else '')
 
 ##
 
