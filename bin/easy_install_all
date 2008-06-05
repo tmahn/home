@@ -16,22 +16,31 @@ mkdir -p "${HOME}/opt/python${PYTHON_VERSION}/src/python${PYTHON_VERSION}/site-p
 mkdir -p "${HOME}/opt/python${PYTHON_VERSION}/bin"
 
 easy_install \
-    -f "http://sf.net/projects/pylibacl/download
-        http://sf.net/projects/psyco/download" \
+    -f "
+        http://sourceforge.net/projects/pylibacl/download
+        http://sourceforge.net/projects/psyco/download
+        http://duplicity.nongnu.org/
+        http://www.jorendorff.com/articles/python/path/index.html
+        " \
+    \
+    "${@}" \
     \
     BeautifulSoup \
     CherryPy \
     FormEncode \
+    GnuPGInterface \
     Paste \
     PyXML \
     PyZ3950 \
     SQLObject \
     cfgparse \
+    duplicity \
     enum \
     httplib2 \
     iso8601 \
     kid \
     logilab.pylintinstaller \
+    path \
     psyco \
     py \
     pylibacl \
