@@ -17,3 +17,21 @@ def customize():
             sys.path.remove(path)
 
 customize()
+
+if sys.platform == 'cygwin':
+    # Cygwin (newlib) currently only supports the 'C' locale
+    # So we need to tell python that CODESET is not supported by
+    # removing it from the _locale module
+    import _locale
+    lc_ctype = _locale.setlocale(_locale.LC_CTYPE, None)
+    if lc_ctype == 'C':
+        del _locale.CODESET
+
+        import codecs
+        import locale
+
+        sys.stdin = codecs.getreader(locale.getpreferredencoding())(sys.stdin)
+        sys.stdout = codecs.getreader(locale.getpreferredencoding())(sys.stdout)
+
+import locale
+sys.setdefaultencoding(locale.getpreferredencoding())
