@@ -1,0 +1,16 @@
+xkb_keymap {
+    xkb_keycodes  { include "xfree86+aliases(qwerty)" };
+    xkb_types     { include "complete" };
+    xkb_compat    { include "complete" };
+    xkb_geometry  { include "pc(pc104)"	};
+    xkb_symbols   {
+        include "pc(pc105)+us+compose(menu)+level3(ralt_switch)"
+        include "neitsch.xkb"
+
+        // Disable Terminate_Server
+        key <BKSP> {
+            type="CTRL+ALT",
+                symbols[Group1] = [ BackSpace, BackSpace ]
+        };
+    };
+};

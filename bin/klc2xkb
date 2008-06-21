@@ -1,0 +1,119 @@
+#!/usr/bin/python
+
+"""%(prog) KLCFILE
+
+Read a .KLC file saved by Microsoft Keyboard Layout Creator, and print
+an equivalent xkb_symbol description.
+
+The resulting output can be included in the xkb_symbol section of a keymap
+description. This may work for you:
+
+ $ %(prog) foo.klc > foo.xkbsym
+ $ setxkbmap -print \
+ >       | sed '/xkb_symbols/s/};/\n\t\t\tinclude "foo.xkbsym" };/' \
+ >       | xkbcomp - "${DISPLAY}"
+ $ setxkbmap -option lv3:ralt_switch # For AltGr
+
+TODO:
+    [ ] Handle dead keys
+"""
+
+from __future__ import with_statement
+
+import codecs
+import re
+import sys
+from optparse import OptionParser
+
+class KeyMapping(object):
+    def __init__(self, scancode, normal, shifted, altgr, shiftedaltgr):
+        self.scancode = scancode
+        self.normal = self._cleanup(normal)
+        self.shifted = self._cleanup(shifted)
+        self.altgr = self._cleanup(altgr)
+        self.shiftedaltgr = self._cleanup(shiftedaltgr)
+
+    @classmethod
+    def _cleanup(cls, charstr):
+        if charstr == '-1':
+            return None
+        match = re.match('[0-9A-Fa-f]{4}', charstr)
+        if match:
+            return unichr(int(match.group(), 16))
+        assert len(charstr) == 1
+        return charstr
+
+    @classmethod
+    def scancode_to_xkbname(cls, scancode):
+        special = {0x29: "TLDE", 0x2b: "BKSL", 0x39: "SPCE", 0x53: "KPDL"}
+        if scancode in special:
+            return special[scancode]
+
+        elif scancode <= 0x0d:
+            return "AE%02d" % (scancode - 1)
+        elif scancode <= 0x1b:
+            return "AD%02d" % (scancode - 0xf)
+        elif scancode <= 0x28:
+            return "AC%02d" % (scancode - 0x1d)
+        elif scancode <= 0x35:
+            return "AB%02d" % (scancode - 0x2b)
+        return None
+
+    def to_xkb_def_str(self):
+        xkbname = self.scancode_to_xkbname(self.scancode)
+        if not xkbname:
+            return ""
+        def format_symbol(sym):
+            if sym is None:
+                return "NoSymbol"
+            return "U%04x" % ord(sym)
+
+        return ("key <%s> { [ %s, %s, %s, %s ] };"
+                % tuple([xkbname]
+                    + [format_symbol(sym)
+                        for sym in [self.normal, self.shifted,
+                            self.altgr, self.shiftedaltgr]]))
+
+class MSKLCFile(object):
+    def __init__(self, filename):
+        self.filename = filename
+        self.mappings = []
+        self.parse()
+
+    def parse(self):
+        with codecs.open(self.filename, 'r', encoding='utf-16') as file:
+            for line in file:
+                match = re.match('(.*?)//', line)
+                if match:
+                    pieces = match.group().split()
+                    if len(pieces) != 9:
+                        continue
+                    (scancode, vk, cap, normal, shift, ctrl,
+                            altgr, shiftaltgr, junk) = pieces
+                    scancode = int(scancode, 16)
+                    mapping = KeyMapping(scancode,
+                            normal, shift, altgr, shiftaltgr)
+                    self.mappings.append(mapping)
+
+def main(args=None):
+    if args is None:
+        args = sys.argv[1:]
+
+    optp = OptionParser(usage=__doc__)
+    options, args = optp.parse_args(args)
+
+    if len(args) != 1:
+        optp.print_help()
+        return 1
+
+    filename = args[0]
+
+    layout = MSKLCFile(filename)
+
+    print "xkb_symbols {"
+    for mapping in layout.mappings:
+        print mapping.to_xkb_def_str()
+    print "};"
+
+if __name__ == '__main__':
+    sys.exit(main())
