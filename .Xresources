@@ -1,3 +1,7 @@
+#ifdef COLOR
+*customization:	-color
+#endif
+
 *MenuButton.shapeStyle: roundedRectangle
 *MenuButton.borderWidth: 1
 

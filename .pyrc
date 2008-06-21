@@ -1,18 +1,25 @@
 # Python startup file
 
+from __future__ import division
+from __future__ import with_statement
+
 import calendar
 import datetime
 import inspect
 import logging
+import math
 import optparse
 import os
 import os.path
 import pickle
+import random
 import re
 # The binding is done in ~/.inputrc
 import rlcompleter
 import socket
+import StringIO
 import struct
+import subprocess
 import sys
 import time
 import urllib

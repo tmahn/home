@@ -9,3 +9,4 @@ keycode  88 = KP_2       KP_Down
 keycode  89 = KP_3       KP_Next
 keycode  90 = KP_0       KP_Insert
 keycode  91 = KP_Decimal KP_Delete
+keycode  22 = BackSpace  BackSpace
