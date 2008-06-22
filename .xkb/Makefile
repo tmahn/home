@@ -1,9 +1,28 @@
-xkbmap.xkm: neitsch.xkb
+xkbmap.xkm: neitsch.xkbsym
 
 install: xkbmap.xkm
+	setxkbmap
 	xkbcomp "${<}" "${DISPLAY}"
 
-%.xkb: %.klc
+%.xkbsym: %.klc
 	klc2xkb "${<}" > "${@}"
-%.xkm: %
-	xkbcomp "${<}"
+%.xkm: %.xkb
+	xkbcomp ${XKBCOMPFLAGS} "${<}" -o "${@}"
+
+clean:
+	rm -f *.xkbsym *.xkm
+
+OSTYPE := $(shell uname -o)
+ifeq (${OSTYPE},Cygwin)
+
+XKBCOMPFLAGS = -Icygxkb
+
+# The cygwin X server comes with old files. We pull down the new ones so
+# that the .xkb file from newer machines will work here too.
+xkbmap.xkb: cygxkb
+KEYBOARD_CONFIG_URL = http://gitweb.freedesktop.org/?p=xkeyboard-config.git;a=blob_plain;f=
+cygxkb:
+	mkdir -p cygxkb/symbols
+	wget '${KEYBOARD_CONFIG_URL}symbols/pc' -O cygxkb/symbols/pc
+	wget '${KEYBOARD_CONFIG_URL}symbols/keypad' -O cygxkb/symbols/keypad
+endif
