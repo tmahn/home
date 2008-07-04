@@ -43,8 +43,8 @@
   t)
 
 (defadvice load-terminal-library (after run-terminal-library-hooks activate)
-  """We do many custom things with xterm, so we apply this after the default
-xterm.el is sourced."""
+  "We do many custom things with xterm, so we apply this after the default
+xterm.el is sourced."
   (and (equal (device-type) 'tty)
        (equal (getenv "TERM") "xterm")
        (require 'xterm-256-color)
@@ -268,6 +268,11 @@ xterm.el is sourced."""
                [(meta backspace)] 'backward-kill-word)))
 
 (add-hook 'slime-mode-hook
+	  ;; If the current buffer doesn’t specify a package, use :cl-user
+	  ;; so that slime-sync-package-and-default-directory won’t error
+	  (setq-default slime-find-buffer-package-function
+			(lambda ()
+			  (or (slime-search-buffer-package) ":cl-user")))
 	  '(lambda ()
 	     (define-keys slime-mode-map
 	       [(control c) (control h)] #'slime-documentation)))
@@ -581,7 +586,9 @@ e.g. (view-emacs-source-file \"simple.el\")"
   (interactive)
   (byte-recompile-directory user-init-directory 0))
 (add-hook 'kill-emacs-hook 'byte-recompile-user-init-directory)
+;; shift-f12 in terminal is f24
 (global-set-key [f24] 'byte-recompile-user-init-directory)
+(global-set-key [(shift f12)] 'byte-recompile-user-init-directory)
 
 ; We have this earlier too, but it gets overridden...
 (set-coding-priority-list '(utf-8))
@@ -615,3 +622,26 @@ right way to hide those ^M's, but it seems to work."
   (let ((this-buffer-file-name (buffer-file-name)))
     (kill-buffer (current-buffer))
     (find-file this-buffer-file-name (get-coding-system 'iso-8859-1-dos))))
+
+;;; Thanks http://justinsboringpage.blogspot.com!
+(defun insert-char-above (&optional lines)
+ "Insert the character above point into the buffer. LINES (default 1) is the
+index of the line to copy from."
+ (interactive)
+ (let ((c (save-excursion
+	    (let ((column (current-column)))
+	      (previous-line (or lines 1))
+	      (if (eq column (current-column))
+		  (char-after))))))
+   (when (and c (/= c ?\n))
+     (insert (char-to-string c)))))
+
+(defun insert-char-below ()
+ "Insert the character below point into the buffer."
+ (interactive)
+ (insert-char-above -1))
+
+;; bindings from vi
+(global-set-key [(control Y)] 'insert-char-above)
+(global-set-key [(control E)] 'insert-char-below)
+
