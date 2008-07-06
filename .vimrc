@@ -26,14 +26,13 @@ endif
 " Wrap when editing brand-new text files
 autocmd BufNewFile *.txt set tw=75 formatoptions+=t
 
-" Vim tip 911
-function! CheckFileEncoding()
-  if &modified && &fileencoding != ''
-    exec 'e! ++enc=' . &fileencoding
-  endif
-endfunction
-
-au BufWinEnter * call CheckFileEncoding()
+" Vim tip 911; but read the comments on that tip before using it
+au BufReadPost * let b:reloadcheck=1
+au BufWinEnter *
+    \ if exists('b:reloadcheck') |
+        \ unlet b:reloadcheck |
+        \ if &modified && &fileencoding != "" |
+            \ exec 'e! ++enc=' . &fileencoding
 
 "" Syntax highlighting
 
