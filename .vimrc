@@ -26,6 +26,15 @@ endif
 " Wrap when editing brand-new text files
 autocmd BufNewFile *.txt set tw=75 formatoptions+=t
 
+" Vim tip 911
+function! CheckFileEncoding()
+  if &modified && &fileencoding != ''
+    exec 'e! ++enc=' . &fileencoding
+  endif
+endfunction
+
+au BufWinEnter * call CheckFileEncoding()
+
 "" Syntax highlighting
 
 syntax on
@@ -187,5 +196,6 @@ autocmd GUIEnter * set t_vb=
 
 if v:version>=700
     set spell
+    set spelllang=en_ca
     set spellfile=~/.vimspell.en.utf-8.add
 endif
