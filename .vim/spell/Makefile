@@ -17,7 +17,7 @@ ${LANGUAGE}_%.aff ${LANGUAGE}_%.dic: ${LANGUAGE}_%.zip ${LANGUAGE}_%.diff fixup.
 	python fixup.py "${LANGUAGE}_${*}.dic" "${LANGUAGE}_${*}.aff"
 
 ${LANGUAGE}_%.zip:
-	wget http://ftp.services.op${LANGUAGE}office.org/pub/Op${LANGUAGE}Office.org/contrib/dictionaries/${LANGUAGE}_${*}.zip
+	wget http://ftp.services.openoffice.org/pub/OpenOffice.org/contrib/dictionaries/${LANGUAGE}_${*}.zip
 
 ${LANGUAGE}_%.diff:
 	wget https://vim.svn.sourceforge.net/svnroot/vim/trunk/runtime/spell/${LANGUAGE}/${LANGUAGE}_${*}.diff
