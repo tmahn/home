@@ -406,6 +406,7 @@ Usually this line would not be highlighted."
 (set-face-background
   'default (make-color-specifier "rgb:DF/DF/DF"))
 
+; Middle-click should insert at point, not where clicked
 (setq-default mouse-yank-at-point t)
 
 ; Silence warnings about backup-directory-alist when compiling with earlier
@@ -448,8 +449,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (add-hook 'text-mode-hook 'auto-fill-mode)
 (add-hook 'emacs-lisp-mode-hook 'auto-fill-mode)
 (setq-default default-fill-column 78)
-(setq-default sentence-end-double-space nil) ; I don’t double-space after a
-					     ; period.
+
 (line-number-mode 1)
 (column-number-mode 1)
 (setq-default column-number-start-at-one t)
@@ -475,7 +475,8 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (setq-default modeline-buffer-identification '("%21b"))
 ; Don't show always-on modes in the modeline
 (defvar minor-mode-alist-ignore
-  '(xterm-title-mode font-lock-mode xterm-mouse-mode filladapt-mode))
+  '(xterm-title-mode font-lock-mode xterm-mouse-mode filladapt-mode
+    auto-fill-function))
 (setq-default
  modeline-format
  (list
@@ -554,17 +555,26 @@ e.g. (view-emacs-source-file \"simple.el\")"
   (add-hook 'c-mode-hook 'turn-off-filladapt-mode)
   (add-hook 'outline-mode-hook 'turn-off-filladapt-mode))
 
-; End sample.init.el
-; ==================
-
-;(defun autocompile nil
-;  "compile self if ~/.xemacs/init.el"
-;  (interactive)
-;  (require 'bytecomp)
-;  (if (equal buffer-file-name user-init-file)
-;      (byte-compile-file (buffer-file-name))))
-
-;(add-hook 'after-save-hook 'autocompile)
+;;; Mildly disgusting hack to make filladapt not put an indent on subsequent
+;;; lines of lisp docstrings. The filladapt algorithm is, roughly
+;;;   - Break each line into tokens
+;;;   - If the tokens are related in the match-table, and end at the same
+;;;     column index, then the lines are in the same paragraph
+;;; There is code to handle ‘match-many’ tokens like bullets which cause
+;;: subsequent lines to be indented more than the previous ones, but nothing to
+;:; handle cases where the first line has a greater indent. So we use advice.
+;;;
+;;; The `filladapt-debug' function is your friend.
+(pushnew '("^  \"" lisp-docstring) filladapt-token-table)
+(pushnew '(lisp-docstring beginning-of-line) filladapt-token-match-table)
+(pushnew 'lisp-docstring filladapt-token-paragraph-start-table)
+(defadvice filladapt-parse-prefixes (around fudge-lisp-docstring activate)
+  "Return 0 for the column offset of any lisp-docstring."
+  (setf ad-return-value
+	(mapcar #'(lambda (x) (if (eq (first x) 'lisp-docstring)
+				  `(lisp-docstring 0 ,@(cddr x))
+				x))
+		ad-do-it)))
 
 ; Clean up GUI: no menubar, toolbar, scrollbars, or tabs
 (customize-set-variable 'toolbar-visible-p nil)
@@ -694,3 +704,16 @@ index of the line to copy from."
     ;; characters, e.g. ‘~’ in τεχ mode.
     (while (re-search-forward "[ \t]+$" nil t)
       (replace-match ""))))
+
+;;; I don’t double-space after a period.
+(setq-default sentence-end-double-space nil)
+
+;; But now `fill-region-as-paragraph' adds a space to lines that end with ‘.’.
+;; That function is very crufty, 328 lines, and hasn’t been touched in three
+;; years. So we wrap it with cleanup advice.
+(defadvice fill-region-as-paragraph
+  (around cleanup-after-fill-region-as-paragraph (from &rest extra) activate)
+  ad-do-it
+  (save-excursion
+    (narrow-to-region from (point))
+    (delete-trailing-whitespace)))
