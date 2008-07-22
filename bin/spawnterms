@@ -23,7 +23,7 @@ else
         LINES=35
         YOFF2=+479
     fi
-    for X in 100 588; do
+    for X in 150 638; do
         for Y in "" "${YOFF2}"; do
             xterm -geometry "80x${LINES}+${X}${Y}" &
         done

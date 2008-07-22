@@ -1,0 +1,4 @@
+include "%L"
+
+<Multi_key> <minus> <greater>	: U2192 # RIGHTWARDS ARROW
+<Multi_key> <less> <3>		: U2764 # HEAVY BLACK HEART

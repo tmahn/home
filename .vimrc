@@ -196,5 +196,5 @@ autocmd GUIEnter * set t_vb=
 if v:version>=700
     set spell
     set spelllang=en_ca
-    set spellfile=~/.vimspell.en.utf-8.add
+    set spellfile=~/.vimspell.en.utf-8.add,~/.vimspell.extra.add
 endif

@@ -2,10 +2,6 @@
 ; [ ] Jump list (Tab and Ctrl-O)
 ; [ ] Spell-check highlighting
 ;     flyspell-incorrect-face ?
-; [ ] Search term highlighting
-; [ ] TODO XXX FIXME highlighting
-; [ ] Highlight trailing space
-; [ ] Automatically trim trailing space on source code (write-contents-hooks?)
 ; [ ] More right-justification in modeline
 ;     [ ] Line length
 ;     [ ] Show region size while marking
@@ -74,7 +70,7 @@ xterm.el is sourced."
 				  (directory-file-name default-directory) 1))
 		       "")))))
        (xterm-title-mode t)
-      
+
        (require 'xt-mouse-xmas)
        (xterm-mouse-mode t)
 
@@ -103,12 +99,12 @@ xterm.el is sourced."
        (define-keys function-key-map
 	 "\e[1;2H" [(shift home)]
 	 "\e[1;2F" [(shift end)])
-              
+
        ; We want the key 'Ctrl-+' to be available inside an
        ; xterm. There's not standard character sequence for it, so we
        ; make one up, add it here and in the xterm translations
        ; resource, and hope there are no conflicts.
-       ; With help from 
+       ; With help from
        ; http://lists.gnu.org/archive/html/help-gnu-emacs/2005-03/msg00102.html
        (defvar control-key-map (make-sparse-keymap) "Control keymap.")
        (define-prefix-command 'control-key-map)
@@ -145,13 +141,53 @@ xterm.el is sourced."
 (if (eq (device-type) 'tty)
     (set-frame-background-mode (selected-frame) 'light))
 
+(eval-when-compile
+  (unless (boundp 'x-color-list-internal-cache))
+      (defvar x-color-list-internal-cache))
+(defun unfudge-x-colors ()
+  "For some reason (color-list) was returning a list of (string) lists instead
+of a list of strings. This fixes that."
+  (when (and (listp (first (color-list)))
+	     (boundp 'x-color-list-internal-cache))
+    (setf x-color-list-internal-cache
+	  (apply #'append x-color-list-internal-cache))))
+(defadvice list-colors-display (before unfudge-x-colors activate)
+  (unfudge-x-colors))
+
 (defadvice iconify-frame (before iconify-tty activate)
   "If on a tty, try to iconify with XTerm's iconifiy control sequence."
   (if (eq (device-type) 'tty)
       (send-string-to-terminal "\e[2t")))
- 
+
 ; syntax highlighting
 (require 'font-lock)
+(require 'lazy-lock)
+
+(progn
+  "This is to fix font-lock of docstrings with parentheses in the first column
+(like so).
+Usually this line would not be highlighted."
+  ;; When the font-lock module is loaded, it sets the syntax table for lisp.
+  ;; The fifth entry (index 4) SYNTAX-BEGIN is set to beginning-of-defun,
+  ;; which looks for ‘(’ at the start of the line. Changing the entry to nil
+  ;; causes font-lock-mode to parse appropriately instead.
+  (setf (nth 4 (get 'lisp-mode 'font-lock-defaults)) nil))
+
+(make-face 'font-lock-trailing-whitespace-face
+	   "Used to highlight trailing whitespace.")
+(set-face-background 'font-lock-trailing-whitespace-face "red")
+(make-face 'font-lock-todo-face)
+(set-face-background 'font-lock-todo-face "yellow2")
+(set-face-foreground 'font-lock-todo-face "darkblue")
+(defun my-font-lock-mode-hook ()
+  (font-lock-add-keywords
+   nil
+   ;; The docstring for font-lock-keywords explains the syntax
+   '(("\\<\\(?:FIXME\\|TODO\\|XXX\\):?\\>" 0 font-lock-todo-face t)
+     ("\\s-+$" 0 font-lock-trailing-whitespace-face t)))
+  (turn-on-lazy-lock))
+(add-hook 'font-lock-mode-hook 'my-font-lock-mode-hook)
+(setq-default lazy-lock-stealth-time nil)
 
 ; External packages
 (require 'findlib)
@@ -159,13 +195,12 @@ xterm.el is sourced."
 (add-hook 'after-init-hook 'session-initialize)
 (setq-default session-undo-check -1)
 
-;(require 'ispell)
-(setq-default ispell-program-name "aspell")
-
 (require 'rsz-minibuf)
 (setq-default resize-minibuffer-mode t)
 
 (require 'slime)
+(setq-default inferior-lisp-program "sbcl")
+(setq slime-net-coding-system 'utf-8-unix)
 (slime-setup)
 
 ;; Key bindings and stuff
@@ -187,7 +222,7 @@ xterm.el is sourced."
 ; From eclipse key bindings: Ctrl-/ and Ctrl-Shift-/ to comment and uncomment
 (global-set-key [(control /)] 'comment-region)
 (defun-when-void uncomment-region (start end)
-  "Uncomment region. See `comme;nt-region'."
+  "Uncomment region. See `comment-region'."
   (interactive "r")
   (comment-region start end (cons nil nil)))
 (global-set-key [(control ?\?)] 'uncomment-region)
@@ -195,7 +230,6 @@ xterm.el is sourced."
 ; C-s search for regular expressions
 (define-key global-map [(control s)] 'isearch-forward-regexp)
 (define-key global-map [(control r)] 'isearch-backward-regexp)
-;
 (add-hook 'isearch-mode-hook
 	  (lambda ()
 	    (define-key isearch-mode-map [(up)] 'isearch-ring-advance)
@@ -222,36 +256,33 @@ xterm.el is sourced."
 (define-key help-map [tab]
   (lookup-key help-map [(control i)]))
 
-
 (defun mark-beginning-of-line (arg)
   "Put mark at beginning of line. Arg works as in `beginning-of-line'."
   (interactive "p")
   (mark-something 'mark-beginning-of-line 'beginning-of-line arg))
-	 
+
 (define-keys global-map
   [(shift end)] 'mark-end-of-line
-  [(shift home)] 'mark-beginning-of-line)
+  [(shift home)] 'mark-beginning-of-line
+  [iso-left-tab] [backtab])
 
 ; SML-mode
 (setq sml-program-name "sml")
+(eval-when-compile
+  (require 'sml-mode))
 (defun my-sml-mode-hook ()
   "Local customizations for SML mode"
   (setq indent-tabs-mode nil)
 
   ;; shift-tab should decrease indent
-  (define-key sml-mode-map [(backtab)] 'sml-back-to-outer-indent)
-  
+  (define-key sml-mode-map [backtab] 'sml-back-to-outer-indent)
+
   ;; Map C-c C-e to run code from the point to the end of the buffer
   (define-key sml-mode-map
     (kbd "C-c C-e")
     '(lambda () "" (interactive)
        (sml-send-region (point) (point-max)))))
 (add-hook 'sml-mode-hook 'my-sml-mode-hook)
-          
-(add-hook 'emacs-lisp-mode-hook
-	  '(lambda ()
-	     (define-key emacs-lisp-mode-map
-	       [linefeed] 'eval-print-last-sexp)))
 
 (defun decrease-line-left-margin ()
   "Run `decrease-left-margin' on the current line."
@@ -283,34 +314,13 @@ xterm.el is sourced."
   (require 'python-mode))
 (add-hook 'python-mode-hook
 	  (lambda()
-	    (set-face-foreground
-	     py-builtins-face (make-color-specifier "steelblue"))
-	    (set-face-foreground
-	     py-pseudo-keyword-face (make-color-specifier "mediumpurple"))))
-
-(setq-default flyspell-mode-line-string nil)
-(autoload 'flyspell-mode "flyspell" "spell checker" t)
-(add-hook 'text-mode-hook
-	  (lambda()
-	    (flyspell-mode)
-	    (loop for face in
-	      (list 'flyspell-incorrect-face 'flyspell-duplicate-face)
-	      do
-	      (set-face-foreground
-	       face (make-color-specifier []))
-	      (set-face-background
-	       face (make-color-specifier "thistle1"))
-	      (set-face-underline-p face nil)
-	      (set-face-highlight-p face nil))
-	    ; Too slow.
-	    ; (save-excursion
-            ;   (flyspell-buffer))
-	      ))
+	    (set-face-foreground py-builtins-face "steelblue")
+	    (set-face-foreground py-pseudo-keyword-face "mediumpurple")))
 
 ; Since we have all the X colors on our tty, let's use them
-(set-face-background 'isearch '((tty . "paleturquoise")))
-(set-face-foreground 'isearch '((tty . "black")))
-(set-face-background 'isearch-secondary '((tty . "yellow")))
+(set-face-background 'isearch "paleturquoise")
+(set-face-foreground 'isearch "black")
+(set-face-background 'isearch-secondary "yellow")
 
 (require 'paren)
 (set-face-background 'paren-mismatch "DeepPink")
@@ -327,6 +337,44 @@ xterm.el is sourced."
   (interactive)
   (isearch-highlight-all-cleanup))
 
+(defun my-flyspell-mode-hook ()
+  (loop for face in '(flyspell-incorrect-face
+		      flyspell-duplicate-face)
+    do
+    (remove-face-property face 'foreground)
+    (remove-face-property face 'underline)
+    (set-face-background face "thistle1")
+    (make-face-unbold face)))
+(add-hook 'flyspell-mode-hook #'my-flyspell-mode-hook)
+
+;;; Spell-checking.
+;;;
+;;; Flyspell doesn’t work very well, because it only checks what you type of
+;;; move your point over; if you load up a buffer full of misspellings, you’ll
+;;; get a screenful of text that looks fine but isn’t.
+;;;
+;;; TODO:
+;;; [ ] keybindings (for now use middle-click)
+;;; [ ] Handle real apostrophes (’)
+;;; [ ] “i” by itself is a misspelling
+;;;
+;;; Still, it’s better than nothing at this point.
+
+(require 'flyspell)
+(setq-default flyspell-mode-line-string nil)
+(setq-default ispell-program-name "aspell")
+(defun turn-on-flyspell ()
+  "Turn on flyspell mode unconditionally."
+  (interactive)
+  (flyspell-mode t))
+;; `font-lock-mode' seems to take effect everywhere, but for flyspell it seems
+;; that you have to add `turn-on-flyspell' to every major-mode-hook. Looking
+;; at what `font-lock-mode' does, it adds `font-lock-set-defaults' to
+;; `find-file-hooks'. Now this won’t get you spell-checking in the *scratch*
+;; buffer; it turns out that font-lock in *scratch* is special-cased in
+;; startup.el.
+(add-hook 'find-file-hooks #'turn-on-flyspell)
+
 (defun insert-shell-command (cmd)
   "Insert the output of the command into the current buffer."
   (interactive "sCommand: ")
@@ -337,7 +385,7 @@ xterm.el is sourced."
   "Insert the current date into the buffer."
   (interactive)
   (insert-string (format-time-string "%c")))
-   
+
 ; Enable scroll wheel
 ;(defun up-slightly () (interactive) (scroll-up 1))
 ;(defun down-slightly () (interactive) (scroll-down 1))
@@ -357,6 +405,8 @@ xterm.el is sourced."
 ; Set background color
 (set-face-background
   'default (make-color-specifier "rgb:DF/DF/DF"))
+
+(setq-default mouse-yank-at-point t)
 
 ; Silence warnings about backup-directory-alist when compiling with earlier
 ; versions
@@ -381,7 +431,7 @@ xterm.el is sourced."
   (message "Attempt to switch into overwrite-mode ignored."))
 
 (if (not (boundp 'source-directory))
-    (setq source-directory 
+    (setq source-directory
 	  (expand-file-name (concat lisp-directory
 				    ".."))))
 (defun view-emacs-source-file (file)
@@ -395,12 +445,11 @@ e.g. (view-emacs-source-file \"simple.el\")"
 		 file
 	       (concat source-directory "/" file))))
 
-; Look up keybindings when running apropros
-;(setq apropos-do-all t)
-
 (add-hook 'text-mode-hook 'auto-fill-mode)
 (add-hook 'emacs-lisp-mode-hook 'auto-fill-mode)
 (setq-default default-fill-column 78)
+(setq-default sentence-end-double-space nil) ; I don’t double-space after a
+					     ; period.
 (line-number-mode 1)
 (column-number-mode 1)
 (setq-default column-number-start-at-one t)
@@ -411,7 +460,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (make-variable-buffer-local 'line-count-string)
 (defun update-line-count-after-change (&optional start end length)
   (let ((old-line-count-string line-count-string))
-    (setq line-count-string 
+    (setq line-count-string
 	  (format "/%d" (count-lines (point-min) (point-max))))
     (unless (equal line-count-string old-line-count-string)
       (redraw-modeline)))
@@ -422,6 +471,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
 	    (pushnew 'update-line-count-after-change after-change-functions)))
 
 (setq-default modeline-modified '("%1* "))
+
 (setq-default modeline-buffer-identification '("%21b"))
 ; Don't show always-on modes in the modeline
 (defvar minor-mode-alist-ignore
@@ -432,7 +482,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
   ; XXX since frame-width is evaluated once at the beginning, right
   ; justification will be lost if the window is resized or a window is
   ; split horizontally
-  (list (- (frame-width) 3)
+  (list (- (frame-width) 4)
 	(cons modeline-modified-extent 'modeline-modified)
 	(cons modeline-buffer-id-extent 'modeline-buffer-identification)
 	" "
@@ -454,7 +504,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
 	'modeline-process
 	")%] %l,%c"
 	'line-count-string)
-  (list 3 "%p")))
+  (list 4 "%p")))
 
 ; calendar keybindings
 (add-hook 'calendar-load-hook
@@ -504,22 +554,6 @@ e.g. (view-emacs-source-file \"simple.el\")"
   (add-hook 'c-mode-hook 'turn-off-filladapt-mode)
   (add-hook 'outline-mode-hook 'turn-off-filladapt-mode))
 
-
-;;; ********************
-;;; lazy-lock is a package which speeds up the highlighting of files
-;;; by doing it "on-the-fly" -- only the visible portion of the
-;;; buffer is fontified.  The results may not always be quite as
-;;; accurate as using full font-lock or fast-lock, but it's *much*
-;;; faster.  No more annoying pauses when you load files.
-
-(if (fboundp 'turn-on-lazy-lock)
-  (add-hook 'font-lock-mode-hook 'turn-on-lazy-lock))
-
-;; I personally don't like "stealth mode" (where lazy-lock starts
-;; fontifying in the background if you're idle for 30 seconds)
-;; because it takes too long to wake up again.
-(setq lazy-lock-stealth-time nil)
-
 ; End sample.init.el
 ; ==================
 
@@ -544,7 +578,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (setq-default shell-file-name "/bin/bash")
 (eval-when-compile (require 'shell))
-(add-hook 'shell-mode-hook 
+(add-hook 'shell-mode-hook
 	  (lambda ()
 	    (message "shell-mode-hook")
 	    (pushnew "--login" explicit-bash-args)))
@@ -614,7 +648,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
     (setf (point) (point-min))
     (while (re-search-forward "" nil t)
       (replace-match "" nil nil))))
-  
+
 (defun revisit-file-in-dos-mode ()
   "Reopen the current file in dos mode. This is almost certainly not the
 right way to hide those ^M's, but it seems to work."
@@ -645,3 +679,18 @@ index of the line to copy from."
 (global-set-key [(control Y)] 'insert-char-above)
 (global-set-key [(control E)] 'insert-char-below)
 
+(defun active-modes ()
+  (mapcan #'(lambda (x) (let ((sym (first x)))
+			  (when (and (boundp sym) (symbol-value sym))
+			    (list sym))))
+	  minor-mode-alist))
+
+(defun delete-trailing-whitespace ()
+  "Remove all trailing whitespace (spaces and tabs) from the current buffer."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    ;; We don’t use the syntax table because it might have significant
+    ;; characters, e.g. ‘~’ in τεχ mode.
+    (while (re-search-forward "[ \t]+$" nil t)
+      (replace-match ""))))
