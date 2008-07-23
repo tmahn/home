@@ -5,7 +5,7 @@ install: xkbmap.xkm
 	xkbcomp "${<}" "${DISPLAY}"
 
 %.xkbsym: %.klc
-	klc2xkb "${<}" > "${@}"
+	klc2xkb --compose=XCompose.dead_keys "${<}" > "${@}"
 %.xkm: %.xkb
 	xkbcomp ${XKBCOMPFLAGS} "${<}" -o "${@}"
 

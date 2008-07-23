@@ -1,6 +1,7 @@
 #!/usr/bin/python
+# coding: utf-8
 
-"""%(prog) KLCFILE
+"""%(prog) [options] KLCFILE
 
 Read a .KLC file saved by Microsoft Keyboard Layout Creator, and print
 an equivalent xkb_symbol description.
@@ -14,8 +15,24 @@ description. This may work for you:
  >       | xkbcomp - "${DISPLAY}"
  $ setxkbmap -option lv3:ralt_switch # For AltGr
 
-TODO:
-    [ ] Handle dead keys
+To use the optional dead-key compose file, written out to say
+~/.XCompose.dead_keys, create a file called ~/.XCompose containing
+
+ include "%L"
+ include "%H/.XCompose.dead_keys"
+
+See §4.19 “Xlib Compose file support and extensions” of the X11R7.1 release
+notes (http://xorg.freedesktop.org/releases/X11R7.1/doc/RELNOTES4.html#30) for
+more information.
+
+X applications read the compose file on startup, so you will need to restart
+applications to pick up changes in dead keys, whereas other changes will take
+effect immediately on running setxkbmap.
+
+There are fundamental difference in the way that X and Windows handle dead
+keys. For the key sequence 〈dead_key〉〈other_key〉, where 〈other_key〉 has no
+mapping for this particular dead key, windows treats both keypresses normally,
+while X ignores both.
 """
 
 from __future__ import with_statement
@@ -23,6 +40,7 @@ from __future__ import with_statement
 import codecs
 import re
 import sys
+import unicodedata
 from optparse import OptionParser
 
 class KeyMapping(object):
@@ -74,32 +92,80 @@ class KeyMapping(object):
                         for sym in [self.normal, self.shifted,
                             self.altgr, self.shiftedaltgr]]))
 
+def DDDD_to_name(DDDD):
+    "'0046' -> 'FULL STOP'"
+    return unicodedata.name(unichr(int(DDDD, 16)))
+
+class DeadKey(object):
+    def __init__(self, deadkey):
+        self.deadkey = deadkey
+        self.maps = {}
+
+    def add_entry(self, key, value):
+        self.maps[key] = value
+
+    def to_xcompose_str(self):
+        return '# %s' % DDDD_to_name(self.deadkey) + "\n" \
+               + "\n".join("<U%s> <U%s>: U%s # '%s' -> %s" % (self.deadkey,
+                                                         k, v,
+                                                         unichr(int(k, 16)),
+                                                         DDDD_to_name(v))
+                           for k, v in self.maps.items()) + "\n"
+
 class MSKLCFile(object):
     def __init__(self, filename):
         self.filename = filename
         self.mappings = []
+        self.deadkeys = []
         self.parse()
 
     def parse(self):
         with codecs.open(self.filename, 'r', encoding='utf-16') as file:
+            in_deadkey_def = False
+
             for line in file:
+                line = line.strip()
+
+                if in_deadkey_def:
+                    match = re.match(r"""^([0-9a-fA-F]{4})\s+
+                                          ([0-9a-fA-F]{4})\s+
+                                          //
+                                          |\s?$""",
+                                     line,
+                                     re.VERBOSE)
+                    if not match:
+                        in_deadkey_def = False
+                    else:
+                        if match.group(1):
+                            self.deadkeys[-1].add_entry(match.group(1),
+                                                        match.group(2))
+                        continue
+
+                match = re.match(r'^DEADKEY\s+([0-9a-fA-F]{4})$', line)
+                if match:
+                    in_deadkey_def = True
+                    self.deadkeys.append(DeadKey(match.group(1)))
+
                 match = re.match('(.*?)//', line)
                 if match:
                     pieces = match.group().split()
-                    if len(pieces) != 9:
-                        continue
-                    (scancode, vk, cap, normal, shift, ctrl,
-                            altgr, shiftaltgr, junk) = pieces
-                    scancode = int(scancode, 16)
-                    mapping = KeyMapping(scancode,
-                            normal, shift, altgr, shiftaltgr)
-                    self.mappings.append(mapping)
+                    if len(pieces) == 9:
+                        self.parse_layout_line(pieces)
+
+    def parse_layout_line(self, pieces):
+        scancode, vk, cap, normal, shift, ctrl, altgr, shiftaltgr, junk = \
+                  pieces
+        scancode = int(scancode, 16)
+        mapping = KeyMapping(scancode, normal, shift, altgr, shiftaltgr)
+        self.mappings.append(mapping)
 
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
     optp = OptionParser(usage=__doc__)
+    optp.add_option('--compose', dest='compose_file', metavar="FILE",
+            help="Write dead key definitions to compose file FILE")
     options, args = optp.parse_args(args)
 
     if len(args) != 1:
@@ -114,6 +180,11 @@ def main(args=None):
     for mapping in layout.mappings:
         print mapping.to_xkb_def_str()
     print "};"
+
+    if options.compose_file is not None:
+        with open(options.compose_file, 'w') as compose_file:
+            for key in layout.deadkeys:
+                print >> compose_file, key.to_xcompose_str()
 
 if __name__ == '__main__':
     sys.exit(main())
