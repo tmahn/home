@@ -9,6 +9,30 @@
 ;     We can set truncate-lines to nil, but then the docstrings wrap into the
 ;     list of symbol names.
 
+(require 'cl)
+(when (not (boundp 'user-init-directory))
+	 (setf user-init-directory "~/.xemacs/"))
+
+(defun Init-safe-require (feat)
+  "Try to require the specified feature. Errors are ignored."
+  (condition-case nil
+      (progn (require feat) t)
+    (error nil)))
+
+;; Macros for the major emacs versions. Inline (if (featurep ...)) forms cause
+;; spurious warnings about undefined variables.
+(defmacro xemacs-only (&rest body)
+  (when (featurep 'xemacs)
+    `(progn ,@body)))
+
+(eval-and-compile
+  (when (string-match "^GNU Emacs" (emacs-version))
+    (pushnew 'fsfmacs features)))
+
+(defmacro fsfmacs-only (&rest body)
+  (when (featurep 'fsfmacs)
+    `(progn ,@body)))
+
 (eval-and-compile
   (mapcar (lambda (user-init-subdirectory)
 	    (add-to-list 'load-path (concat user-init-directory
@@ -23,14 +47,13 @@
 (setq calendar-longitude -74.0)
 (setq calendar-location-name "New York, NY")
 
-(push '("python[0-9.]*" . python-mode) interpreter-mode-alist)
-
 ; utf-8; from UTF-8 Setup Mini HOWTO (http://www.maruko.ca/i18n/)
-(if (not (emacs-version>= 21 5))
-    (require 'un-define)
-      (set-coding-priority-list '(utf-8))
-      (set-coding-category-system 'utf-8 'utf-8))
-(set-default-buffer-file-coding-system 'utf-8)
+(xemacs-only
+  (cond ((emacs-version>= 21 5)
+	 (set-coding-priority-list '(utf-8))
+	 (set-coding-category-system 'utf-8 'utf-8))
+	(t (require 'un-define)))
+  (set-default-buffer-file-coding-system 'utf-8))
 
 (defun define-keys (keymap &rest key-def-plist)
   "Like `define-key', but you can pass in mulitiple pairs of keys and defs."
@@ -38,81 +61,83 @@
     (define-key keymap (pop key-def-plist) (pop key-def-plist)))
   t)
 
-(defadvice load-terminal-library (after run-terminal-library-hooks activate)
-  "We do many custom things with xterm, so we apply this after the default
+(xemacs-only
+  (defadvice load-terminal-library (after run-terminal-library-hooks activate)
+    "We do many custom things with xterm, so we apply this after the default
 xterm.el is sourced."
-  (and (equal (device-type) 'tty)
-       (equal (getenv "TERM") "xterm")
-       (require 'xterm-256-color)
+    (and (equal (device-type) 'tty)
+	 (equal (getenv "TERM") "xterm")
+	 (require 'xterm-256-color)
 
-       (list
+	 (list
 
-      ; We want the frame title to be displayed in an xterm, but there's no
-      ; way to format the frame-title-format from lisp. So we fake it.
-      (require 'xterm-title)
-      (defun xterm-title-update ()
-	"Update xterm window title with the name of the selected buffer."
-	; we don't want to see Minibuffer0 as the title
-	(if (eq (minibuffer-depth) 0)
-	    (xterm-set-window-title
-	     (format "XEmacs: %s%s"
-	             ; Some modes (e.g. Hyper Apropos) put a more descriptive
-	             ; title in modeline-buffer-identification, but have a
-		     ; blah buffer name.
-		     (if (not (eq modeline-buffer-identification
-				  (default-value
-				    'modeline-buffer-identification)))
-			 (mapconcat 'cdr modeline-buffer-identification "")
-		       (buffer-name))
-		     (if (buffer-file-name)
-			 (format " (%s)"
-				 (abbreviate-file-name
-				  (directory-file-name default-directory) 1))
-		       "")))))
-       (xterm-title-mode t)
+	  ;; We want the frame title to be displayed in an xterm, but there's no
+	  ;; way to format the frame-title-format from lisp. So we fake it.
+	  (require 'xterm-title)
+	  (defun xterm-title-update ()
+	    "Update xterm window title with the name of the selected buffer."
+	    ;; we don't want to see Minibuffer0 as the title
+	    (if (eq (minibuffer-depth) 0)
+		(xterm-set-window-title
+		 (format "XEmacs: %s%s"
+	             ;; Some modes (e.g. Hyper Apropos) put a more descriptive
+	             ;; title in modeline-buffer-identification, but
+		     ;; have a blah buffer name.
+			 (if (not (eq modeline-buffer-identification
+				      (default-value
+					'modeline-buffer-identification)))
+			     (mapconcat 'cdr modeline-buffer-identification "")
+			   (buffer-name))
+			 (if (buffer-file-name)
+			     (format " (%s)"
+				     (abbreviate-file-name
+				      (directory-file-name default-directory)
+				      1))
+			   "")))))
+	  (xterm-title-mode t)
 
-       (require 'xt-mouse-xmas)
-       (xterm-mouse-mode t)
+	  (require 'xt-mouse-xmas)
+	  (xterm-mouse-mode t)
 
-       (set-terminal-coding-system 'utf-8)
+	  (set-terminal-coding-system 'utf-8)
 
-       (define-key function-key-map "\e[1;5D" [(control left)])
-       (define-key function-key-map "\e[1;5C" [(control right)])
-       (define-key function-key-map "\e[1;5A" [(control up)])
-       (define-key function-key-map "\e[1;5B" [(control down)])
-       (define-key function-key-map "\e[1;5H" [(control home)])
-       (define-key function-key-map "\e[1;5F" [(control end)])
-       (define-key function-key-map "\e[1;3D" [(meta left)])
-       (define-key function-key-map "\e[1;3C" [(meta right)])
-       (define-key function-key-map "\e[1;3A" [(meta up)])
-       (define-key function-key-map "\e[1;3B" [(meta down)])
-       (define-key function-key-map "\e[15;5~"  [(control f5)])
-       (define-key function-key-map "\e\e[1;3A" [(meta up)])
-       (define-key function-key-map "\e\e[1;3B" [(meta down)])
-       (define-key function-key-map "\e\e[1;3C" [(meta right)])
-       (define-key function-key-map "\e\e[1;3D" [(meta left)])
-       (define-key function-key-map "\e[1;2A" [(shift up)])
-       (define-key function-key-map "\e[1;2B" [(shift down)])
-       (define-key function-key-map "\e[1;2C" [(shift right)])
-       (define-key function-key-map "\e[1;2D" [(shift left)])
+	  (define-key function-key-map "\e[1;5D" [(control left)])
+	  (define-key function-key-map "\e[1;5C" [(control right)])
+	  (define-key function-key-map "\e[1;5A" [(control up)])
+	  (define-key function-key-map "\e[1;5B" [(control down)])
+	  (define-key function-key-map "\e[1;5H" [(control home)])
+	  (define-key function-key-map "\e[1;5F" [(control end)])
+	  (define-key function-key-map "\e[1;3D" [(meta left)])
+	  (define-key function-key-map "\e[1;3C" [(meta right)])
+	  (define-key function-key-map "\e[1;3A" [(meta up)])
+	  (define-key function-key-map "\e[1;3B" [(meta down)])
+	  (define-key function-key-map "\e[15;5~"  [(control f5)])
+	  (define-key function-key-map "\e\e[1;3A" [(meta up)])
+	  (define-key function-key-map "\e\e[1;3B" [(meta down)])
+	  (define-key function-key-map "\e\e[1;3C" [(meta right)])
+	  (define-key function-key-map "\e\e[1;3D" [(meta left)])
+	  (define-key function-key-map "\e[1;2A" [(shift up)])
+	  (define-key function-key-map "\e[1;2B" [(shift down)])
+	  (define-key function-key-map "\e[1;2C" [(shift right)])
+	  (define-key function-key-map "\e[1;2D" [(shift left)])
 
-       (define-keys function-key-map
-	 "\e[1;2H" [(shift home)]
-	 "\e[1;2F" [(shift end)])
+	  (define-keys function-key-map
+	    "\e[1;2H" [(shift home)]
+	    "\e[1;2F" [(shift end)])
 
-       ; We want the key 'Ctrl-+' to be available inside an
-       ; xterm. There's not standard character sequence for it, so we
-       ; make one up, add it here and in the xterm translations
-       ; resource, and hope there are no conflicts.
-       ; With help from
-       ; http://lists.gnu.org/archive/html/help-gnu-emacs/2005-03/msg00102.html
-       (defvar control-key-map (make-sparse-keymap) "Control keymap.")
-       (define-prefix-command 'control-key-map)
-       (define-key function-key-map "\e[[" 'control-key-map)
-       (define-key control-key-map "C+" [(control +)])
-       (define-key control-key-map "c=" [(control =)])
-       (define-key control-key-map "c/" [(control /)])
-       (define-key control-key-map "C/" [(control ?\?)]))
+	  ;; We want the key 'Ctrl-+' to be available inside an
+	  ;; xterm. There's not standard character sequence for it, so
+	  ;; we make one up, add it here and in the xterm translations
+	  ;; resource, and hope there are no conflicts.  With help
+	  ;; from
+	  ;; http://lists.gnu.org/archive/html/help-gnu-emacs/2005-03/msg00102.html
+	  (defvar control-key-map (make-sparse-keymap) "Control keymap.")
+	  (define-prefix-command 'control-key-map)
+	  (define-key function-key-map "\e[[" 'control-key-map)
+	  (define-key control-key-map "C+" [(control +)])
+	  (define-key control-key-map "c=" [(control =)])
+	  (define-key control-key-map "c/" [(control /)])
+	  (define-key control-key-map "C/" [(control ?\?)]))
 ;       ; Attempts to use Ctrl-[Shift]-Digit are raising the error
 ;       ; "keysym char must be printable: ?\^G"
 ;       (let ((n 0))
@@ -120,7 +145,7 @@ xterm.el is sourced."
 ;	   (define-key control-key-map (format "C%d" n)
 ;	     (vector (list 'control n)))
 ;	   (setq n (1+ n))))
-       ))
+       )))
 
 (defun set-frame-background-mode (frame color)
   "Attempt to convey that the FRAME background COLOR is 'light or
@@ -138,8 +163,9 @@ xterm.el is sourced."
 			 (frame-property frame 'custom-properties))))
   (defun get-frame-background-mode (frame)
     frame-background-mode))
-(if (eq (device-type) 'tty)
-    (set-frame-background-mode (selected-frame) 'light))
+(xemacs-only
+  (if (eq (device-type) 'tty)
+      (set-frame-background-mode (selected-frame) 'light)))
 
 (eval-when-compile
   (unless (boundp 'x-color-list-internal-cache))
@@ -171,7 +197,8 @@ Usually this line would not be highlighted."
   ;; The fifth entry (index 4) SYNTAX-BEGIN is set to beginning-of-defun,
   ;; which looks for ‘(’ at the start of the line. Changing the entry to nil
   ;; causes font-lock-mode to parse appropriately instead.
-  (setf (nth 4 (get 'lisp-mode 'font-lock-defaults)) nil))
+  (when (get 'lisp-mode 'font-lock-defaults)
+    (setf (nth 4 (get 'lisp-mode 'font-lock-defaults)) nil)))
 
 (make-face 'font-lock-trailing-whitespace-face
 	   "Used to highlight trailing whitespace.")
@@ -179,13 +206,13 @@ Usually this line would not be highlighted."
 (make-face 'font-lock-todo-face)
 (set-face-background 'font-lock-todo-face "yellow2")
 (set-face-foreground 'font-lock-todo-face "darkblue")
+(setq font-lock-support-mode 'lazy-lock-mode)
 (defun my-font-lock-mode-hook ()
   (font-lock-add-keywords
    nil
    ;; The docstring for font-lock-keywords explains the syntax
-   '(("\\<\\(?:FIXME\\|TODO\\|XXX\\):?\\>" 0 font-lock-todo-face t)
-     ("\\s-+$" 0 font-lock-trailing-whitespace-face t)))
-  (turn-on-lazy-lock))
+   '(("\\<\\(?:FIXME\\|TODO\\|XXX\\):?\\>" 0 'font-lock-todo-face t)
+     ("\\s-+$" 0 'font-lock-trailing-whitespace-face t))))
 (add-hook 'font-lock-mode-hook 'my-font-lock-mode-hook)
 (setq-default lazy-lock-stealth-time nil)
 
@@ -195,8 +222,8 @@ Usually this line would not be highlighted."
 (add-hook 'after-init-hook 'session-initialize)
 (setq-default session-undo-check -1)
 
-(require 'rsz-minibuf)
-(setq-default resize-minibuffer-mode t)
+(when (Init-safe-require 'rsz-minibuf)
+  (setq-default resize-minibuffer-mode t))
 
 (require 'slime)
 (setq-default inferior-lisp-program "sbcl")
@@ -206,18 +233,30 @@ Usually this line would not be highlighted."
 ;; Key bindings and stuff
 ; C-x C-b should activate the buffer-list
 (define-key ctl-x-map [(control b)] 'buffer-menu)
+
 ; Use iswitchb-buffer
 (require 'iswitchb)
 (define-key ctl-x-map [(b)] 'iswitchb-buffer)
+(when (fboundp 'iswitchb-mode)
+  (iswitchb-mode 1))
+
 ; Use redo
-(require 'redo)
-(define-key global-map [(control +)] 'redo)
+(when (Init-safe-require 'redo)
+  (define-key global-map [(control +)] 'redo))
+
 (define-key global-map [f3] 'kill-this-buffer)
 (global-set-key [(meta f4)] 'kill-this-buffer)
-(global-set-key 'home 'beginning-of-line-text)
+(global-set-key [home] 'beginning-of-line-text)
 (global-set-key [(meta Z)] 'zap-up-to-char)
-(define-key help-map [F] 'find-function)
-(define-key help-map [V] 'find-variable)
+(define-key help-map "F" 'find-function)
+(define-key help-map "V" 'find-variable)
+
+(when (not (fboundp 'defun-when-void))
+  ;; Chicken, meet egg.
+  (defmacro defun-when-void (&rest args)
+    "Define a function, just like `defun', unless it’s already defined."
+    `(when (not (fboundp ',(car args)))
+       (defun ,@args))))
 
 ; From eclipse key bindings: Ctrl-/ and Ctrl-Shift-/ to comment and uncomment
 (global-set-key [(control /)] 'comment-region)
@@ -266,23 +305,22 @@ Usually this line would not be highlighted."
   [(shift home)] 'mark-beginning-of-line
   [iso-left-tab] [backtab])
 
-; SML-mode
-(setq sml-program-name "sml")
-(eval-when-compile
-  (require 'sml-mode))
-(defun my-sml-mode-hook ()
-  "Local customizations for SML mode"
-  (setq indent-tabs-mode nil)
+(when (Init-safe-require 'sml-mode)
+  ;;; SML-mode
+  (setq sml-program-name "sml")
+  (defun my-sml-mode-hook ()
+    "Local customizations for SML mode"
+    (setq indent-tabs-mode nil)
 
-  ;; shift-tab should decrease indent
-  (define-key sml-mode-map [backtab] 'sml-back-to-outer-indent)
+    ;; shift-tab should decrease indent
+    (define-key sml-mode-map [backtab] 'sml-back-to-outer-indent)
 
-  ;; Map C-c C-e to run code from the point to the end of the buffer
-  (define-key sml-mode-map
-    (kbd "C-c C-e")
-    '(lambda () "" (interactive)
-       (sml-send-region (point) (point-max)))))
-(add-hook 'sml-mode-hook 'my-sml-mode-hook)
+    ;; Map C-c C-e to run code from the point to the end of the buffer
+    (define-key sml-mode-map
+      (kbd "C-c C-e")
+      '(lambda () "" (interactive)
+         (sml-send-region (point) (point-max)))))
+  (add-hook 'sml-mode-hook 'my-sml-mode-hook))
 
 (defun decrease-line-left-margin ()
   "Run `decrease-left-margin' on the current line."
@@ -309,13 +347,35 @@ Usually this line would not be highlighted."
 	       [(control c) (control h)] #'slime-documentation)))
 ;; Faces
 
-; Cyan is really bright, guys.
-(eval-when-compile
-  (require 'python-mode))
-(add-hook 'python-mode-hook
-	  (lambda()
-	    (set-face-foreground py-builtins-face "steelblue")
-	    (set-face-foreground py-pseudo-keyword-face "mediumpurple")))
+(defun fsfmacs-face-alias (xemacs-name fsfmacs-name)
+  (fsfmacs-only
+    (put xemacs-name 'face-alias fsfmacs-name)))
+
+(fsfmacs-only
+ (defun-when-void remove-face-property (face property)
+   ;; XEmacs uses 'foreground; fsfmacs :foreground.
+   (set-face-attribute face nil
+		       (intern (concat ":" (symbol-name property)))
+		       'unspecified)))
+
+(fsfmacs-face-alias 'text-cursor 'cursor)
+(set-face-background 'text-cursor "blue")
+(set-face-foreground 'text-cursor "white")
+
+;; Python
+(when (Init-safe-require 'python-mode)
+  (push '("python[0-9.]*" . python-mode) interpreter-mode-alist)
+  ;; Cyan is really bright, guys.
+  (add-hook 'python-mode-hook
+	    (lambda()
+	      (set-face-foreground py-builtins-face "steelblue")
+	      (set-face-foreground py-pseudo-keyword-face "mediumpurple"))))
+
+(fsfmacs-only
+  (fsfmacs-face-alias 'isearch-secondary 'lazy-highlight)
+  (setq-default lazy-highlight-cleanup nil
+		lazy-highlight-initial-delay 0
+		lazy-highlight-max-at-a-time 1000))
 
 ; Since we have all the X colors on our tty, let's use them
 (set-face-background 'isearch "paleturquoise")
@@ -323,20 +383,26 @@ Usually this line would not be highlighted."
 (set-face-background 'isearch-secondary "yellow")
 
 (require 'paren)
+(fsfmacs-face-alias 'paren-mismatch 'show-paren-mismatch)
+(fsfmacs-face-alias 'paren-match 'show-paren-match)
 (set-face-background 'paren-mismatch "DeepPink")
 (set-face-background 'paren-match "seagreen3")
-(set-face-highlight-p 'paren-match nil)
 
 ; We want search highlighting to persist after we're done searching
-(defadvice isearch-done (after isearch-highlight-when-done activate)
-  (isearch-highlight-all-update))
+(when (fboundp 'isearch-highlight-all-update)
+  (defadvice isearch-done (after isearch-highlight-when-done activate)
+    (isearch-highlight-all-update)))
 ; but we want to be able to turn it off too
 (defun nohls ()
   "Alias for people used to typing :nohls in vim. Calls
 `isearch-highlight-all-cleanup'."
   (interactive)
-  (isearch-highlight-all-cleanup))
+  (fsfmacs-only
+   (lazy-highlight-cleanup t))
+  (xemacs-only
+   (isearch-highlight-all-cleanup)))
 
+(setq-default flyspell-use-meta-tab nil	)
 (defun my-flyspell-mode-hook ()
   (loop for face in '(flyspell-incorrect-face
 		      flyspell-duplicate-face)
@@ -386,33 +452,30 @@ Usually this line would not be highlighted."
   (interactive)
   (insert-string (format-time-string "%c")))
 
-; Enable scroll wheel
-;(defun up-slightly () (interactive) (scroll-up 1))
-;(defun down-slightly () (interactive) (scroll-down 1))
-;(global-set-key [button-4] 'down-slightly)
-;(global-set-key [button-5] 'up-slightly)
-
 ; more scrolling
 (setq-default scroll-step 1)
 
 ; match parens
-(paren-set-mode 'paren)
+(if (fboundp 'paren-set-mode)
+    (paren-set-mode 'paren))
 
 ; Allow typing 'y' instead of 'yes' to exit
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq-default require-final-newline t)
 
 ; Set background color
-(set-face-background
-  'default (make-color-specifier "rgb:DF/DF/DF"))
+(set-face-background 'default "rgb:DF/DF/DF")
+(if (boundp 'fringe-mode)
+    (set-face-background 'fringe "rgb:DF/DF/DF"))
 
 ; Middle-click should insert at point, not where clicked
 (setq-default mouse-yank-at-point t)
 
 ; Silence warnings about backup-directory-alist when compiling with earlier
 ; versions
-(eval-when-compile (if (not (emacs-version>= 21 5))
-      (defvar backup-directory-alist)))
+(xemacs-only
+ (eval-when-compile (if (not (emacs-version>= 21 5))
+			(defvar backup-directory-alist))))
 ; Don't leave backup files all over
 (if (boundp 'backup-directory-alist)
     (push (cons "." (expand-file-name "~/misc/bak")) backup-directory-alist)
@@ -446,8 +509,8 @@ e.g. (view-emacs-source-file \"simple.el\")"
 		 file
 	       (concat source-directory "/" file))))
 
-(add-hook 'text-mode-hook 'auto-fill-mode)
-(add-hook 'emacs-lisp-mode-hook 'auto-fill-mode)
+(add-hook 'text-mode-hook #'turn-on-auto-fill)
+(add-hook 'emacs-lisp-mode-hook #'turn-on-auto-fill)
 (setq-default default-fill-column 78)
 
 (line-number-mode 1)
@@ -477,36 +540,37 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (defvar minor-mode-alist-ignore
   '(xterm-title-mode font-lock-mode xterm-mouse-mode filladapt-mode
     auto-fill-function))
-(setq-default
- modeline-format
- (list
-  ; XXX since frame-width is evaluated once at the beginning, right
-  ; justification will be lost if the window is resized or a window is
-  ; split horizontally
-  (list (- (frame-width) 4)
-	(cons modeline-modified-extent 'modeline-modified)
-	(cons modeline-buffer-id-extent 'modeline-buffer-identification)
-	" "
-	(let ((mode-string global-mode-string))
-	  (if mode-string (list mode-string " ")))
-	"%[("
-	(cons modeline-minor-mode-extent
-	      ; XXX There has to be a better way to strip out elements from
-	      ; a list
-	      (list "" 'mode-name
-		    (progn
-		      (mapcar
-		       (lambda (mode)
-			 (setq minor-mode-alist
-			       (remassoc mode minor-mode-alist)))
-		       minor-mode-alist-ignore)
+(xemacs-only
+  (setq-default
+   modeline-format
+   (list
+    ;; XXX since frame-width is evaluated once at the beginning, right
+    ;; justification will be lost if the window is resized or a window is
+    ;; split horizontally
+    (list (- (frame-width) 4)
+	  (cons modeline-modified-extent 'modeline-modified)
+	  (cons modeline-buffer-id-extent 'modeline-buffer-identification)
+	  " "
+	  (let ((mode-string global-mode-string))
+	    (if mode-string (list mode-string " ")))
+	  "%[("
+	  (cons modeline-minor-mode-extent
+		;; XXX There has to be a better way to strip out elements from
+		;; a list
+		(list "" 'mode-name
+		      (progn
+			(mapcar
+			 (lambda (mode)
+			   (setq minor-mode-alist
+				 (remassoc mode minor-mode-alist)))
+			 minor-mode-alist-ignore)
 		      minor-mode-alist)))
-	(cons modeline-narrowed-extent "%n")
-	'modeline-process
-	")%] %l,%c"
-	'line-count-string)
-  (list 4 "%p")))
-
+	  (cons modeline-narrowed-extent "%n")
+	  'modeline-process
+	  ")%] %l,%c"
+	  'line-count-string)
+    (list 4 "%p"))))
+  
 ; calendar keybindings
 (add-hook 'calendar-load-hook
           '(lambda ()
@@ -549,39 +613,41 @@ e.g. (view-emacs-source-file \"simple.el\")"
 ;;; makes filling (e.g. using M-q) much much smarter about paragraphs
 ;;; that are indented and/or are set off with semicolons, dashes, etc.
 
-(require 'filladapt)
-(setq-default filladapt-mode t)
-(when (fboundp 'turn-off-filladapt-mode)
-  (add-hook 'c-mode-hook 'turn-off-filladapt-mode)
-  (add-hook 'outline-mode-hook 'turn-off-filladapt-mode))
+(when (Init-safe-require 'filladapt)
+  (setq-default filladapt-mode t)
+  (when (fboundp 'turn-off-filladapt-mode)
+    (add-hook 'c-mode-hook 'turn-off-filladapt-mode)
+    (add-hook 'outline-mode-hook 'turn-off-filladapt-mode))
 
-;;; Mildly disgusting hack to make filladapt not put an indent on subsequent
-;;; lines of lisp docstrings. The filladapt algorithm is, roughly
-;;;   - Break each line into tokens
-;;;   - If the tokens are related in the match-table, and end at the same
-;;;     column index, then the lines are in the same paragraph
-;;; There is code to handle ‘match-many’ tokens like bullets which cause
-;;: subsequent lines to be indented more than the previous ones, but nothing to
-;:; handle cases where the first line has a greater indent. So we use advice.
-;;;
-;;; The `filladapt-debug' function is your friend.
-(pushnew '("^  \"" lisp-docstring) filladapt-token-table)
-(pushnew '(lisp-docstring beginning-of-line) filladapt-token-match-table)
-(pushnew 'lisp-docstring filladapt-token-paragraph-start-table)
-(defadvice filladapt-parse-prefixes (around fudge-lisp-docstring activate)
-  "Return 0 for the column offset of any lisp-docstring."
-  (setf ad-return-value
-	(mapcar #'(lambda (x) (if (eq (first x) 'lisp-docstring)
-				  `(lisp-docstring 0 ,@(cddr x))
-				x))
-		ad-do-it)))
+  ;; Mildly disgusting hack to make filladapt not put an indent on subsequent
+  ;; lines of lisp docstrings. The filladapt algorithm is, roughly
+  ;;   - Break each line into tokens
+  ;;   - If the tokens are related in the match-table, and end at the same
+  ;;     column index, then the lines are in the same paragraph
+  ;; There is code to handle ‘match-many’ tokens like bullets which cause
+  ;: subsequent lines to be indented more than the previous ones, but nothing to
+  :; handle cases where the first line has a greater indent. So we use advice.
+  ;;
+  ;; The `filladapt-debug' function is your friend.
+  (pushnew '("^  \"" lisp-docstring) filladapt-token-table)
+  (pushnew '(lisp-docstring beginning-of-line) filladapt-token-match-table)
+  (pushnew 'lisp-docstring filladapt-token-paragraph-start-table)
+  (defadvice filladapt-parse-prefixes (around fudge-lisp-docstring activate)
+    "Return 0 for the column offset of any lisp-docstring."
+    (setf ad-return-value
+	  (mapcar #'(lambda (x) (if (eq (first x) 'lisp-docstring)
+				    `(lisp-docstring 0 ,@(cddr x))
+				  x))
+		  ad-do-it))))
 
 ; Clean up GUI: no menubar, toolbar, scrollbars, or tabs
-(customize-set-variable 'toolbar-visible-p nil)
-(customize-set-variable 'gutter-buffers-tab-visible-p nil)
-(set-specifier vertical-scrollbar-visible-p nil)
-(set-specifier horizontal-scrollbar-visible-p nil)
-(set-specifier menubar-visible-p nil)
+(xemacs-only
+    (progn
+      (customize-set-variable 'toolbar-visible-p nil)
+      (customize-set-variable 'gutter-buffers-tab-visible-p nil)
+      (set-specifier vertical-scrollbar-visible-p nil)
+      (set-specifier horizontal-scrollbar-visible-p nil)
+      (set-specifier menubar-visible-p nil)))
 
 ; Handle escapes in shell (currently only works well in GUI)
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
@@ -624,6 +690,8 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (global-set-key [(control c) f] 'adn-file-complete)
 
 (setq-default enable-recursive-minibuffers t)
+(setq minibuffer-max-depth nil)
+(put 'set-goal-column 'disabled nil)
 
 (defun byte-recompile-user-init-directory ()
   "Recompile everything in the user init directory that needs it."
@@ -635,7 +703,8 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (global-set-key [(shift f12)] 'byte-recompile-user-init-directory)
 
 ; We have this earlier too, but it gets overridden...
-(set-coding-priority-list '(utf-8))
+(xemacs-only
+  (set-coding-priority-list '(utf-8)))
 
 ;    (global-set-key "%" 'match-paren)
 ;      (defun match-paren (arg)
@@ -708,12 +777,53 @@ index of the line to copy from."
 ;;; I don’t double-space after a period.
 (setq-default sentence-end-double-space nil)
 
-;; But now `fill-region-as-paragraph' adds a space to lines that end with ‘.’.
-;; That function is very crufty, 328 lines, and hasn’t been touched in three
-;; years. So we wrap it with cleanup advice.
-(defadvice fill-region-as-paragraph
-  (around cleanup-after-fill-region-as-paragraph (from &rest extra) activate)
-  ad-do-it
-  (save-excursion
-    (narrow-to-region from (point))
-    (delete-trailing-whitespace)))
+;; This badly breaks fsfmacs; it starts throwing SIGABRTs like crazy.
+(xemacs-only
+  ;; But now `fill-region-as-paragraph' adds a space to lines that end with ‘.’.
+  ;; That function is very crufty, 328 lines, and hasn’t been touched in three
+  ;; years. So we wrap it with cleanup advice.
+  (defadvice fill-region-as-paragraph
+    (around cleanup-after-fill-region-as-paragraph (from &rest extra) activate)
+    ad-do-it
+    (save-excursion
+      ; `fill-region-as-paragraph' leaves the point at the new end of the
+      ; region, and doesn’t touch anything before FROM.
+      (narrow-to-region from (point))
+      (delete-trailing-whitespace))))
+
+(defun left-rotate (list)
+  "Move the first element to the end of the list."
+  (append (rest list) (list (first list))))
+
+;; The heights of balanced windows get messed up if this is run from the
+;; minibuffer, but *any* command -- even C-g -- seems to mess that up.
+(defun rotate-windows ()
+  "Rotate the buffers in the windows in the current frames."
+  (interactive)
+  (let* ((windows (window-list))
+	 (rotated-windows (left-rotate windows))
+	 (window-buffers (mapcar #'window-buffer rotated-windows))
+	 (window-starts (mapcar #'window-start rotated-windows)))
+    (mapcar* #'(lambda (window buffer start)
+		 (set-window-buffer window buffer)
+		 (set-window-start window start))
+	     windows window-buffers window-starts)))
+(define-key global-map [(control x) r] #'rotate-windows)
+
+;;; fsfmacs Compatibility
+(fsfmacs-only
+  (and (equal (getenv "TERM") "xterm")
+       (xterm-mouse-mode t))
+
+  (defun up-slightly () (interactive) (scroll-up 1))
+  (defun down-slightly () (interactive) (scroll-down 1))
+  (global-set-key [mouse-4] 'down-slightly)
+  (global-set-key [mouse-5] 'up-slightly)
+
+  (set-face-font 'default "-misc-fixed-medium-r-*--13-*-*-*-*-*-iso10646-1")
+
+  (define-key global-map "\M-?" #'help-command)
+  (define-key help-map [a] #'apropos))
+
+(unless (fboundp 'show-message-log)
+  (defalias 'show-message-log #'view-echo-area-messages))

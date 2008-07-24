@@ -38,7 +38,8 @@ of colors that the current display can handle."
 	  (setq list (cdr list)))))))
 
 ;; eval-pretty-print-last-sexp
-(require 'cl-extra)
+(if (featurep 'xemacs)
+    (require 'cl-extra))
 (defun eval-prettyprint-last-sexp ()
   "Evaluate sexp before point; print value into current buffer."
   (interactive)
