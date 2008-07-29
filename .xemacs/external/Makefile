@@ -2,6 +2,7 @@ include ~/.Makefile
 
 LIBS := \
        findlib \
+       filladapt \
        session \
        xt-mouse-xmas \
        xterm-frobs \
@@ -34,6 +35,8 @@ xterm-frobs.el: URL := ${FRIEDMAN_URL}/xterm-frobs.el
 
 EMACSWIKI_URL := http://www.emacswiki.org/cgi-bin/wiki/download
 xt-mouse-xmas.el: URL := ${EMACSWIKI_URL}/xt-mouse-xmas.el
+
+filladapt.el: URL := http://www.wonderworks.com/download/filladapt.el
 
 xmas-tty-faces.el: URL := http://nijino.homelinux.net/emacs/xmas-tty-faces.el
 

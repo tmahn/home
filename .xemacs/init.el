@@ -167,18 +167,19 @@ xterm.el is sourced."
   (if (eq (device-type) 'tty)
       (set-frame-background-mode (selected-frame) 'light)))
 
-(eval-when-compile
-  (unless (boundp 'x-color-list-internal-cache))
-      (defvar x-color-list-internal-cache))
-(defun unfudge-x-colors ()
-  "For some reason (color-list) was returning a list of (string) lists instead
-of a list of strings. This fixes that."
-  (when (and (listp (first (color-list)))
-	     (boundp 'x-color-list-internal-cache))
-    (setf x-color-list-internal-cache
-	  (apply #'append x-color-list-internal-cache))))
-(defadvice list-colors-display (before unfudge-x-colors activate)
-  (unfudge-x-colors))
+(when (fboundp 'color-list)
+  (eval-when-compile
+    (unless (boundp 'x-color-list-internal-cache)
+      (defvar x-color-list-internal-cache)))
+  (defun unfudge-x-colors ()
+    "For some reason (color-list) was returning a list of (string) lists
+instead of a list of strings. This fixes that."
+    (when (and (listp (first (color-list)))
+	       (boundp 'x-color-list-internal-cache))
+      (setf x-color-list-internal-cache
+	    (apply #'append x-color-list-internal-cache))))
+  (defadvice list-colors-display (before unfudge-x-colors activate)
+    (unfudge-x-colors)))
 
 (defadvice iconify-frame (before iconify-tty activate)
   "If on a tty, try to iconify with XTerm's iconifiy control sequence."
@@ -211,8 +212,13 @@ Usually this line would not be highlighted."
   (font-lock-add-keywords
    nil
    ;; The docstring for font-lock-keywords explains the syntax
-   '(("\\<\\(?:FIXME\\|TODO\\|XXX\\):?\\>" 0 'font-lock-todo-face t)
-     ("\\s-+$" 0 'font-lock-trailing-whitespace-face t))))
+   `(("\\<\\(?:FIXME\\|TODO\\|XXX\\):?\\>" 0 'font-lock-todo-face t)
+     (,(if (featurep 'xemacs)
+	   "\\s-+$"
+	   ;; When highlighting based on the syntax table in fsfmacs, the end
+	   ;; of every line followed by a new line in text-mode is erroneously
+	   ;; highlighted as containing trailing space.
+	   "[ \t ]+$") 0 'font-lock-trailing-whitespace-face t))))
 (add-hook 'font-lock-mode-hook 'my-font-lock-mode-hook)
 (setq-default lazy-lock-stealth-time nil)
 
@@ -250,6 +256,8 @@ Usually this line would not be highlighted."
 (global-set-key [(meta Z)] 'zap-up-to-char)
 (define-key help-map "F" 'find-function)
 (define-key help-map "V" 'find-variable)
+(define-key global-map (read-kbd-macro "C-v") #'quoted-insert)
+(define-key global-map (read-kbd-macro "RET") #'newline-and-indent)
 
 (when (not (fboundp 'defun-when-void))
   ;; Chicken, meet egg.
@@ -304,6 +312,9 @@ Usually this line would not be highlighted."
   [(shift end)] 'mark-end-of-line
   [(shift home)] 'mark-beginning-of-line
   [iso-left-tab] [backtab])
+;; Line up THEN and ELSE under TEST
+(fsfmacs-only
+ (put 'if 'lisp-indent-function 3))
 
 (when (Init-safe-require 'sml-mode)
   ;;; SML-mode
@@ -361,6 +372,39 @@ Usually this line would not be highlighted."
 (fsfmacs-face-alias 'text-cursor 'cursor)
 (set-face-background 'text-cursor "blue")
 (set-face-foreground 'text-cursor "white")
+
+(fsfmacs-face-alias 'font-lock-doc-string-face 'font-lock-doc-face)
+
+;; Use the font-lock faces from xemacs in fsfmacs. Evaluate this form in
+;; xemacs to get the below code to specify the colours.
+(xemacs-only
+ (mapcar #'(lambda (font)
+	     `(set-face-foreground ',font
+	       ,(color-instance-name
+		 (specifier-instance
+		  (face-foreground font)))))
+	 '(font-lock-builtin-face
+	   font-lock-comment-face
+	   font-lock-constant-face
+	   font-lock-doc-string-face
+	   font-lock-function-name-face
+	   font-lock-keyword-face
+	   font-lock-preprocessor-face
+	   font-lock-string-face
+	   font-lock-type-face
+	   font-lock-variable-name-face)))
+
+(fsfmacs-only
+ (set-face-foreground 'font-lock-builtin-face 		"Purple")
+ (set-face-foreground 'font-lock-comment-face 		"blue4")
+ (set-face-foreground 'font-lock-constant-face 		"DarkMagenta")
+ (set-face-foreground 'font-lock-doc-string-face 	"green4")
+ (set-face-foreground 'font-lock-function-name-face 	"brown4")
+ (set-face-foreground 'font-lock-keyword-face 		"red4")
+ (set-face-foreground 'font-lock-preprocessor-face 	"blue3")
+ (set-face-foreground 'font-lock-string-face 		"green4")
+ (set-face-foreground 'font-lock-type-face 		"steelblue")
+ (set-face-foreground 'font-lock-variable-name-face 	"magenta4"))
 
 ;; Python
 (when (Init-safe-require 'python-mode)
@@ -570,7 +614,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
 	  ")%] %l,%c"
 	  'line-count-string)
     (list 4 "%p"))))
-  
+
 ; calendar keybindings
 (add-hook 'calendar-load-hook
           '(lambda ()
@@ -692,6 +736,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
 (setq-default enable-recursive-minibuffers t)
 (setq minibuffer-max-depth nil)
 (put 'set-goal-column 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
 (defun byte-recompile-user-init-directory ()
   "Recompile everything in the user init directory that needs it."
@@ -808,7 +853,7 @@ index of the line to copy from."
 		 (set-window-buffer window buffer)
 		 (set-window-start window start))
 	     windows window-buffers window-starts)))
-(define-key global-map [(control x) r] #'rotate-windows)
+(define-key global-map (read-kbd-macro "C-x r") #'rotate-windows)
 
 ;;; fsfmacs Compatibility
 (fsfmacs-only
@@ -822,8 +867,41 @@ index of the line to copy from."
 
   (set-face-font 'default "-misc-fixed-medium-r-*--13-*-*-*-*-*-iso10646-1")
 
+  ;; Keys for compatibility
+  (define-key global-map (read-kbd-macro "<M-up>") #'backward-paragraph)
+  (define-key global-map (read-kbd-macro "<M-down>") #'forward-paragraph)
   (define-key global-map "\M-?" #'help-command)
-  (define-key help-map [a] #'apropos))
+  (define-key global-map (read-kbd-macro "<f1> a") #'apropos)
+
+  ;; Alt-Left and -Right should move by sexps.
+  (dolist (mode '(lisp-mode emacs-lisp-mode
+		  lisp-interaction-mode slime-repl-mode))
+    (let ((hook (intern (concat (symbol-name mode) "-hook")))
+	  (map (intern (concat (symbol-name mode) "-map"))))
+      ;; Workaround for absence of closures
+      (eval `(add-hook hook
+		       #'(lambda ()
+			   (define-keys ,map
+			     (read-kbd-macro "<M-left>") #'backward-sexp
+			     (read-kbd-macro "<M-right>") #'forward-sexp)))))))
 
 (unless (fboundp 'show-message-log)
   (defalias 'show-message-log #'view-echo-area-messages))
+
+;; Truncating partial-width windows doesn’t make sense with two
+;; 80-character-wide windows side-by-side in a frame
+(setq-default truncate-partial-width-windows nil)
+
+;; The cc-mode indent stuff is all documented as info files; don’t bother
+;; looking at the source because there isn’t much interesting there. It’s
+;; actually pretty easy to figure out what you want to change: on the line
+;; that isn’t indenting right, M-x c-show-syntactic-information will tell you
+;; what adjustments are being applied, and M-x c-set-offset lets you adjust it
+;; on the fly.
+(defvar my-c-style
+  '((c-offsets-alist	. ((substatement-open . 0)
+			   (arglist-cont-nonempty . +)))))
+(c-add-style "personal" my-c-style)
+(defun my-c-mode-common-hook ()
+  (c-set-style "personal"))
+(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)

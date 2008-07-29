@@ -34,11 +34,12 @@ shell, ignoring all output, and raising an error on command failure."
 	(error "Shell command %S failed with status %s"
 	       (cons command args) ret-value)))))
 
+;; Based on vc-file-tree-walk-internal
 (defun adn-walk-tree-removing-elc-links (path)
   "Walk the filesystem below PATH, deleting all broken and .elc symlinks."
   (if (not (file-directory-p path))
       (when (and (file-symlink-p path)
-		 (or 
+		 (or
 		  (string-equal (file-name-extension file) "elc")
 		  ;; Clean  up broken symlinks too
 		  (not (file-exists-p path))))
