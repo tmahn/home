@@ -247,7 +247,7 @@ class LocalNXAgent:
 
         session_filename = self.session_dir.joinpath('session')
         with open(session_filename, 'w') as session_file:
-            process = subprocess.Popen(['nxagent', '-display',
+            process = subprocess.Popen(['nxagent', '-nokbreset', '-display',
                 'nx/nx,options=%s:%d' % (option_filename, self.display),
                 ':%d' % self.display],
                 stdout=session_file, stderr=subprocess.STDOUT)
