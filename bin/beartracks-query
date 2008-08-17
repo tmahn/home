@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+
+"""Usage: %(prog) [options] SUBJECT NUMBER [SUBJECT NUMBER]...
+
+Query beartracks for information about courses."""
+
+import re
+import sys
+from blindrut.itertools import grouper
+from BeautifulSoup import BeautifulSoup, Tag
+from mechanize import Browser
+from optparse import OptionParser
+
+def search_class(term, subject, course_number):
+    br = Browser()
+
+    br.open('https://www.beartracks.ualberta.ca/servlets/iclientservlet/uahebprd/?ICType=Panel&Menu=SA_LEARNER_SERVICES&Market=GBL&PanelGroupName=CLASS_SEARCH')
+
+    # Term search
+    br.select_form('main')
+    br.form.set_all_readonly(False)
+    br['ZSS_DERIVED_STRM'] = [term]
+    br['ICAction'] = 'CLASS_SRCH_BASIC'
+    br.submit()
+
+    # Class search
+    br.select_form('main')
+    br.form.set_all_readonly(False)
+    br['ZSS_DERIVED_SUBJECT_SRCH'] = [subject]
+    br['CLASS_SRCH_WRK2_CATALOG_NBR'] = str(course_number)
+    br['CLASS_SRCH_WRK2_OPEN_ONLY$chk'] = ''
+    br['ICAction'] = 'CLASS_SRCH_WRK2_CLASS_SRCH_PB'
+    br.submit()
+
+    #
+    soup = BeautifulSoup(br.response().get_data())
+    listing_labels = soup.findAll('label', text=re.compile('Class.*Nbr'))
+    assert listing_labels
+    found = False
+
+    for label in listing_labels:
+        listing = label.findParent('tr')
+        while listing:
+            if (isinstance(listing, Tag)
+                    and listing.findAll('div', text=subject)):
+
+                process_listing(listing)
+
+                found = True
+                break
+            listing = listing.nextSibling
+        else:
+            raise "Course not found."
+
+def process_listing(listing):
+    print "\t".join("\t".join(d.contents) for d in listing.findAll('div'))
+
+if __name__ == '__main__':
+    optp = OptionParser(usage=__doc__)
+    optp.add_option('-t', '--term', dest='term', default='1250',
+        help='Term number. 1250 is Fall 2008, 1260 is Winter 2009.')
+
+    options, args = optp.parse_args()
+    if (not args) or (len(args) % 2 != 0):
+        optp.print_help()
+
+    for subject, course_number in grouper(2, args):
+        search_class(options.term, subject, course_number)
