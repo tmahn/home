@@ -173,6 +173,8 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
 alias ls='ls -AF --color=auto'
+alias import="echo \"You thought you were in a python shell, didn't you?\"
+              false"
 
 # builtins
 alias cd=cd_func
@@ -207,12 +209,20 @@ fi
 export CONFIG_SITE="$HOME/.config.site"
 export PERLDOC_PAGER="less -fr"
 export RI="--format bs"
-export CFLAGS='-Wall'
+# -Warray-bounds needs -ftree-vrp, -Wundef needs -01, and -rdynamic gives
+# better backtraces.
+export CFLAGS_COMMON="-ansi -g3 -O1 -pedantic -Wextra -Wall -Wformat=2 \
+-Wfloat-equal -Wmissing-include-dirs -Warray-bounds -ftree-vrp -Wundef \
+-Wshadow -rdynamic"
+ export CFLAGS="${CFLAGS_COMMON} -Wc++-compat"
+export CXXFLAGS="${CFLAGS_COMMON} \
+-Wold-style-cast -Woverloaded-virtual -Weffc++ -Wabi"
 export LDFLAGS='-lm'
 export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
 export LC_ALL=en_CA.utf-8 # C
+export SSL_CERT_DIR=~/.ssl
 # nroff (a shell script) only looks for UTF-8 (all uppercase) in LC_ALL,
 # and then looks for utf-8 in LESSCHARSET
 export LESSCHARSET=utf-8
