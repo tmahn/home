@@ -412,6 +412,7 @@ for the local NX proxy endpoint.""")
             try:
                 proxy_options = {
                     'cookie': cookie,
+                    'kill': proc.pid,
                 }
 
                 for optstr in options.local_options:
