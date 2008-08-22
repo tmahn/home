@@ -1,0 +1,2 @@
+history -n
+history -a

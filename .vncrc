@@ -2,3 +2,4 @@
 
 $geometry = "1273x745";
 $depth = 24;
+$pixelformat = "RGB888";

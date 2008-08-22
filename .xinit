@@ -4,5 +4,11 @@ if [ -d "${FONT_DIR}" ]; then
 fi
 
 xrdb ~/.Xresources
+xsetroot -solid grey
 xmodmap ~/.Xmodmap
+if xmodmap -pke |grep -q Terminate_Server; then
+    xmessage "The Terminate_Server key is bound. You will regret that."
+    exit 1
+fi
+
 make -C ~/.xkb install
