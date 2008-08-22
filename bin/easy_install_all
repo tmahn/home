@@ -40,6 +40,7 @@ easy_install \
     iso8601 \
     kid \
     logilab.pylintinstaller \
+    mechanize \
     path \
     psyco \
     py \

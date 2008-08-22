@@ -22,6 +22,7 @@
 xterm.vt100.loginShell: true
 xterm.vt100.saveLines: 10000
 XTerm*scrollBar: false
+XTerm*termName: xterm-256color
 
 /* True-type font support */
 XTerm*VT100.renderFont: false

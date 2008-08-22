@@ -2,6 +2,16 @@
 ; Add every color xterm supports as "xtermcolor%d", and every X color from
 ; x-color-alist as its nearest xterm equivalent.
 
+;; Sun Aug 17 19:47:34 MDT 2008
+;; I looked into cleaning this up but don’t have time to do anything right
+;; now, so here are some notes for the future:
+;; - Setting the resource “XTerm*termName: xterm-256color” makes fsfmacs
+;;   figure out about all 256 colors on its own. Colors 16 through 255 are
+;;   known as ‘color-%d’.
+;; - For the purposes of mapping those colors to the nearest X colors, fsfmacs
+;;   includes rgb.txt (“(expand-file-name "rgb.txt" data-directory)”) while
+;;   xemacs has the function `x-color-list-internal'.
+
 (eval-when-compile
   (require 'fsf-local)
   (require 'x-color-alist)

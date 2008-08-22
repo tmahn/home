@@ -413,7 +413,11 @@ Usually this line would not be highlighted."
   (add-hook 'python-mode-hook
 	    (lambda()
 	      (set-face-foreground py-builtins-face "steelblue")
-	      (set-face-foreground py-pseudo-keyword-face "mediumpurple"))))
+	      (set-face-foreground py-pseudo-keyword-face "mediumpurple")))
+  (add-hook 'inferior-python-mode-hook
+	    (lambda ()
+	      (define-key inferior-python-mode-map
+		(read-kbd-macro "TAB") #'python-complete-symbol))))
 
 (fsfmacs-only
   (fsfmacs-face-alias 'isearch-secondary 'lazy-highlight)
@@ -508,7 +512,8 @@ Usually this line would not be highlighted."
 (setq-default require-final-newline t)
 
 ; Set background color
-(set-face-background 'default "rgb:DF/DF/DF")
+(when (display-graphic-p)
+  (set-face-background 'default "rgb:DF/DF/DF"))
 (if (boundp 'fringe-mode)
     (set-face-background 'fringe "rgb:DF/DF/DF"))
 
@@ -673,7 +678,7 @@ e.g. (view-emacs-source-file \"simple.el\")"
   :; handle cases where the first line has a greater indent. So we use advice.
   ;;
   ;; The `filladapt-debug' function is your friend.
-  (pushnew '("^  \"" lisp-docstring) filladapt-token-table)
+  (pushnew '("^  \"" lisp-docstring) (rest filladapt-token-table))
   (pushnew '(lisp-docstring beginning-of-line) filladapt-token-match-table)
   (pushnew 'lisp-docstring filladapt-token-paragraph-start-table)
   (defadvice filladapt-parse-prefixes (around fudge-lisp-docstring activate)
@@ -682,7 +687,20 @@ e.g. (view-emacs-source-file \"simple.el\")"
 	  (mapcar #'(lambda (x) (if (eq (first x) 'lisp-docstring)
 				    `(lisp-docstring 0 ,@(cddr x))
 				  x))
-		  ad-do-it))))
+		  ad-do-it)))
+
+  ;; Adaptive filling of multi-line /* c comments */
+  ;; TODO: electric-newline that copies fill-prefix (the function
+  ;;       filladapt-adapt will dynamically set fill-prefix)
+  (pushnew '("/\\* " c-comment-start)
+	   ;; This keeps beginning-of-line as the first entry
+	   (rest filladapt-token-table))
+  (pushnew '(" \\* " c-comment-continue) (rest filladapt-token-table))
+  (pushnew '(c-comment-continue c-comment-start c-comment-continue)
+	   filladapt-token-match-table)
+  (pushnew 'c-comment-start filladapt-token-paragraph-start-table)
+  (pushnew '(c-comment-start . exact) filladapt-token-conversion-table)
+  (pushnew '(c-comment-continue . exact) filladapt-token-conversion-table))
 
 ; Clean up GUI: no menubar, toolbar, scrollbars, or tabs
 (xemacs-only
@@ -865,7 +883,8 @@ index of the line to copy from."
   (global-set-key [mouse-4] 'down-slightly)
   (global-set-key [mouse-5] 'up-slightly)
 
-  (set-face-font 'default "-misc-fixed-medium-r-*--13-*-*-*-*-*-iso10646-1")
+  (when (display-graphic-p)
+    (set-face-font 'default "6x13"))
 
   ;; Keys for compatibility
   (define-key global-map (read-kbd-macro "<M-up>") #'backward-paragraph)
@@ -905,3 +924,34 @@ index of the line to copy from."
 (defun my-c-mode-common-hook ()
   (c-set-style "personal"))
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+
+
+;;; Automatic pretty-printing in lisp-interaction-mode
+
+(xemacs-only
+ (require 'cl-extra)
+ (defun adn-looking-back-at (exp)
+   (save-excursion
+     (backward-char 1)
+     (looking-at exp)))
+
+ (defun eval-prettyprint-last-sexp ()
+   "Evaluate sexp before point; pretty-print value into current buffer."
+   (interactive)
+   (unless (adn-looking-back-at "\n")
+     (insert "\n"))
+   (let ((opoint (point)))
+     (pp-eval-last-sexp t)
+     (insert "\n")
+     (indent-region opoint (point) nil))))
+
+(fsfmacs-only
+ (load "cl-extra") 			; cl-extra.el doesn’t provide
+ (defun eval-prettyprint-last-sexp ()
+   "Evaluate sexp before point; pretty-print value into current buffer."
+   (interactive)
+   (cl-prettyprint (eval (preceding-sexp)))
+   (forward-char)))
+
+(define-key lisp-interaction-mode-map (read-kbd-macro "C-j")
+  #'eval-prettyprint-last-sexp)

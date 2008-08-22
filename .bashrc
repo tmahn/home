@@ -211,7 +211,7 @@ export PERLDOC_PAGER="less -fr"
 export RI="--format bs"
 # -Warray-bounds needs -ftree-vrp, -Wundef needs -01, and -rdynamic gives
 # better backtraces.
-export CFLAGS_COMMON="-ansi -g3 -O1 -pedantic -Wextra -Wall -Wformat=2 \
+CFLAGS_COMMON="-ansi -g3 -O1 -pedantic -Wextra -Wall -Wformat=2 \
 -Wfloat-equal -Wmissing-include-dirs -Warray-bounds -ftree-vrp -Wundef \
 -Wshadow -rdynamic"
  export CFLAGS="${CFLAGS_COMMON} -Wc++-compat"
@@ -286,15 +286,15 @@ function _bashrc_linux_style_prompt() {
         *) PS1='\u@'"${PS1}" ;;
     esac
     # Xterm titles
-    if [ "x${TERM}" = "xxterm" ]
-    then
+    case "${TERM}" in
+        xterm*)
         PS1="\[\e[94m\]${PS1}\[\e[0m\]\[\033]0;"
         PS1="${PS1}\$(date \"+%b %e %H:%M\") ${THEHOST}: \w\007\]"
         if [ "x${LOGNAME}" = "xroot" ]
         then
             PS1="\[\e[48;5;201m\]${PS1}\[\e[0m\] "
-        fi
-    fi
+        fi;;
+    esac
 }
 
 function _bashrc_clean_path() {
@@ -334,7 +334,11 @@ HISTFILE=~/.bash_history
 HISTSIZE=10000000
 HISTFILESIZE=${HISTSIZE}
 HISTIGNORE=ignorespace
-export -n HISTFILE HISTSIZE HISTFILESIZE HISTIGNORE
+HISTTIMEFORMAT="%s "
+# I type exclamation marks in strings more often than I use the ! history
+# command, so place the history command on something unlikely to be typed.
+histchars=$'\077^#'
+export -n HISTFILE HISTSIZE HISTFILESIZE HISTIGNORE HISTTIMEFORMAT
 
 # Needs to be last command in file
 #

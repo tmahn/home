@@ -42,6 +42,7 @@ set background=light
 
 " Very bright search highlighting
 highlight Search ctermbg=190
+highlight Visual ctermbg=183
 " Turn on 256 colours for xterms
 if &term == "xterm"
     set t_Co=256 t_Sf=<Esc>[38;5;%p1%m t_Sb=<Esc>[48;5;%p1%m

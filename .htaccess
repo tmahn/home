@@ -13,3 +13,5 @@ AddType audio/mp4           .m4a
 <Files ~ "\.(py|pl|txt)$">
 SetHandler default-handler
 </Files>
+
+Options +SymlinksIfOwnerMatch

@@ -1,5 +1,7 @@
 SHELL = /bin/bash
 
+XKBCOMPFLAGS += -I.
+
 xkbmap.xkm: neitsch.xkbsym
 
 install: xkbmap.xkm
