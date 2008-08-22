@@ -1,0 +1,8 @@
+FONT_DIR=~/.fonts
+if [ -d "${FONT_DIR}" ]; then
+    xset +fp "${FONT_DIR}"
+fi
+
+xrdb ~/.Xresources
+xmodmap ~/.Xmodmap
+make -C ~/.xkb install

@@ -3,9 +3,14 @@
 set -eu
 
 PATH="/bin:/usr/X11R6/bin:${PATH}"
+export PATH
 
+DISPLAY=:0
+# Avoid race: the cookie has to be in place before starting the server
+xauth generate "${DISPLAY}" .
 run /usr/X11R6/bin/Xwin_GL \
-    -multiwindow -emulate3buttons -unixkill \
+    -auth ~/.Xauthority \
+    -multiwindow -clipboard -emulate3buttons -unixkill \
     -screen 0 2432x1064 &
 
 MAX_CHECKS=50
@@ -17,10 +22,6 @@ do
     sleep 0.1
 done
 
-export DISPLAY=:0
+export DISPLAY
 
-FONT_DIR=~/.fonts
-if [ -d "${FONT_DIR}" ]; then
-    xset +fp "${FONT_DIR}"
-fi
-xrdb ~/.Xresources
+. ~/.xinit

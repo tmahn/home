@@ -9,11 +9,13 @@ if ! [ "${EASY_INSTALL_HEADER:0:2}" = "#!" ]; then
     echo "${PROG}: RTFSRC" 1>&2
     exit 1
 fi
-PYTHON_VERSION="$(${EASY_INSTALL_HEADER#??} -c 'import sys; print sys.version[:3]')"
+PYTHON_VERSION="$(${EASY_INSTALL_HEADER#??} -c 'import sys; print sys.version[:3]' | tr -d '\r')"
 
 mkdir -p "${HOME}/opt/python${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/site-packages"
 mkdir -p "${HOME}/opt/python${PYTHON_VERSION}/src/python${PYTHON_VERSION}/site-packages"
 mkdir -p "${HOME}/opt/python${PYTHON_VERSION}/bin"
+
+set +u
 
 easy_install \
     -f "
@@ -45,7 +47,6 @@ easy_install \
     psyco \
     py \
     pylibacl \
-    pylint \
     pymarc \
     pytz \
     simplejson \

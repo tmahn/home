@@ -121,9 +121,9 @@ XTerm*VT100.translations: #override \
         "$ t":                  set-altscreen(toggle) \n\
         "t":                    insert() \n\
         "$ v":                  insert-selection(PRIMARY) \n\
-        "$ d":                  spawn-new-terminal() \n\
+     /* "$ d":                  spawn-new-terminal() \n\ */ \
         "$ f":                  hard-reset() \n\
-        "$ /":                  dabbrev-expand() \n\
+     /* "$ /":                  dabbrev-expand() \n\ */ \
         "v":                    insert() \n\
         "d":                    insert() \n\
         "f":                    insert() \n\
