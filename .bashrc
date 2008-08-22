@@ -228,6 +228,8 @@ export SSL_CERT_DIR=~/.ssl
 export LESSCHARSET=utf-8
 if [ "$OSTYPE" = "cygwin" ]; then
     export SMLNJ_CYGWIN_RUNTIME=true
+    export TEMP=/tmp
+    PATH="${HOME}/bin:${HOME}/usr/bin:${PATH}"
 fi
 
 # Personal time zone
@@ -337,7 +339,7 @@ HISTIGNORE=ignorespace
 HISTTIMEFORMAT="%s "
 # I type exclamation marks in strings more often than I use the ! history
 # command, so place the history command on something unlikely to be typed.
-histchars=$'\077^#'
+histchars=$'\177^#'
 export -n HISTFILE HISTSIZE HISTFILESIZE HISTIGNORE HISTTIMEFORMAT
 
 # Needs to be last command in file
