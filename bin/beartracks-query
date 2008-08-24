@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: UTF-8
 
 """Usage: %(prog) [options] SUBJECT NUMBER [SUBJECT NUMBER]...
 
@@ -11,6 +12,31 @@ from BeautifulSoup import BeautifulSoup, Tag
 from mechanize import Browser
 from optparse import OptionParser
 
+def set_closest_match(form, control_name, label):
+    """
+    Set the select control in the given form to the closest match for label.
+    This doesn’t require every token in label to match; for example
+    querying for ‘Winter 2010’ could select ‘Winter 2009’.
+    """
+
+    control = form.find_control(control_name)
+    label_tokens = frozenset(label.split())
+    best_match = None
+    best_match_count = 0
+    # Take the first match with the most tokens in common
+    for item in control.items:
+        item_tokens = frozenset(item.attrs['label'].split())
+        match_count = len(label_tokens.intersection(item_tokens))
+        if match_count > best_match_count:
+            best_match_count = match_count
+            best_match = item.attrs['value']
+    if best_match is None:
+        raise Exception("Couldn’t reasonably interpret "
+        "%s as any of %s while setting %s." % (repr(label),
+            ", ".join(repr(item.attrs['label']) for item in control.items),
+            control_name))
+    form[control_name] = [best_match]
+
 def search_class(term, subject, course_number):
     br = Browser()
 
@@ -19,7 +45,7 @@ def search_class(term, subject, course_number):
     # Term search
     br.select_form('main')
     br.form.set_all_readonly(False)
-    br['ZSS_DERIVED_STRM'] = [term]
+    set_closest_match(br.form, 'ZSS_DERIVED_STRM', term)
     br['ICAction'] = 'CLASS_SRCH_BASIC'
     br.submit()
 
@@ -32,33 +58,63 @@ def search_class(term, subject, course_number):
     br['ICAction'] = 'CLASS_SRCH_WRK2_CLASS_SRCH_PB'
     br.submit()
 
-    #
-    soup = BeautifulSoup(br.response().get_data())
-    listing_labels = soup.findAll('label', text=re.compile('Class.*Nbr'))
-    assert listing_labels
-    found = False
+    def find_first_tr_containing_divtext_after_tr_with_label(
+            soup, divtext, label, action):
+        listing_labels = soup.findAll('label', text=label)
+        assert listing_labels
 
-    for label in listing_labels:
-        listing = label.findParent('tr')
-        while listing:
-            if (isinstance(listing, Tag)
-                    and listing.findAll('div', text=subject)):
+        for label in listing_labels:
+            listing = label.findParent('tr')
+            while listing:
+                if (isinstance(listing, Tag)
+                        and listing.findAll('div', text=divtext)):
+                    action(listing)
+                    break
+                listing = listing.nextSibling
+            else:
+                raise "Course not found."
 
-                process_listing(listing)
+    class CourseInfo(object):
+        """
+        We make two passes over the returned HTML, collecting information
+        for each section of each course. Since python doesn’t have
+        closures, we use a class instead.
+        """
 
-                found = True
-                break
-            listing = listing.nextSibling
-        else:
-            raise "Course not found."
+        def __init__(self):
+            self.course_info = []
+            self.schedule_info = []
 
-def process_listing(listing):
-    print "\t".join("\t".join(d.contents) for d in listing.findAll('div'))
+        def munge_tr(self, tr):
+            return "\t".join("\t".join(d.contents) for d in tr.findAll('div'))
+
+        def add_course_info(self, tr):
+            self.course_info.append(self.munge_tr(tr))
+
+        def add_schedule_info(self, tr):
+            self.schedule_info.append(self.munge_tr(tr))
+
+        def __str__(self):
+            return "\n".join("%s, %s" % (c, s)
+                    for c, s in zip(self.course_info, self.schedule_info))
+
+    courseinfo = CourseInfo()
+
+    soup = BeautifulSoup(br.response().get_data(),
+            # Turn &nbsp; into ‘ ’
+            convertEntities=BeautifulSoup.HTML_ENTITIES)
+    find_first_tr_containing_divtext_after_tr_with_label(
+            soup, divtext=subject, label=re.compile('Class.*Nbr'),
+            action=courseinfo.add_course_info)
+    find_first_tr_containing_divtext_after_tr_with_label(
+            soup, divtext=re.compile('AM|PM'), label='Time:',
+            action=courseinfo.add_schedule_info)
+    print courseinfo
 
 if __name__ == '__main__':
     optp = OptionParser(usage=__doc__)
-    optp.add_option('-t', '--term', dest='term', default='1250',
-        help='Term number. 1250 is Fall 2008, 1260 is Winter 2009.')
+    optp.add_option('-t', '--term', dest='term', default='Fall 2008',
+        help='Term, defaults to "%default"')
 
     options, args = optp.parse_args()
     if (not args) or (len(args) % 2 != 0):
