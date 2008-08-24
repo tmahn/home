@@ -159,6 +159,7 @@ from path import path
 import pwd
 import re
 import signal
+import socket
 import subprocess
 import sys
 import time
@@ -188,9 +189,11 @@ def split_option_str(optionstr):
     return dict(opt.split('=', 1) for opt in options)
 
 class LocalNXAgent:
-    def __init__(self, display, extra_options=[]):
+    def __init__(self, display, extra_options=[], name=None):
         self.display = display
         self.session_dir = self._get_session_dir()
+        self.name = (name if name is not None
+                else "%s:%d" % (socket.getfqdn(), display))
         self.options = {
             'accept': 'localhost',
             'listen': self.port_from_display(self.display),
@@ -248,6 +251,7 @@ class LocalNXAgent:
         session_filename = self.session_dir.joinpath('session')
         with open(session_filename, 'w') as session_file:
             process = subprocess.Popen(['nxagent', '-nokbreset',
+                '-name', self.name,
                 '-auth', os.path.expanduser('~/.Xauthority'),
                 '-display',
                 'nx/nx,options=%s:%d' % (option_filename, self.display),
@@ -336,6 +340,7 @@ for the local NX proxy endpoint.""")
     optp.add_option('--remote-viewnx-cmd', dest='viewnx_cmd', default='viewnx',
             help="Location of viewnx if not on $PATH", metavar='COMMAND')
     optp.add_option('-S', '--server', action='store_true', dest='server_mode')
+    optp.add_option('--name', dest='name', default=None, help="Window name")
     (options, args) = optp.parse_args(args)
 
     if len(args) != 1:
@@ -347,7 +352,8 @@ for the local NX proxy endpoint.""")
     display = int(display)
 
     if options.server_mode:
-        agent = LocalNXAgent(display, options.remote_options)
+        agent = LocalNXAgent(display, options.remote_options,
+                name=options.name)
         agent.listen()
         print 'Cookie:', agent.cookie
         if agent.cookie == FAILURE_SENTINEL:
@@ -380,7 +386,9 @@ for the local NX proxy endpoint.""")
         try:
             proc.stdin.write('set -e\n')
 
-            cmd = [options.viewnx_cmd, '-S', display_spec]
+            cmd = [options.viewnx_cmd, '--server', display_spec]
+            if options.name is not None:
+                    cmd += ['--name', options.name]
             for opt in options.remote_options:
                 cmd += ['--remote-options', opt]
 
