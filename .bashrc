@@ -9,6 +9,8 @@ set +o allexport
 # print a warning. Run bash --login -xv to get a dump.
 readonly _HOME_BASHRC_ALREADY_READ=1
 
+cd "${HOME}"
+
 defaultsdir=/usr/local/lib/initfiles
 if [ -r "$defaultsdir/system-bashrc" ]; then
    source "$defaultsdir/system-bashrc"
@@ -324,6 +326,9 @@ if [ "${OSTYPE#linux}" != "${OSTYPE}" ]; then
 fi
 if [ -e "${HOME}/ts" ]; then
     _handle_site ts
+fi
+if [ -e "${HOME}/cs.ualberta.ca" ]; then
+    _handle_site cs.ualberta.ca
 fi
 
 _bashrc_clean_path PATH

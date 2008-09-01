@@ -1,3 +1,7 @@
 . "${HOME}/.xinit"
 
-exec /opt/kde3/bin/startkde
+STARTKDE="$(type -p startkde)"
+if [ -z "${STARTKDE}" ]; then
+    STARTKDE=/opt/kde3/bin/startkde
+fi
+exec "${STARTKDE}"

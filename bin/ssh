@@ -16,7 +16,7 @@ if ssh_agent_is_missing; then
 fi
 
 # Start an ssh agent if there's no working one
-if ssh_agent_is_missing; then
+if ssh_agent_is_missing && [ -f "${HOME}/.ssh/id_rsa" ]; then
     # Kill the old one
     if [ -z "$SSH_AUTH_PID" ] && [ -r "$MY_SSH_AUTH_PID_FILE" ]; then
         SSH_AUTH_PID="$(<${MY_SSH_AUTH_PID_FILE})"
@@ -39,4 +39,8 @@ if ssh_agent_is_missing; then
     ssh-add
 fi
 
-/usr/bin/ssh "$@"
+SSH_CMD="${HOME}/usr/arch/${ARCH}/bin/ssh"
+if ! [ -x "${SSH_CMD}" ]; then
+    SSH_CMD="/usr/bin/ssh"
+fi
+exec "${SSH_CMD}" "$@"

@@ -1,3 +1,5 @@
+.DELETE_ON_ERROR:
+
 SHELL = /bin/bash
 
 XKBCOMPFLAGS += -I.
