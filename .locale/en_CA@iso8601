@@ -1,0 +1,92 @@
+escape_char /
+comment_char %
+
+LC_IDENTIFICATION
+% Locale based on en_CA, but with LC_TIME using ISO 8601 date format. Some
+% suggest using en_DK, but that uses ambiguous time zone abbreviations.
+%
+category  "en_CA@iso8601";LC_IDENTIFICATION
+category  "en_CA@iso8601";LC_CTYPE
+category  "en_CA@iso8601";LC_COLLATE
+category  "en_CA@iso8601";LC_TIME
+category  "en_CA@iso8601";LC_NUMERIC
+category  "en_CA@iso8601";LC_MONETARY
+category  "en_CA@iso8601";LC_MESSAGES
+category  "en_CA@iso8601";LC_PAPER
+category  "en_CA@iso8601";LC_NAME
+category  "en_CA@iso8601";LC_ADDRESS
+category  "en_CA@iso8601";LC_TELEPHONE
+
+END LC_IDENTIFICATION
+
+LC_COLLATE
+copy "en_CA"
+END LC_COLLATE
+
+LC_CTYPE
+copy "en_CA"
+END LC_CTYPE
+
+LC_MONETARY
+copy "en_CA"
+END LC_MONETARY
+
+LC_NUMERIC
+copy "en_CA"
+END LC_NUMERIC
+
+LC_TIME
+abday    "Sun";"Mon";"Tue";"Wed";"Thu";"Fri";"Sat"
+day      "Sunday";/
+         "Monday";/
+         "Tuesday";/
+         "Wednesday";/
+         "Thursday";/
+         "Friday";/
+         "Saturday"
+abmon    "Jan";"Feb";"Mar";"Apr";"May";"Jun";/
+         "Jul";"Aug";"Sep";"Oct";"Nov";"Dec"
+mon      "January";/
+         "February";/
+         "March";/
+         "April";/
+         "May";/
+         "June";/
+         "July";/
+         "August";/
+         "September";/
+         "October";/
+         "November";/
+         "December"
+% date formats following ISO 8601
+d_t_fmt  "%Y-%m-%dT%T %z"
+d_fmt    "%Y-%m-%d"
+t_fmt    "%T"
+am_pm    "AM";"PM"
+t_fmt_ampm  "%I:%M:%S %p"
+date_fmt	"%a %b %e %H:%M:%S %z %Y"
+END LC_TIME
+
+LC_MESSAGES
+copy "en_CA"
+END LC_MESSAGES
+
+LC_PAPER
+copy "en_CA"
+END LC_PAPER
+
+LC_TELEPHONE
+copy "en_CA"
+END LC_TELEPHONE
+
+LC_MEASUREMENT
+copy "en_CA"
+END LC_MEASUREMENT
+
+LC_NAME
+copy "en_CA"
+END LC_NAME
+
+LC_ADDRESS
+copy "en_CA"
+END LC_ADDRESS

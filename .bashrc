@@ -223,7 +223,12 @@ export LDFLAGS='-lm'
 export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
-export LC_ALL=en_CA.utf-8 # C
+unset LC_ALL
+export LANG=en_CA.UTF-8
+if [ -f ~/.locale/en_CA.UTF-8@iso8601/LC_TIME ]; then
+    export LOCPATH=~/.locale
+    export LC_TIME=en_CA.UTF-8@iso8601
+fi
 export SSL_CERT_DIR=~/.ssl
 # nroff (a shell script) only looks for UTF-8 (all uppercase) in LC_ALL,
 # and then looks for utf-8 in LESSCHARSET
