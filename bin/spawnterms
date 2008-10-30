@@ -15,6 +15,7 @@ if xdpyinfo |grep "^vendor string" |grep -q Cygwin; then
     done
 else
     HEIGHT="$(xwininfo -root -stats |awk '/Height:/ {print $2}')"
+    WIDTH="$(xwininfo -root -stats |awk '/Width:/ {print $2}')"
 
     if (( HEIGHT < 900 )); then
         LINES=25
@@ -23,7 +24,13 @@ else
         LINES=35
         YOFF2=+479
     fi
-    for X in 150 638; do
+    X_OFFSETS=(150 638)
+    if (( WIDTH > 80 * 6 * 3 )); then
+        LINES=36
+        YOFF2=+490
+        X_OFFSETS=(0 488 976)
+    fi
+    for X in "${X_OFFSETS[@]}"; do
         for Y in "" "${YOFF2}"; do
             xterm -geometry "80x${LINES}+${X}${Y}" &
         done

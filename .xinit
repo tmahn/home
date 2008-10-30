@@ -3,6 +3,7 @@ if [ -d "${FONT_DIR}" ]; then
     xset +fp "${FONT_DIR}"
 fi
 
+xset b off # shitcan the freaking bell
 xrdb ~/.Xresources
 xsetroot -solid grey
 xmodmap ~/.Xmodmap

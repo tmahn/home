@@ -16,6 +16,7 @@ import random
 import re
 # The binding is done in ~/.inputrc
 import rlcompleter
+import shutil
 import socket
 import StringIO
 import struct

@@ -252,7 +252,14 @@ Usually this line would not be highlighted."
 
 (define-key global-map [f3] 'kill-this-buffer)
 (global-set-key [(meta f4)] 'kill-this-buffer)
-(global-set-key [home] 'beginning-of-line-text)
+
+(defun smart-beginning-of-line ()
+  (interactive)
+  (let ((oldpos (point)))
+    (back-to-indentation)
+    (when (= oldpos (point))
+         (beginning-of-line))))
+(global-set-key [home] #'smart-beginning-of-line)
 (global-set-key [(meta Z)] 'zap-up-to-char)
 (define-key help-map "F" 'find-function)
 (define-key help-map "V" 'find-variable)
