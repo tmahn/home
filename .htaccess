@@ -1,6 +1,6 @@
 # Global apache configuration directives
 
-AddDefaultCharset utf-8
+AddDefaultCharset UTF-8
 
 IndexOptions FancyIndexing DescriptionWidth=* NameWidth=*
 ReadmeName .footer.html

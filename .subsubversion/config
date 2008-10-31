@@ -62,6 +62,7 @@
 ### use a forward slash (/) or a paired backslash (\\) as the
 ### path separator.  A single backslash will be treated as an
 ### escape for the following character.
+brssh = /home/neitsch/bin/brssh
 
 ### Section for configuring miscelleneous Subversion options.
 [miscellany]
@@ -80,7 +81,7 @@ global-ignores = *.o *.lo *.la #*# .*.rej *.rej .*~ *~ .#* .DS_Store *.stackdump
 ### Set enable-auto-props to 'yes' to enable automatic properties
 ### for 'svn add' and 'svn import', it defaults to 'no'.
 ### Automatic properties are defined in the section 'auto-props'.
-# enable-auto-props = yes
+enable-auto-props = yes
 
 ### Section for configuring automatic properties.
 [auto-props]
@@ -99,5 +100,8 @@ global-ignores = *.o *.lo *.la #*# .*.rej *.rej .*~ *~ .#* .DS_Store *.stackdump
 # *.txt = svn:eol-style=native
 # *.png = svn:mime-type=image/png
 # *.jpg = svn:mime-type=image/jpeg
+*.lzma = svn:mime-type=application/x-lzma
+*.pdf = svn:mime-type=application/pdf
+*.nb = svn:mime-type=application/mathematica
 # Makefile = svn:eol-style=native
 

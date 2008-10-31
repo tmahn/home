@@ -12,6 +12,7 @@ import optparse
 import os
 import os.path
 import pickle
+import pprint
 import random
 import re
 # The binding is done in ~/.inputrc

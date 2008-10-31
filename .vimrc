@@ -199,3 +199,7 @@ if v:version>=700
     set spelllang=en_ca
     set spellfile=~/.vimspell.en.utf-8.add,~/.vimspell.extra.add
 endif
+
+" For browsing by regexes...
+" nmap <Esc>n nz<CR>
+" nmap <Esc>N Nz<CR>
