@@ -328,10 +328,11 @@ def main(args=None):
         args = sys.argv[1:]
 
     optp = OptionParser(usage=__doc__)
+    default_remote_options = "link=1m,cache=64m,images=128m,taint=1"
     optp.add_option('--remote-options', action='append', dest='remote_options',
-            default=[], help="""Options to pass to nxagent when starting it.
-E.g. link=56k,cache=16m,images=64m to turn on compression and caching.
-See `nxproxy -help` for more.""", metavar='OPTIONS')
+            default=[], help="""Options to pass to nxagent when starting
+            it. See `nxproxy -help` for more. Default is %s""" %
+            default_remote_options)
     optp.add_option('--local-options', action='append', dest='local_options',
             default=[], metavar='OPTIONS')
     optp.add_option('-p', '--local-port', default=None, type=int,
@@ -352,6 +353,8 @@ for the local NX proxy endpoint.""")
     display = int(display)
 
     if options.server_mode:
+        options.remote_options = (options.remote_options
+                or [default_remote_options])
         agent = LocalNXAgent(display, options.remote_options,
                 name=options.name)
         agent.listen()
