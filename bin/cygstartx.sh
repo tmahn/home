@@ -11,7 +11,23 @@ set -eu
 PATH="/bin:/usr/X11R6/bin:${PATH}"
 export PATH
 
-: "${DISPLAY=:0}"
+: "${DISPLAY=localhost:0.0}"
+DISPLAY_NUMBER=":${DISPLAY##*:}"
+DISPLAY_NUMBER="${DISPLAY_NUMBER%.*}"
+
+XWIN=/usr/X11R6/bin/Xwin_GL
+XRUN=run
+
+if ! [ -x "${XWIN}" ]; then
+    XWIN=/usr/bin/Xwin
+fi
+
+XMING="/d/c/Program Files (x86)/Xming/Xming.exe"
+if [ -x "${XMING}" ]; then
+    XWIN="${XMING}"
+    XRUN="setsid"
+fi
+
 # Avoid race: the cookie has to be in place before starting the server
 #
 # PARANOIA: generating a cookie and passing it to ‘xauth add’ on the
@@ -21,20 +37,26 @@ python -ES -c \
     | xauth source -
 [ "${PIPESTATUS[0]}" -eq 0 ]
 
-run /usr/X11R6/bin/Xwin_GL \
+"${XWIN}" \
     -auth ~/.Xauthority \
     -multiwindow -clipboard -emulate3buttons -unixkill \
-    -screen 0 2432x1064 "${DISPLAY}" &
+    -screen 0 2432x1064 "${DISPLAY_NUMBER}" &
+
+export DISPLAY
+
+function isDisplayUp() {
+   xprop -root >& /dev/null 
+}
 
 MAX_CHECKS=50
 CHECK=1
-while ! [ -s "/tmp/.X11-unix/X${DISPLAY#:}" ] \
-    &&[ "${CHECK}" -lt "${MAX_CHECKS}" ]
+while ! isDisplayUp &&[ "${CHECK}" -lt "${MAX_CHECKS}" ]
 do
     (( CHECK++ ))
     sleep 0.1
 done
-
-export DISPLAY
+if ! isDisplayUp; then
+    exit 1
+fi
 
 . ~/.xinit
