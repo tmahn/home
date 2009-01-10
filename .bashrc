@@ -230,9 +230,15 @@ if [ -f ~/.locale/en_CA.UTF-8@iso8601/LC_TIME ]; then
     export LC_TIME=en_CA.UTF-8@iso8601
 fi
 export SSL_CERT_DIR=~/.ssl
-# nroff (a shell script) only looks for UTF-8 (all uppercase) in LC_ALL,
-# and then looks for utf-8 in LESSCHARSET
-export LESSCHARSET=utf-8
+export CVS_RSH=ssh
+
+if [ "${TERM}" != "cygwin" ]; then
+    export LC_ALL=en_CA.utf-8
+    # nroff (a shell script) only looks for UTF-8 (all uppercase) in LC_ALL,
+    # and then looks for utf-8 in LESSCHARSET
+    export LESSCHARSET=utf-8
+fi
+
 if [ "$OSTYPE" = "cygwin" ]; then
     export SMLNJ_CYGWIN_RUNTIME=true
     export TEMP=/tmp

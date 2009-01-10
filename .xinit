@@ -1,9 +1,16 @@
+set +e
+
 FONT_DIR=~/.fonts
 if [ -d "${FONT_DIR}" ]; then
+    #  Xming needs windows paths
+    if [ "$OSTYPE" = "cygwin" ] && xdpyinfo |grep -q 'Colin Harrison'; then
+        FONT_DIR="$(cygpath -w "${FONT_DIR}")"
+    fi
     xset +fp "${FONT_DIR}"
 fi
 
 xset b off # shitcan the freaking bell
+# xset r off
 xrdb ~/.Xresources
 xsetroot -solid grey
 xmodmap ~/.Xmodmap

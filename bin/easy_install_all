@@ -22,7 +22,6 @@ easy_install \
         http://sourceforge.net/projects/pylibacl/download
         http://sourceforge.net/projects/psyco/download
         http://duplicity.nongnu.org/
-        http://www.jorendorff.com/articles/python/path/index.html
         " \
     \
     "${@}" \

@@ -15,17 +15,15 @@ export PATH
 DISPLAY_NUMBER=":${DISPLAY##*:}"
 DISPLAY_NUMBER="${DISPLAY_NUMBER%.*}"
 
-XWIN=/usr/X11R6/bin/Xwin_GL
-XRUN=run
+XWIN=(/usr/X11R6/bin/Xwin_GL)
 
-if ! [ -x "${XWIN}" ]; then
-    XWIN=/usr/bin/Xwin
+if ! [ -x "${XWIN[0]}" ]; then
+    XWIN=(/usr/bin/Xwin)
 fi
 
 XMING="/d/c/Program Files (x86)/Xming/Xming.exe"
 if [ -x "${XMING}" ]; then
-    XWIN="${XMING}"
-    XRUN="setsid"
+    XWIN=(/usr/bin/setsid "${XMING}")
 fi
 
 # Avoid race: the cookie has to be in place before starting the server
@@ -37,9 +35,9 @@ python -ES -c \
     | xauth source -
 [ "${PIPESTATUS[0]}" -eq 0 ]
 
-"${XWIN}" \
+"${XWIN[@]}" \
     -auth ~/.Xauthority \
-    -multiwindow -clipboard -emulate3buttons -unixkill \
+    -multiwindow -clipboard -emulate3buttons -nounixkill \
     -screen 0 2432x1064 "${DISPLAY_NUMBER}" &
 
 export DISPLAY

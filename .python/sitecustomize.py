@@ -30,7 +30,18 @@ if sys.platform == 'cygwin':
         import codecs
         import locale
 
+        # The getreader() hack breaks readline() which is used by getpass
+        original_stdin = sys.stdin
+        preferred_encoding = locale.getpreferredencoding()
+
+        def readline_replacement(size=-1):
+            global original_stdin
+            global preferred_encoding
+
+            line = original_stdin.readline(size)
+            return line.encode(preferred_encoding)
         sys.stdin = codecs.getreader(locale.getpreferredencoding())(sys.stdin)
+        sys.stdin.readline = readline_replacement
         sys.stdout = codecs.getreader(locale.getpreferredencoding())(sys.stdout)
 
 import locale
