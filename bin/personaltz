@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: UTF-8
 
 """Compile each FILE, a list of dates in the format 'TZ="{tz}" {date}', where
 {tz} is in a valid time zone, and {date} is in a format recognized by
@@ -188,7 +189,7 @@ class PersonalTZ(object):
                     rule_end = nextevent.date
                     if rule.until and rule.until < rule_end:
                         rule_end = rule.until
-                    # The 'until' field is relative to that line's GMT offset
+                    # The ‘until’ field is relative to that line’s GMT offset
                     rule_end += datetime.timedelta(0, rule.standard_offset)
                     rule_end = rule_end.strftime('%Y %b %d %H:%M')
                 else:
@@ -241,9 +242,13 @@ class LocalTZ(object):
         zdump = unix_pipe(["zdump", "-v", self.name], "")
         tzchanges = []
         for line in zdump.strip().split('\n'):
+            # Work around zdump bug
+            if line.endswith(" NULL"):
+                continue
+
             match = LocalTZ._zdump_re.match(line)
             if not match:
-                raise ParseException("Don't know how to handle output "
+                raise ParseException("Don’t know how to handle output "
                         + repr(line) + " from zdump.")
             utcdate, localdate, tzname, isdst = match.groups()
 
@@ -317,6 +322,11 @@ class LocalTZRule(_PPObject):
     def format_rule(self, longnames=False):
         ret = ""
         for tzchange in self.tzchanges:
+            # Work around for bug “the datetime strftime() methods
+            # require year >= 1900”
+            if tzchange.date.year < 1900:
+                continue
+
             ret += LocalTZRule.FMT % ("Rule",
                     self.key,
                     tzchange.date.year,
