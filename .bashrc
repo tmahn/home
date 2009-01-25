@@ -233,13 +233,13 @@ export SSL_CERT_DIR=~/.ssl
 export CVS_RSH=ssh
 
 if [ "${TERM}" != "cygwin" ]; then
-    export LC_ALL=en_CA.utf-8
     # nroff (a shell script) only looks for UTF-8 (all uppercase) in LC_ALL,
     # and then looks for utf-8 in LESSCHARSET
     export LESSCHARSET=utf-8
 fi
 
 if [ "$OSTYPE" = "cygwin" ]; then
+    export LC_ALL=en_CA.utf-8
     export SMLNJ_CYGWIN_RUNTIME=true
     export TEMP=/tmp
     PATH="${HOME}/bin:${HOME}/usr/bin:${PATH}"
