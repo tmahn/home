@@ -36,7 +36,7 @@ au BufWinEnter *
 
 "" Syntax highlighting
 
-syntax on
+syntax enable
 
 set background=light
 
