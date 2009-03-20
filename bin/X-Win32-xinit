@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# This script runs the cygwin ~/.xinit for an X-Win32 session. Create an
+# Autostart “command” session with
+#
+#    Target: "c:\cygwin\bin\bash.exe" X-Win32-xinit
+#    Start In: c:\cygwin\home\Andrew\bin (or wherever this script lives)
+#
+# Now the environment when the command runs is all wonky, because $HOME is
+# a windows path somewhere in c:\Users\Username\AppData\Roaming, and $USER is
+# not set. $HOME has to be manually set before a “bash --login” will
+# actually run rc files in $HOME.
+#
+# It’s extremely tricky to specify complicated target commands because all
+# slashes in the command line are silently converted to backslashes. You
+# can try to work around that with gunk like $'\057' but it gets really
+# messy really quickly. Note that everything in the “Target” field in the
+# “Edit Session” box needs to be wrapped in double quotes.
+
+/usr/bin/python -c \
+'
+import os
+import pwd
+import socket
+
+userinfo = pwd.getpwuid(os.getuid())
+
+newenv = dict(os.environ)
+newenv["USER"] = userinfo.pw_name
+newenv["HOME"] = userinfo.pw_dir
+
+# X-Win32 sets DISPLAY=127.0.0.1:0.0 in the environment, but we need
+# fully-qualified domain names for xauth to work.
+display_screen = newenv.get("DISPLAY", ":0").split(":")[-1]
+newenv["DISPLAY"] = socket.getfqdn() + ":" + display_screen
+
+os.execvpe("/bin/bash",
+    ["/bin/bash", "--login", "%s/.xinit" % newenv["HOME"]],
+    newenv)'

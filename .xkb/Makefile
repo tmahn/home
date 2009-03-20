@@ -2,18 +2,23 @@
 
 SHELL = /bin/bash
 
+X_SERVER_IS_X_WIN32 := $(shell if xdpyinfo | grep '^vendor string:.*StarNet Communications' > /dev/null; then echo true; else false; fi)
+
+XKBCOMP      ?= $(shell if ${X_SERVER_IS_X_WIN32}; then echo X-Win32-xkbcomp; else echo xkbcomp; fi)
+SETXKBMAP    ?= $(shell if ${X_SERVER_IS_X_WIN32}; then echo true; else echo setxkbmap; fi)
+
 XKBCOMPFLAGS += -I.
 
 xkbmap.xkm: neitsch.xkbsym
 
 install: xkbmap.xkm
-	setxkbmap
-	xkbcomp "${<}" "${DISPLAY}"
+	${SETXKBMAP}
+	${XKBCOMP} ${XKBCOMPFLAGS} "${<}" "${DISPLAY}"
 
 %.xkbsym: %.klc
 	klc2xkb --compose=XCompose.dead_keys "${<}" > "${@}"
 %.xkm: %.xkb
-	xkbcomp ${XKBCOMPFLAGS} "${<}" -o "${@}"
+	${XKBCOMP} ${XKBCOMPFLAGS} "${<}" -o "${@}"
 
 clean:
 	rm -f *.xkbsym *.xkm

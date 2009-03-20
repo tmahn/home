@@ -1,5 +1,11 @@
 set +e
 
+# X-Win32 raises a bunch of “allow this connection?” pop-ups when this runs
+# automatically at startup which I’m guessing has something to do with the
+# fact that there aren’t any windows on screen yet.
+xmessage -timeout 10 -buttons '' "Welcome to X!" &
+sleep 2
+
 FONT_DIR=~/.fonts
 if [ -d "${FONT_DIR}" ]; then
     #  Xming needs windows paths
