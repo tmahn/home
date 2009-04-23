@@ -20,6 +20,10 @@ set completion-ignore-case on
 
 "\t": menu-complete
 
+# Ignore windows key
+"\e[5~": ""
+"\e[OD": ""
+
 $if python
 "\t": complete
 $endif
