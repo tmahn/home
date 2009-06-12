@@ -38,14 +38,16 @@ au BufWinEnter *
 
 syntax enable
 
-set background=light
-
-" Very bright search highlighting
-highlight Search ctermbg=190
-highlight Visual ctermbg=183
-" Turn on 256 colours for xterms
 if &term == "xterm"
+    set background=light
+    " Turn on 256 colours for xterms
     set t_Co=256 t_Sf=<Esc>[38;5;%p1%m t_Sb=<Esc>[48;5;%p1%m
+    " Very bright search highlighting
+    highlight Search ctermbg=190
+    highlight Visual ctermbg=183
+endif
+if &term == "cygwin"
+    highlight Search ctermbg=Black ctermfg=Yellow cterm=reverse,bold
 endif
 
 " Highlight trailing spaces, too-long lines in red in source code

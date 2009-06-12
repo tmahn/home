@@ -1,10 +1,12 @@
 history -n
 history -a
 
-sudo -K
+if type -p sudo > /dev/null; then
+    sudo -K
+fi
 
 # Clear the screen if on a physical console
-if [[ "$(tty)" =~ /tty[0-9]+$ ]]; then
+if [ "${TERM}" != "xterm" ] && [[ "$(tty)" =~ /tty[0-9]+$ ]]; then
     clear
 
     # Clear scrollback by reloading the default font
