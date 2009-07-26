@@ -2,7 +2,7 @@
 
 SHELL = /bin/bash
 
-X_SERVER_IS_X_WIN32 := $(shell if xdpyinfo | grep '^vendor string:.*StarNet Communications' > /dev/null; then echo true; else false; fi)
+X_SERVER_IS_X_WIN32 := $(shell if xdpyinfo | grep '^vendor string:.*StarNet Communications' > /dev/null; then echo true; else echo false; fi)
 
 XKBCOMP      ?= $(shell if ${X_SERVER_IS_X_WIN32}; then echo X-Win32-xkbcomp; else echo xkbcomp; fi)
 SETXKBMAP    ?= $(shell if ${X_SERVER_IS_X_WIN32}; then echo true; else echo setxkbmap; fi)
