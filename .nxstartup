@@ -7,9 +7,4 @@ fi
 if [ -z "${STARTKDE}" ]; then
     STARTKDE=xterm
 fi
-
-if type -p e16 > /dev/null; then
-    export KDEWM=e16
-fi
-
 exec "${STARTKDE}"

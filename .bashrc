@@ -220,7 +220,7 @@ export RI="--format bs"
 # export CXXFLAGS="${CFLAGS_COMMON} \
 # -Wold-style-cast -Woverloaded-virtual -Weffc++ -Wabi"
 # export LDFLAGS='-lm'
-export CC='gcc'
+#export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
 unset LC_ALL
