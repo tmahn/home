@@ -26,8 +26,8 @@ else
     fi
     X_OFFSETS=(150 638)
     if (( WIDTH > 80 * 6 * 3 )); then
-        LINES=36
-        YOFF2=+490
+        LINES=34
+        YOFF2=+475
         X_OFFSETS=(0 488 976)
     fi
     for X in "${X_OFFSETS[@]}"; do

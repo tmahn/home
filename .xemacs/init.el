@@ -417,10 +417,10 @@ Usually this line would not be highlighted."
 (when (Init-safe-require 'python-mode)
   (push '("python[0-9.]*" . python-mode) interpreter-mode-alist)
   ;; Cyan is really bright, guys.
-  (add-hook 'python-mode-hook
-	    (lambda()
-	      (set-face-foreground py-builtins-face "steelblue")
-	      (set-face-foreground py-pseudo-keyword-face "mediumpurple")))
+;; (add-hook 'python-mode-hook
+;; 	    (lambda()
+;; 	      (set-face-foreground py-builtins-face "steelblue")
+;; 	      (set-face-foreground py-pseudo-keyword-face "mediumpurple")))
   (add-hook 'inferior-python-mode-hook
 	    (lambda ()
 	      (define-key inferior-python-mode-map

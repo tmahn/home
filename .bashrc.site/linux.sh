@@ -2,6 +2,7 @@ _bashrc_linux_style_prompt
 ARCH="$(arch)"
 export ARCH
 PATH="${HOME}/bin:${HOME}/bin/linux:${HOME}/usr/arch/${ARCH}/bin\
+:${HOME}/usr/bin\
 :${HOME}/opt/python2.5/bin\
 :/usr/local/bin:/usr/bin:/bin\
 :${HOME}/usr/arch/${ARCH}/sbin\

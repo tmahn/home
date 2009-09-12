@@ -64,6 +64,7 @@ files."
   (interactive)
   (unless (file-directory-p user-init-directory)
     (make-directory user-init-directory))
+  ;; lndir is in the xorg-x11-util-devel rpm
   (adn-call-process-check "lndir" "-silent"
 			  real-user-init-directory
 			  user-init-directory)

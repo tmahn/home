@@ -1,7 +1,15 @@
 . "${HOME}/.xinit"
 
-STARTKDE="$(type -p startkde)"
+STARTKDE=/opt/kde3/bin/startkde
 if [ -z "${STARTKDE}" ]; then
-    STARTKDE=/opt/kde3/bin/startkde
+    STARTKDE="$(type -p startkde)"
 fi
+if [ -z "${STARTKDE}" ]; then
+    STARTKDE=xterm
+fi
+
+if type -p e16 > /dev/null; then
+    export KDEWM=e16
+fi
+
 exec "${STARTKDE}"

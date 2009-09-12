@@ -208,18 +208,18 @@ export LESSKEY="${MY_LESSKEY}"
 if [ "${LESSKEY}key" -nt "${LESSKEY}" ]; then
    lesskey
 fi
-export CONFIG_SITE="$HOME/.config.site"
+#export CONFIG_SITE="$HOME/.config.site"
 export PERLDOC_PAGER="less -fr"
 export RI="--format bs"
 # -Warray-bounds needs -ftree-vrp, -Wundef needs -01, and -rdynamic gives
 # better backtraces.
-CFLAGS_COMMON="-ansi -g3 -O1 -pedantic -Wextra -Wall -Wformat=2 \
--Wfloat-equal -Wmissing-include-dirs -Warray-bounds -ftree-vrp -Wundef \
--Wshadow -rdynamic"
- export CFLAGS="${CFLAGS_COMMON} -Wc++-compat"
-export CXXFLAGS="${CFLAGS_COMMON} \
--Wold-style-cast -Woverloaded-virtual -Weffc++ -Wabi"
-export LDFLAGS='-lm'
+# CFLAGS_COMMON="-ansi -g3 -O1 -pedantic -Wextra -Wall -Wformat=2 \
+# -Wfloat-equal -Wmissing-include-dirs -Warray-bounds -ftree-vrp -Wundef \
+# -Wshadow -rdynamic"
+#  export CFLAGS="${CFLAGS_COMMON} -Wc++-compat"
+# export CXXFLAGS="${CFLAGS_COMMON} \
+# -Wold-style-cast -Woverloaded-virtual -Weffc++ -Wabi"
+# export LDFLAGS='-lm'
 export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
