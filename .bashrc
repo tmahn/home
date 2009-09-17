@@ -239,7 +239,6 @@ if [ "${TERM}" != "cygwin" ]; then
 fi
 
 if [ "$OSTYPE" = "cygwin" ]; then
-    export LC_ALL=en_CA.utf-8
     export SMLNJ_CYGWIN_RUNTIME=true
     export TEMP=/tmp
     PATH="${HOME}/bin:${HOME}/usr/bin:${PATH}"
@@ -277,6 +276,8 @@ MAILCHECK=-1
 if [ -t 0 ];
 then
     stty sane
+    stty stop ''
+    stty start ''
 fi
 
 case "${TERM}" in

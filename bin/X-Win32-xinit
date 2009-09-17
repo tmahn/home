@@ -17,6 +17,12 @@
 # messy really quickly. Note that everything in the “Target” field in the
 # “Edit Session” box needs to be wrapped in double quotes.
 
+# X-Win32 pops up a dialog if there is any output to stderr. Someone
+# (usually xset) always complains, so we redirect to stdout instead.
+# You can still view the log by changing the session’s “Show Status” option
+# to “Always”.
+exec 2>&1
+
 /usr/bin/python -c \
 '
 import os

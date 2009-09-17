@@ -21,9 +21,12 @@ if ! [ -x "${XWIN[0]}" ]; then
     XWIN=(/usr/bin/Xwin)
 fi
 
+#XAUTHORITY=~/.Xauthority
+
 XMING="/d/c/Program Files (x86)/Xming/Xming.exe"
 if [ -x "${XMING}" ]; then
     XWIN=(/usr/bin/setsid "${XMING}")
+    #XAUTHORITY="$(cygpath -m "${XAUTHORITY}")"
 fi
 
 # Avoid race: the cookie has to be in place before starting the server
@@ -36,9 +39,8 @@ python -ES -c \
 [ "${PIPESTATUS[0]}" -eq 0 ]
 
 "${XWIN[@]}" \
-    -auth ~/.Xauthority \
     -multiwindow -clipboard -emulate3buttons -nounixkill \
-    -screen 0 2432x1064 "${DISPLAY_NUMBER}" &
+    -screen 0 1680x1680 "${DISPLAY_NUMBER}" &
 
 export DISPLAY
 
