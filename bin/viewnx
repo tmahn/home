@@ -252,7 +252,6 @@ class LocalNXAgent:
         with open(session_filename, 'w') as session_file:
             process = subprocess.Popen(['nxagent', '-nokbreset',
                 '-name', self.name,
-                '-dpi', '92',
                 '-auth', os.path.expanduser('~/.Xauthority'),
                 '-display',
                 'nx/nx,options=%s:%d' % (option_filename, self.display),
