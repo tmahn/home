@@ -1,3 +1,9 @@
+if [ $(hostname) = swanhills ]; then
+    export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11R6/bin
+    export MANPATH=/usr/share/man:/usr/X11R6/man
+    exec $HOME/bin/save-forever
+fi
+
 set +e
 
 # X-Win32 seems to reset a bunch of internal state if it ever gets down to
