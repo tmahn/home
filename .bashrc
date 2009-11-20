@@ -176,6 +176,7 @@ fi
 if [ "$OSTYPE" = "cygwin" ]; then
     export SMLNJ_CYGWIN_RUNTIME=true
     export TEMP=/tmp
+    export TMP="${TEMP}"
     PATH="${HOME}/bin:${HOME}/usr/bin:${PATH}"
 fi
 

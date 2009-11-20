@@ -205,3 +205,5 @@ endif
 " For browsing by regexes...
 " nmap <Esc>n nz<CR>
 " nmap <Esc>N Nz<CR>
+
+let perl_include_pod = 1
