@@ -7,6 +7,8 @@ augroup cprog
 	\ set formatoptions=tcql autoindent tw=75 comments&
   autocmd BufRead *.c,*.h
         \ set formatoptions=croql cindent comments=sr:/*,mb:*,el:*/,://
+  autocmd BufRead *.bib
+        \ set nocindent
 augroup END
 
 autocmd BufRead *.kid
@@ -38,7 +40,7 @@ au BufWinEnter *
 
 syntax enable
 
-if &term == "xterm"
+if &term == "xterm" || &term == "xterm-256color"
     set background=light
     " Turn on 256 colours for xterms
     set t_Co=256 t_Sf=<Esc>[38;5;%p1%m t_Sb=<Esc>[48;5;%p1%m
