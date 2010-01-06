@@ -6,7 +6,7 @@ import re
 import sys
 import unicodedata
 
-deadkey_line = re.compile('[0-9A-Fa-f]{4}\s+[0-9A-Fa-f]{4}\s+//')
+deadkey_line = re.compile('[0-9A-Fa-f]{4}\s+([0-9A-Fa-f]{4})\s+// . -> .')
 
 def rewrite(filename):
     contents = open(filename).read().decode('UTF-16')
@@ -14,7 +14,9 @@ def rewrite(filename):
     for line in contents.split('\r\n'):
         match = deadkey_line.match(line)
         if match:
-            output.append(line + " (" + unicodedata.name(line[-1]) + ")")
+            dead_char = unichr(int(match.group(1), 16))
+            output.append(match.group(0)
+                    + " (" + unicodedata.name(dead_char) + ")")
         else:
             output.append(line)
     with open(filename, 'wb') as outfile:
