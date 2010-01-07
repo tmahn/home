@@ -94,7 +94,7 @@ class KeyMapping(object):
 
 def DDDD_to_name(DDDD):
     "'0046' -> 'FULL STOP'"
-    return unicodedata.name(unichr(int(DDDD, 16)))
+    return unicodedata.name(unichr(int(DDDD, 16)), None)
 
 class DeadKey(object):
     def __init__(self, deadkey):
