@@ -1,6 +1,6 @@
 #!/bin/bash
 
-XWINDIR="/d/c/Program Files (x86)/StarNet/X-Win32 9.5"
+XWINDIR="/d/c/Program Files (x86)/StarNet/X-Win32 2010"
 
 function push() {
     local ARRAY_NAME="${1}"
