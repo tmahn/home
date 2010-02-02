@@ -145,6 +145,7 @@ if [ "${LESSKEY}key" -nt "${LESSKEY}" ]; then
 fi
 #export CONFIG_SITE="$HOME/.config.site"
 export PERLDOC_PAGER="less -fr"
+export PERL5LIB="$HOME/.perl/lib/perl5/site_perl/5.10"
 export RI="--format bs"
 # -Warray-bounds needs -ftree-vrp, -Wundef needs -01, and -rdynamic gives
 # better backtraces.
