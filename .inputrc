@@ -21,6 +21,7 @@ set completion-ignore-case on
 "\e[4~": end-of-line
 
 "\t": menu-complete
+"\C-w": backward-kill-word
 
 # Ignore windows key
 "\e[5~": ""

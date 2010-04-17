@@ -11,6 +11,10 @@ readonly _HOME_BASHRC_ALREADY_READ=1
 
 cd "${HOME}"
 
+if [ -f ".profile" ]; then
+    . .profile
+fi
+
 defaultsdir=/usr/local/lib/initfiles
 if [ -r "$defaultsdir/system-bashrc" ]; then
    source "$defaultsdir/system-bashrc"
@@ -182,6 +186,8 @@ if [ "$OSTYPE" = "cygwin" ]; then
     PATH="${HOME}/bin:${HOME}/usr/bin:${PATH}"
 fi
 
+PATH="${HOME}/bin:${PATH}"
+
 # Personal time zone
 PERSONAL_TZ="${HOME}/Andrew_Neitsch"
 PERSONAL_TZC="${PERSONAL_TZ}.tzc"
@@ -216,6 +222,7 @@ then
     stty sane
     stty stop ''
     stty start ''
+    stty werase ''
 fi
 
 case "${TERM}" in
