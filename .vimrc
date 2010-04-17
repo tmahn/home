@@ -48,6 +48,12 @@ if &term == "xterm" || &term == "xterm-256color"
     highlight Search ctermbg=190
     highlight Visual ctermbg=183
 endif
+if &term == "xterm-color"
+    set background=light
+    highlight SpellBad cterm=bold ctermfg=white
+    highlight SpellCap cterm=bold ctermfg=white
+    highlight SpellLocal cterm=bold ctermfg=black
+endif
 if &term == "cygwin"
     highlight Search ctermbg=Black ctermfg=Yellow cterm=reverse,bold
 endif

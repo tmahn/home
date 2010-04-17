@@ -124,6 +124,7 @@ fi
 
 ## Variables for export
 export LS_COLORS='no=00:fi=00:di=34:ln=36:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=32:*.tar=31:*.tgz=31:*.arj=31:*.taz=31:*.lzh=31:*.zip=31:*.z=31:*.Z=31:*.gz=31:*.bz2=31:*.deb=31:*.rpm=31:*.jpg=35:*.png=35:*.gif=35:*.bmp=35:*.ppm=35:*.tga=35:*.xbm=35:*.xpm=35:*.tif=35:*.png=35:*.mpg=35:*.avi=35:*.fli=35:*.gl=35:*.dl=35:'
+export LSCOLORS="exgxfxdxcxdaDa"
 
 unset LD_ASSUME_KERNEL
 export EDITOR=vim
@@ -220,7 +221,7 @@ fi
 case "${TERM}" in
     xterm*)
     # http://nion.modprobe.de/blog/archives/572-less-colors-for-man-pages.html
-	    export LESS_TERMCAP_md=$'\e[38;5;54m';;
+	    export LESS_TERMCAP_md=$'\e[35m';;
     dumb)
 	    # The default cygwin prompt sets the xterm title, which gets
 	    # mangled in xemacs shell mode.
@@ -273,6 +274,9 @@ function _handle_site() {
 if [ "${OSTYPE#linux}" != "${OSTYPE}" ]; then
     _handle_site linux
 fi
+if [ "${OSTYPE#darwin}" != "${OSTYPE}" ]; then
+    _bashrc_linux_style_prompt
+fi
 if [ -e "${HOME}/ts" ]; then
     _handle_site ts
 fi
@@ -295,6 +299,11 @@ HISTTIMEFORMAT="%s "
 # command, so place the history command on something unlikely to be typed.
 histchars=$'\177^#'
 export -n HISTFILE HISTSIZE HISTFILESIZE HISTIGNORE HISTTIMEFORMAT
+
+case "${OSTYPE}" in darwin*)
+	alias ls='ls -AFG'
+	;;
+esac
 
 # Needs to be last command in file
 #
