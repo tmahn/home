@@ -52,9 +52,11 @@ cd_func ()
     return 0
   fi
 
-  set -- "$(echo $1 |sed -e ':a;s/\.\.\./\.\.\/\.\./g;t a')"
-  the_new_dir=$1
-  [[ -z $1 ]] && the_new_dir=$HOME
+  set -- "$(echo "$1" |sed -e ':a
+s@\.\.\.@../..@g
+t a')"
+  the_new_dir="$1"
+  [[ -z "$1" ]] && the_new_dir="$HOME"
 
   if [[ ${the_new_dir:0:1} == '-' ]]; then
     #
