@@ -42,7 +42,7 @@ XTerm*VT100font6:	-misc-fixed-medium-r-normal--20-200-75-75-c-100-iso10646-1
 !xterm.vt100.geometry: 80x35
 xterm*backarrowKeyIsErase : true
 xterm*vt100.backarrowKey: false
-xterm*vt100.background: rgb:DF/DF/DF
+xterm*vt100.background: rgb:F2/F2/F2
 xterm*vt100.foreground: black
 
 XTerm*Logging:  true
