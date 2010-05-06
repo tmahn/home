@@ -19,13 +19,15 @@ import re
 import rlcompleter
 import shutil
 import socket
-import StringIO
 import struct
 import subprocess
 import sys
 import time
 import unicodedata
 import urllib
-import urllib2
-import urlparse
 import warnings
+
+if sys.version_info[0] < 3:
+    import StringIO
+    import urllib2
+    import urlparse

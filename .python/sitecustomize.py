@@ -45,4 +45,5 @@ if sys.platform == 'cygwin':
         sys.stdout = codecs.getreader(locale.getpreferredencoding())(sys.stdout)
 
 import locale
-sys.setdefaultencoding(locale.getpreferredencoding())
+if hasattr(sys, 'setdefaultencoding'):
+    sys.setdefaultencoding(locale.getpreferredencoding().lower())

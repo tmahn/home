@@ -31,7 +31,7 @@ def __readline_shim_setup():
         paths = sys.path
 
         mod_dir = dirname(filename)
-        paths = filter(lambda x: x != mod_dir, sys.path)
+        paths = list(filter(lambda x: x != mod_dir, sys.path))
 
         while paths:
             real_module = imp.find_module(name, paths)
