@@ -1,15 +1,4 @@
-if [ $(hostname) = swanhills ]; then
-    export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11R6/bin
-    export MANPATH=/usr/share/man:/usr/X11R6/man
-    exec $HOME/bin/save-forever
-fi
-
 set +e
-
-## # X-Win32 seems to reset a bunch of internal state if it ever gets down to
-## # zero clients. So we keep a dummy one active at all times.
-## xdummyclient &
-## disown "${!}"
 
 FONT_DIR=~/.fonts
 if [ -d "${FONT_DIR}" ]; then
@@ -21,15 +10,16 @@ if [ -d "${FONT_DIR}" ]; then
 fi
 
 xset b off # shitcan the freaking bell
-# xset r off
 xrdb ~/.Xresources
 xsetroot -solid grey
-xmodmap ~/.Xmodmap
-if xmodmap -pke |grep -q Terminate_Server; then
-    xmessage "The Terminate_Server key is bound. You will regret that."
-    exit 1
-fi
 
-make -C ~/.xkb install
+case "${OSTYPE}" in
+    linux*)
+        make -C ~/.xkb install
 
-exec gnome-session
+        exec gnome-session
+        ;;
+    darwin*)
+        exec /bin/sh /usr/X11/lib/X11/xinit/xinitrc
+        ;;
+esac
