@@ -1,24 +1,12 @@
-# .bashrc
+# ~/.bashrc: executed by bash for interactive non-login shells
 
 set +o allexport
-# Use "man initfiles" for more documentation.
-# Do not take the following lines out unless you're really sure of
-# what you are doing.
 
 # If this file is accidentally sourced multiple times, the next line will
 # print a warning. Run bash --login -xv to get a dump.
 readonly _HOME_BASHRC_ALREADY_READ=1
 
 cd "${HOME}"
-
-if [ -f ".profile" ]; then
-    . .profile
-fi
-
-defaultsdir=/usr/local/lib/initfiles
-if [ -r "$defaultsdir/system-bashrc" ]; then
-   source "$defaultsdir/system-bashrc"
-fi
 
 unalias -a
 
@@ -155,16 +143,6 @@ fi
 export PERLDOC_PAGER="less -fr"
 export PERL5LIB="$HOME/.perl/lib/perl5/site_perl/5.10"
 export RI="--format bs"
-# -Warray-bounds needs -ftree-vrp, -Wundef needs -01, and -rdynamic gives
-# better backtraces.
-# CFLAGS_COMMON="-ansi -g3 -O1 -pedantic -Wextra -Wall -Wformat=2 \
-# -Wfloat-equal -Wmissing-include-dirs -Warray-bounds -ftree-vrp -Wundef \
-# -Wshadow -rdynamic"
-#  export CFLAGS="${CFLAGS_COMMON} -Wc++-compat"
-# export CXXFLAGS="${CFLAGS_COMMON} \
-# -Wold-style-cast -Woverloaded-virtual -Weffc++ -Wabi"
-# export LDFLAGS='-lm'
-#export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
 unset LC_ALL
@@ -187,6 +165,12 @@ if [ "$OSTYPE" = "cygwin" ]; then
     export TEMP=/tmp
     export TMP="${TEMP}"
     PATH="${HOME}/bin:${HOME}/usr/bin:${PATH}"
+fi
+
+# For MacPorts
+if [ -d "/opt/local/bin" ]; then
+    export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+    export MANPATH="/opt/local/share/man:$MANPATH"
 fi
 
 PATH="${HOME}/bin:${PATH}"
