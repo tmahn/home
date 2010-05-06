@@ -49,10 +49,11 @@ if &term == "xterm" || &term == "xterm-256color"
     highlight Visual ctermbg=183
 endif
 if &term == "xterm-color"
+    " test: collr color. colour 
     set background=light
-    highlight SpellBad cterm=bold ctermfg=white
-    highlight SpellCap cterm=bold ctermfg=white
-    highlight SpellLocal cterm=bold ctermfg=black
+    highlight SpellBad ctermbg=NONE ctermfg=magenta cterm=NONE
+    highlight SpellCap ctermbg=NONE ctermfg=cyan cterm=NONE
+    highlight SpellLocal ctermbg=NONE ctermfg=cyan cterm=NONE
 endif
 if &term == "cygwin"
     highlight Search ctermbg=Black ctermfg=Yellow cterm=reverse,bold
