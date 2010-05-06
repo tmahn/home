@@ -55,6 +55,13 @@ def __readline_shim_setup():
         readline.read_history_file(HIST_FILE)
     atexit.register(lambda: readline.write_history_file(HIST_FILE))
 
+    # this is for Mac OS which somehow uses libedit under the hood?!?
+    readline.parse_and_bind("bind ^I rl_complete")
+
+    # And getting all our hacks together -- clean up sys.path again
+    import sitecustomize
+    sitecustomize.customize()
+
 # Bindings in this module leak through to the real readline, so we create
 # only one with an unlikely name and remove it after.
 __readline_shim_setup()
