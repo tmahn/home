@@ -103,14 +103,14 @@ XTerm*VT100.translations: #override \
 	! Shift Ctrl<Key>?:	string(\033[[C?) \n\
 	! Shift Ctrl<Key>/:	string(\033[[C/) \n\
         /* We bind Alt-Space [n,x,r] to minimize, maximize, and restore,
-         * because that's what we've been doing every since windows 3.1
-         * The '$ ' is funky; according to the manual,
+         * because that’s what we’ve been doing every since windows 3.1
+         * The ‘$ ’ is funky; according to the manual,
          *
-         *   "In key sequences, a circumflex (^) is an abbreviation for
+         *   “In key sequences, a circumflex (^) is an abbreviation for
          *    the Control modifier, a dollar sign ($) is an abbreviation
          *    for Meta, and a backslash (\) can be used to quote any
-         *    character, in particular a double quote ("), a circumflex
-         *    (^), a dollar sign ($), and another backslash (\)."
+         *    character, in particular a double quote, a circumflex
+         *    (^), a dollar sign ($), and another backslash (\).”
          *
          * Unfortunately, until we figure out more about X, this causes us
          * to lose the Alt-Space key. */ \
