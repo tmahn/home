@@ -55,8 +55,11 @@ def __readline_shim_setup():
         readline.read_history_file(HIST_FILE)
     atexit.register(lambda: readline.write_history_file(HIST_FILE))
 
-    # this is for Mac OS which somehow uses libedit under the hood?!?
-    readline.read_init_file()
+    # Stock python on Mac OS uses libedit under a readline interface, and
+    # needs to be told to re-read ~/.editrc. But doing that makes up- and
+    # down-arrow keys for history not work on linux.
+    if sys.platform == 'darwin':
+        readline.read_init_file()
 
     # And getting all our hacks together -- clean up sys.path again
     import sitecustomize
