@@ -1,2 +1,7 @@
 [ui]
+username = Andrew Neitsch <andrew@subjoin.net>
 ignore = ~/.hgignore
+
+[extensions]
+mq =
+color =
