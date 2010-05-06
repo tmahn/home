@@ -6,10 +6,10 @@ fi
 
 set +e
 
-# X-Win32 seems to reset a bunch of internal state if it ever gets down to
-# zero clients. So we keep a dummy one active at all times.
-xdummyclient &
-disown "${!}"
+## # X-Win32 seems to reset a bunch of internal state if it ever gets down to
+## # zero clients. So we keep a dummy one active at all times.
+## xdummyclient &
+## disown "${!}"
 
 FONT_DIR=~/.fonts
 if [ -d "${FONT_DIR}" ]; then
@@ -31,3 +31,5 @@ if xmodmap -pke |grep -q Terminate_Server; then
 fi
 
 make -C ~/.xkb install
+
+exec gnome-session

@@ -138,6 +138,7 @@ export VISUAL=vim
 mkdir -p -m 700 ~/.vimtmp
 mkdir -p -m 700 ~/misc/bak
 export BLOCK_SIZE=1
+export PAGER=less
 export LESS='-iM -z-3'
 if less --help |grep -q -- --mouse-support; then
     export LESS="${LESS} --mouse-support"
@@ -294,7 +295,8 @@ if [ -e "${HOME}/cs.ualberta.ca" ]; then
 fi
 
 _bashrc_clean_path PATH
-_bashrc_clean_path MANPATH
+# A blank entry seems to mean “use defaults too”
+#_bashrc_clean_path MANPATH
 _bashrc_clean_path INFOPATH
 _bashrc_clean_path LD_LIBRARY_PATH
 

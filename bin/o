@@ -7,9 +7,16 @@ PROG="$(basename -- "${0}")"
 case "${OSTYPE}" in
     (cygwin) O=(cygstart);;
     (linux)  O=(kfmclient exec);;
+    (linux-gnu) O=(setsid gnome-open);;
     (darwin*)O=(open);;
     (*)      echo "${PROG}: uhh..." 1>&2
              exit 1
 esac
+
+# Close standard file descriptors to keep the spawned process from hogging
+# the terminal
+exec 0<&-
+exec 1<&-
+exec 2<&-
 
 exec "${O[@]}" "$@"

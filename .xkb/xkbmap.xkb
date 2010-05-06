@@ -1,5 +1,5 @@
 xkb_keymap {
-    xkb_keycodes  { include "xfree86+aliases(qwerty)" };
+    xkb_keycodes  { include "evdev+aliases(qwerty)" };
     xkb_types     { include "complete" };
     xkb_compat    { include "complete"
         // Workaround for X-Win32 bug #31263
@@ -9,7 +9,7 @@ xkb_keymap {
     };
     xkb_geometry  { include "pc(pc104)"	};
     xkb_symbols   {
-        include "pc(pc105)+us+compose(menu)+level3(ralt_switch)+ctrl(nocaps)"
+        include "pc(pc105)+us+inet(evdev)+compose(menu)+level3(ralt_switch)+ctrl(nocaps)"
         include "neitsch.xkbsym"
 
         // Disable Terminate_Server
