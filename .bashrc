@@ -213,8 +213,14 @@ then
 fi
 
 case "${TERM}" in
-    xterm*)
     # http://nion.modprobe.de/blog/archives/572-less-colors-for-man-pages.html
+    xterm-256color)
+            export LESS_TERMCAP_md=$'\e[35m'
+            export LESS_TERMCAP_us=$'\e[38;5;19m'
+            export LESS_TERMCAP_ue=$'\e[0m'
+            ;;
+
+    xterm*)
 	    export LESS_TERMCAP_md=$'\e[35m';;
     dumb)
 	    # The default cygwin prompt sets the xterm title, which gets
