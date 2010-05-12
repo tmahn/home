@@ -171,6 +171,21 @@ fi
 if [ -d "/opt/local/bin" ]; then
     export PATH=/opt/local/bin:/opt/local/sbin:$PATH
     export MANPATH="/opt/local/share/man:$MANPATH"
+    export CFLAGS="$CFLAGS -I/opt/local/include"
+    export LDFLAGS="$LDFLAGS -L/opt/local/lib"
+    portto () {
+        if (( $# != 1 )); then
+            echo "Usage: ${FUNCNAME[0]} PORTNAME"
+            return 1
+        fi
+        local PORT="${1}" PORTDIR RET
+        PORTDIR="$(port dir "${PORT}")"
+        RET="${?}"
+        if (( RET != 0 )); then
+            return "${RET}"
+        fi
+        cd ~/.macports/"${PORTDIR}"
+    }
 fi
 
 PATH="${HOME}/bin:${PATH}"

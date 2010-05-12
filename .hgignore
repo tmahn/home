@@ -1,3 +1,4 @@
 syntax glob
 
 x1
+.*\.pyc

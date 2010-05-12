@@ -105,11 +105,11 @@ cmap <Esc>[3;2~ <C-h>
 " translations for S-Tab to work in an xterm
 " nnoremap <Tab> >>
 nnoremap <S-Tab> <LT><LT>
-vnoremap <Tab> >
+" vnoremap <Tab> >
 vnoremap <S-Tab> <LT>
 " Tab should indent (jump up to the next indent increment multiple), and
 " shift-tab should unindent
-inoremap <Tab> <C-T>
+"inoremap <Tab> <C-T>
 inoremap <S-Tab> <C-D>
 
 " Emacs compatibility
@@ -168,6 +168,7 @@ set shiftround
 set shiftwidth=4
 set showcmd
 set smartcase
+set softtabstop=4
 set statusline=%<%f\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P
 set t_vb=
 set tabstop=8
@@ -202,6 +203,9 @@ set path+=/usr/include/w32api
 set path+=/usr/include/mingw
 set path+=/usr/include/c++/3.3.1
 set path+=/usr/include/c++/3.3.1/i686-pc-mingw32
+set path+=/opt/local/include
+set path+=/opt/local/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6
+set path+=/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Headers
 
 autocmd GUIEnter * set t_vb=
 
