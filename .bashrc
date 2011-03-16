@@ -308,6 +308,9 @@ case "${OSTYPE}" in darwin*)
 	;;
 esac
 
+export rvm_project_rvmrc=0
+[[ -s "/Users/andrew/.rvm/scripts/rvm" ]] && . "/Users/andrew/.rvm/scripts/rvm"
+
 # Needs to be last command in file
 #
 # DO NOT ADD ANYTHING AFTER THIS
