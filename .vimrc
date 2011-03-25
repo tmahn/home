@@ -9,6 +9,49 @@ augroup cprog
         \ set formatoptions=croql cindent comments=sr:/*,mb:*,el:*/,://
   autocmd BufRead *.bib
         \ set nocindent
+  " autocmd BufRead *.tex
+  "       \ setlocal errorformat=%E!\ LaTeX\ %trror:\ %m,
+  "           \%E!\ %m,
+  "           "\%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#,
+  "           \%+W%.%#\ at\ lines\ %l--%*\\d,
+  "           "\%WLaTeX\ %.%#Warning:\ %m,
+  "           \%Cl.%l\ %m,
+  "           \%+C\ \ %m.,
+  "           \%+C%.%#-%.%#,
+  "           \%+C%.%#[]%.%#,
+  "           \%+C[]%.%#,
+  "           \%+C%.%#%[{}\\]%.%#,
+  "           \%+C<%.%#>%.%#,
+  "           \%C\ \ %m,
+  "           \%-GSee\ the\ LaTeX%m,
+  "           \%-GType\ \ H\ <return>%m,
+  "           \%-G\ ...%.%#,
+  "           \%-G%.%#\ (C)\ %.%#,
+  "           \%-G(see\ the\ transcript%.%#),
+  "           \%-G\\s%#,
+  "           \%+O(%*[^()])%r,
+  "           \%+O%*[^()](%*[^()])%r,
+  "           \%+P(%f%r,
+  "           \%+P\ %\\=(%f%r,
+  "           \%+P%*[^()](%f%r,
+  "           \%+P[%\\d%[^()]%#(%f%r,
+  "           \%+Q)%r,
+  "           \%+Q%*[^()])%r,
+  "           \%+Q[%\\d%*[^()])%r
+  autocmd BufRead *.tex
+        \ let &errorformat="iconv:\ %f:%l:%c:\ %m," . &errorformat
+  autocmd BufRead *.tex
+        \ syn region texZone
+                \ start="\\begin{program}"
+                \ end="\\end{program}\|%stopzone\>"
+                \ contains=@Spell
+  autocmd BufRead *.tex
+        \ syn region texZone
+                \ start="\\code\*\=\z([^\ta-zA-Z]\)"
+                \ end="\z1\|%stopzone\>"
+                \ contains=@Spell
+  autocmd BufRead,BufNewFile *.rb,Rakefile
+        \ set shiftwidth=2 softtabstop=2
 augroup END
 
 autocmd BufRead *.kid
@@ -185,6 +228,8 @@ runtime! ftplugin/man.vim
 "" Error formats
 " Guile
 let &errorformat="ERROR:\ %f:%l:%c:\ %m," . &errorformat
+let &errorformat="iconv:\ %f:%l:%c:\ %m," . &errorformat
+let &errorformat="l.%l \ %m," . &errorformat
 " Error formats for pathscale compilers (or maybe icc... don't remember)
 set errorformat+=%E%f(%l):\ error\ #%n:\ %m
 set errorformat+=%E%f(%l):\ error:\ %m,%-Z%p^,%-C%.%#
@@ -192,7 +237,6 @@ set errorformat+=%E%f(%l):\ error:\ %m,%-Z%p^,%-C%.%#
 set errorformat+=%m\ at\ %f\ line\ %l\\,\ near\ \"%.%#\"
 set errorformat+=%m\ at\ %f\ line\ %l\\,%.%#
 set errorformat+=%m\ at\ %f\ line\ %l.
-
 
 "" Paths
 set path+=/usr/include/g++-3
