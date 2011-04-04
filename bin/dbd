@@ -24,6 +24,12 @@ if [ "${#}" = 0 ] || [ "${#}" -gt 2 ]; then
     exit 1
 fi
 
+if type gdate >& /dev/null; then
+    DATE=gdate
+else
+    DATE=date
+fi
+
 START="${1}"
 
 if [ "${#}" -lt 2 ]; then
@@ -32,8 +38,8 @@ else
     END="${2}"
 fi
 
-START_EPOCH="$(date +%s -d "${START}")"
-END_EPOCH="$(date +%s -d "${END}")"
+START_EPOCH="$("${DATE}" +%s -d "${START}")"
+END_EPOCH="$("${DATE}" +%s -d "${END}")"
 
 perl -e "print abs((${START_EPOCH} - ${END_EPOCH}) / 86400.0);"
 echo
