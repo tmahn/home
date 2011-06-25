@@ -50,8 +50,10 @@ augroup cprog
                 \ start="\\code\*\=\z([^\ta-zA-Z]\)"
                 \ end="\z1\|%stopzone\>"
                 \ contains=@Spell
-  autocmd BufRead,BufNewFile *.rb,Rakefile
+  autocmd BufRead,BufNewFile *.rb,Rakefile,*.htm,*.html
         \ set shiftwidth=2 softtabstop=2
+  autocmd BufRead,BufNewFile *.js
+        \ set indentkeys=!^F,o
 augroup END
 
 autocmd BufRead *.kid
@@ -264,3 +266,4 @@ endif
 " nmap <Esc>N Nz<CR>
 
 let perl_include_pod = 1
+let g:js_indent_log = 0
