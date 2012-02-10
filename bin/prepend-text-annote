@@ -8,9 +8,10 @@ set -o pipefail
 
 PROG="$(basename -- "${0}")"
 
+TMP_HTML="$(mktemp -t "${PROG}.html")"
 TMP_PDF_IN="$(mktemp -t "${PROG}.pdf")"
 TMP_PDF_OUT="$(mktemp -t "${PROG}.pdf")"
-trap 'rm -f "${TMP_PDF_IN}" "${TMP_PDF_OUT}"' 0 1 2 3 15
+trap 'rm -f "${TMP_PDF_IN}" "${TMP_PDF_OUT}" "${TMP_HTML}"' 0 1 2 3 15
 
 if (( $# != 1 )); then
     echo RTFSRC
@@ -18,9 +19,13 @@ fi
 
 PDF="${1}"
 
-pbpaste | paps --paper=letter \
-    | gs -q -dSAFER -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile="${TMP_PDF_IN}" \
-        >/dev/null
+# force page break due to logo from free version of Prince
+echo 'this page intentionally left blank
+<h1 style="page-break-before: always"></h1>
+<div style="white-space: pre-wrap">' > ${TMP_HTML}
+pbpaste >> "${TMP_HTML}"
+echo '</div>' >> "${TMP_HTML}"
+prince -i html "${TMP_HTML}" -o "${TMP_PDF_IN}"
 
-pdftk A="${TMP_PDF_IN}" B="${PDF}" cat A B output "${TMP_PDF_OUT}"
+pdftk A="${TMP_PDF_IN}" B="${PDF}" cat A2-end B output "${TMP_PDF_OUT}"
 cat "${TMP_PDF_OUT}" > "${PDF}"
