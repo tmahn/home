@@ -20,11 +20,13 @@ fi
 PDF="${1}"
 
 # force page break due to logo from free version of Prince
-echo 'this page intentionally left blank
+echo '<html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+this page intentionally left blank
 <h1 style="page-break-before: always"></h1>
 <div style="white-space: pre-wrap">' > ${TMP_HTML}
 pbpaste >> "${TMP_HTML}"
-echo '</div>' >> "${TMP_HTML}"
+echo '</div></html>' >> "${TMP_HTML}"
 prince -i html "${TMP_HTML}" -o "${TMP_PDF_IN}"
 
 pdftk A="${TMP_PDF_IN}" B="${PDF}" cat A2-end B output "${TMP_PDF_OUT}"
