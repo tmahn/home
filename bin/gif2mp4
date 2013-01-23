@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -eu
+
+if (( $# != 1 )); then
+    echo "Usage: gif2mp4 ANIMATED-GIF" 1>&2
+    exit 1
+fi
+
+INFILE="${1}"
+OUTFILE="${INFILE%.gif}.mp4"
+OUTFILE="$(dirname -- "${OUTFILE}")/$(basename -- "${OUTFILE}")"
+
+TMPDIR="$(mktemp -d -t gif2mp4)"
+trap 'rm -rf "${TMPDIR}"' 0 1 2 3 15
+
+convert "${INFILE}" -coalesce "${TMPDIR}/image-%06d.png"
+ffmpeg -i "${TMPDIR}/image-%06d.png" -vf 'crop=in_w:in_h' "${OUTFILE}"
