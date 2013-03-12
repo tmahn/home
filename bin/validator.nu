@@ -5,6 +5,11 @@ import sys
 
 import requests
 
+# See:
+# http://about.validator.nu/#api
+# http://wiki.whatwg.org/wiki/Validator.nu_Web_Service_Interface
+# http://about.validator.nu/html5check.py
+
 LOCAL = 'http://127.0.0.1:8888/'
 REMOTE = 'http://validator.nu/'
 
