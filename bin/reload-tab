@@ -18,7 +18,7 @@ on run argv
     	-- reload tab if visible
     	repeat with w in windows
     		repeat with t in tabs of w
-    			if URL of t = progressURL then
+			if URL of t = progressURL or URL of t starts with progressURL & "#" then
     				reload t
     				if w is visible then
     					tell current application to log "reloaded"
