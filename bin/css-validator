@@ -11,6 +11,10 @@ from path import path
 
 NS = '{http://www.w3.org/2005/07/css-validator}'
 
+IGNORED_WARNINGS = [
+    "You should add a 'type' attribute with a value of 'text/css' to the 'style' element",
+]
+
 lib_dir = path(__file__).dirname().joinpath('css-validator.libs')
 
 parser = argparse.ArgumentParser()
@@ -38,6 +42,7 @@ if args.echo_raw_results:
 class ParserTarget(object):
     def __init__(self):
         self.errorcount_seen = False
+        self.error_seen = False
         self._data = []
 
     def start(self, tag, attrib):
@@ -57,7 +62,8 @@ class ParserTarget(object):
             self.error_seen = True
             self.print_message('error')
         elif tag == NS + 'warning':
-            self.print_message('warning')
+            if self.message not in IGNORED_WARNINGS:
+                self.print_message('warning')
 
         self._data = []
 
