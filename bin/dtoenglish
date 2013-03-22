@@ -18,4 +18,7 @@ if type -a sbcl >& /dev/null; then
     sbcl --noinform --eval '(format t "~r~%" '$1')' --non-interactive
 elif type -a clj >& /dev/null; then
     clj -e '(ns user (:require clojure.pprint)) (clojure.pprint/cl-format true "~R~%" '$1')'
+else
+    echo "Neither sbcl nor clj found." 1>&2
+    exit 2
 fi
