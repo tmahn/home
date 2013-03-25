@@ -1,9 +1,14 @@
 #!/usr/bin/env python2.7
+# coding: UTF-8
 
 import argparse
 import sys
 
 import requests
+
+IGNORED_ERRORS = [
+    "Bad value “X-UA-Compatible” for attribute “http-equiv” on element “meta”.",
+]
 
 # See:
 # http://about.validator.nu/#api
@@ -37,9 +42,16 @@ def main(args=None):
 
     retcode = 0
     if options.format == 'gnu' and validation:
+        lines = []
+        for line in validation.split('\n'):
+            if not any(e in line for e in IGNORED_ERRORS):
+                lines.append(line)
+        validation = '\n'.join(lines)
+
+    if options.format == 'gnu' and validation:
         for line in validation.split('\n'):
             parts = line.split(':')
-            if 'error' in parts[2]:
+            if 'error' in parts[2] or 'error' in parts[1]:
                 retcode = 1
                 break
 
