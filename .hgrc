@@ -4,12 +4,13 @@ ignore = ~/.hgignore_global
 ssh = ssh -C
 
 [extensions]
-mq =
 color =
 convert =
-hgk =
 fetch =
+hgk =
 pager =
+progress =
+record =
 
 [pager]
 pager = less -R
