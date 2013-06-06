@@ -9,4 +9,4 @@ FROM="${1%=*}"
 TO="${1#*=}"
 shift
 
-find "${@}" -perm "${FROM}" -print0 | xargs -0 chmod "${TO}"
+gfind "${@}" -perm "${FROM}" -print0 | xargs -0 chmod "${TO}"

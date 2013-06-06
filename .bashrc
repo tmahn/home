@@ -1,12 +1,8 @@
 # ~/.bashrc: executed by bash for interactive non-login shells
 
-set +o allexport
-
 # If this file is accidentally sourced multiple times, the next line will
 # print a warning. Run bash --login -xv to get a dump.
 readonly _HOME_BASHRC_ALREADY_READ=1
-
-cd "${HOME}"
 
 unalias -a
 
@@ -29,7 +25,10 @@ function check_exit_status ()
     fi
     return 0
 }
+PROMPT_COMMAND="check_exit_status; $PROMPT_COMMAND"
+PROMPT_COMMAND="${PROMPT_COMMAND%; }"
 
+## This was found on the internet many years ago
 cd_func ()
 {
   local x2 the_new_dir adir index
@@ -85,17 +84,7 @@ t a')"
   return 0
 }
 
-add-ssh-agent() {
-    local SOCK_CMD_FILE=~/.ssh/agent/${HOSTNAME}/sock
-    if [ -S "$SOCK_CMD_FILE" ]; then
-        export SSH_AUTH_SOCK="$SOCK_CMD_FILE"
-        # disabled by default so that a stray 'ssh-agent -k' won't bring
-        # down the master ssh-agent
-        # export SSH_AGENT_PID="$(<${SOCK_CMD_FILE%sock}pid)"
-    elif [ -f "$SOCK_CMD_FILE" ] && [ -s "$SOCK_CMD_FILE" ]; then
-        . "$SOCK_CMD_FILE"
-    fi
-}
+alias cd=cd_func
 
 ## Aliases
 
@@ -103,28 +92,25 @@ alias erase=rm
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
-alias ls='ls -AF --color=auto'
+alias ls='ls -AF'
+if type -p gls >& /dev/null; then
+  alias ls="gls --block-size=\"'1\" -A --color=auto"
+fi
 alias import="echo \"You thought you were in a python shell, didn't you?\"
               false"
-
-# builtins
-alias cd=cd_func
-
-# Use the real 'which'
-if alias -p |grep -q '^alias which='
-then
-    unalias which
-fi
+alias latex='latex -interaction=nonstopmode'
+alias pdflatex='pdflatex -interaction=nonstopmode'
+alias xelatex='xelatex -interaction=nonstopmode'
+alias tree='tree -aF'
 
 ## Variables for export
-export LS_COLORS='no=00:fi=00:di=34:ln=36:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=32:*.tar=31:*.tgz=31:*.arj=31:*.taz=31:*.lzh=31:*.zip=31:*.z=31:*.Z=31:*.gz=31:*.bz2=31:*.deb=31:*.rpm=31:*.jpg=35:*.png=35:*.gif=35:*.bmp=35:*.ppm=35:*.tga=35:*.xbm=35:*.xpm=35:*.tif=35:*.png=35:*.mpg=35:*.avi=35:*.fli=35:*.gl=35:*.dl=35:'
+export LS_COLORS='no=00:fi=00:di=34:ln=36:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=32:'
 export LSCOLORS="exgxfxdxcxdaDa"
+export CLICOLOR=1
 
 unset LD_ASSUME_KERNEL
 export EDITOR=vim
 export VISUAL=vim
-mkdir -p -m 700 ~/.vimtmp
-mkdir -p -m 700 ~/misc/bak
 export BLOCK_SIZE=1
 export PAGER=less
 export LESS='-iM -z-3'
@@ -139,68 +125,24 @@ export LESSKEY="${MY_LESSKEY}"
 if [ "${LESSKEY}key" -nt "${LESSKEY}" ]; then
    lesskey
 fi
-#export CONFIG_SITE="$HOME/.config.site"
 export PERLDOC_PAGER="less -fr"
-export PERL5LIB="$HOME/.perl/lib/perl5/site_perl/5.10"
 export RI="--format bs"
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
+
 unset LC_ALL
 export LANG=en_CA.UTF-8
-if [ -f ~/.locale/en_CA.UTF-8@iso8601/LC_TIME ]; then
-    export LOCPATH=~/.locale
-    export LC_TIME=en_CA.UTF-8@iso8601
-fi
-export SSL_CERT_DIR=~/.ssl
+
 export CVS_RSH=ssh
-
-if [ "${TERM}" != "cygwin" ]; then
-    # nroff (a shell script) only looks for UTF-8 (all uppercase) in LC_ALL,
-    # and then looks for utf-8 in LESSCHARSET
-    export LESSCHARSET=utf-8
-fi
-
-if [ "$OSTYPE" = "cygwin" ]; then
-    export SMLNJ_CYGWIN_RUNTIME=true
-    export TEMP=/tmp
-    export TMP="${TEMP}"
-    PATH="${HOME}/bin:${HOME}/usr/bin:${PATH}"
-fi
-
-# For MacPorts
-if [ -d "/opt/local/bin" ]; then
-    export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-    export MANPATH="/opt/local/share/man:$MANPATH"
-    export CFLAGS="$CFLAGS -I/opt/local/include"
-    export LDFLAGS="$LDFLAGS -L/opt/local/lib"
-    portto () {
-        if (( $# != 1 )); then
-            echo "Usage: ${FUNCNAME[0]} PORTNAME"
-            return 1
-        fi
-        local PORT="${1}" PORTDIR RET
-        PORTDIR="$(port dir "${PORT}")"
-        RET="${?}"
-        if (( RET != 0 )); then
-            return "${RET}"
-        fi
-        cd ~/.macports/"${PORTDIR}"
-    }
-fi
-
-PATH="${HOME}/bin:${PATH}"
 
 ## Shell settings
 
 shopt -s cdspell checkwinsize dotglob checkhash
+# Stop expansions like ~/.* from including ~/..
+export GLOBIGNORE="*/.:*/.."
 
-# Limits
 umask 022 # rw-r--r--
 
-# Prompt
-PROMPT_COMMAND=check_exit_status
-
-# Misc
 MAILCHECK=-1
 
 ## Terminal
@@ -230,86 +172,48 @@ case "${TERM}" in
 	    PS1="${PS1#\\[\\e\]0;\\w\\a\\\]}";;
 esac
 
-
-# For site-specific customizations, we map hostnames to 'sites', and then
-# source ~/.bashrc.site/$site
-#
-# Site-specific files may want to use functions defined here.
-function _bashrc_linux_style_prompt() {
-    PS1="${HOSTNAME%.*.*}"':\w>'
-    case "${LOGNAME}" in
-        *neitsch) ;;
-        *) PS1='\u@'"${PS1}" ;;
-    esac
-    # Xterm titles
-    case "${TERM}" in
-        xterm*)
-        PS1="\[\e[94m\]${PS1}\[\e[0m\]\[\033]0;"
-        PS1="${PS1}\$(date \"+%b %e %H:%M\") ${THEHOST}: \w\007\]"
-        if [ "x${LOGNAME}" = "xroot" ]
-        then
-            PS1="\[\e[48;5;201m\]${PS1}\[\e[0m\] "
-        fi;;
-    esac
-}
-
-function _bashrc_clean_path() {
-    # Given the name of a variable that contains a colon-separated list,
-    # remove duplicates and blanks from that list and export it.
-    eval local PATHTOCLEAN="\${${1}}"
-    PATHTOCLEAN="$(echo -n "${PATHTOCLEAN}" | awk '
-            BEGIN	  		{ RS = ":" }
-            !seen[$0] && $0 != "" 	{ seen[$0] = 1;
-                                          printf("%s:", $0)}')"
-    PATHTOCLEAN="${PATHTOCLEAN%:}"
-    eval export "${1}=\${PATHTOCLEAN}"
-}
-
-function _handle_site() {
-    local SITE="$1"
-    local SITE_FILE="${HOME}/.bashrc.site/$SITE.sh"
-    if [ -n "$SITE" ] && [ -r "$SITE_FILE" ]; then
-        . "$SITE_FILE"
-    fi
-}
-
-if [ "${OSTYPE#linux}" != "${OSTYPE}" ]; then
-    _handle_site linux
-fi
-if [ "${OSTYPE#darwin}" != "${OSTYPE}" ]; then
-    _bashrc_linux_style_prompt
-fi
-if [ -e "${HOME}/ts" ]; then
-    _handle_site ts
-fi
-if [ -e "${HOME}/cs.ualberta.ca" ]; then
-    _handle_site cs.ualberta.ca
-fi
-
-_bashrc_clean_path PATH
-# A blank entry seems to mean “use defaults too”
-#_bashrc_clean_path MANPATH
-_bashrc_clean_path INFOPATH
-_bashrc_clean_path LD_LIBRARY_PATH
+PS1="\u@\h:\w\$ "
+case "${TERM}" in
+   xterm-256color)
+     PS1="\[\e[38;5;18m\]${PS1}\[\e[0m\]" ;;
+   xterm*)
+     PS1="\[\e[34m\]${PS1}\[\e[0m\]" ;;
+   *) ;;
+esac
 
 # History settings
 HISTFILE=~/.bash_history
-HISTSIZE=10000000
+HISTSIZE=100000
 HISTFILESIZE=${HISTSIZE}
-HISTIGNORE=ignorespace
-HISTTIMEFORMAT="%s "
+HISTCONTROL=ignorespace
+# This is only used by the output of the history builtin
+HISTTIMEFORMAT="%a %Y-%m-%d %H:%M:%S "
+shopt -s histappend
 # I type exclamation marks in strings more often than I use the ! history
 # command, so place the history command on something unlikely to be typed.
 histchars=$'\177^#'
 export -n HISTFILE HISTSIZE HISTFILESIZE HISTIGNORE HISTTIMEFORMAT
 
-case "${OSTYPE}" in darwin*)
-	alias ls='ls -AFG'
-	;;
-esac
-
-export rvm_project_rvmrc=0
-[[ -s "/Users/andrew/.rvm/scripts/rvm" ]] && . "/Users/andrew/.rvm/scripts/rvm"
+# PATH parts, specified in order of preference, and only added if they exist
+for p in \
+  ~/bin \
+  ~/Library/Python/2.7/bin \
+  /opt/texlive2012/bin/x86_64-darwin \
+  /opt/homebrew/bin \
+  ;
+do
+  if [ -d "${p}" ]; then
+     EXTRA_PATH="${EXTRA_PATH}:${p}"
+  fi
+done
+EXTRA_PATH="${EXTRA_PATH#:}"
+PATH="${EXTRA_PATH}:${PATH}"
+for m in \
+  /opt/texlive2012/texmf/doc/man \
+  ;
+do
+  MANPATH="${m}:${MANPATH}"
+done
 
 # Needs to be last command in file
 #

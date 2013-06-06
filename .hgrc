@@ -1,7 +1,22 @@
 [ui]
-username = Andrew Neitsch <andrew@subjoin.net>
-ignore = ~/.hgignore
+username = Andrew Neitsch <andrew@neitsch.ca>
+ignore = ~/.hgignore_global
+ssh = ssh -C
 
 [extensions]
 mq =
 color =
+convert =
+hgk =
+fetch =
+pager =
+
+[pager]
+pager = less -R
+attend = diff, log
+
+[hgk]
+path = ~/xcvs/hg/contrib/hgk
+
+[web]
+cacerts = ~/.hgdummycert.pem

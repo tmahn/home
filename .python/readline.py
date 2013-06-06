@@ -61,10 +61,6 @@ def __readline_shim_setup():
     if sys.platform == 'darwin' and readline.__file__.startswith('/System'):
          readline.read_init_file()
 
-    # And getting all our hacks together -- clean up sys.path again
-    import sitecustomize
-    sitecustomize.customize()
-
 # Bindings in this module leak through to the real readline, so we create
 # only one with an unlikely name and remove it after.
 __readline_shim_setup()

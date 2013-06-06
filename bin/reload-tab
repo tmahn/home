@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# TODO:
+# - handle spaces in filenames
+# - handle http:// arguments
+
 set -eu
 
 if (( $# != 1 )); then

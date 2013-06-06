@@ -3,6 +3,7 @@
 # Run the W3C CSS Validator and print results in file:line:error format.
 
 import argparse
+import re
 import subprocess
 import sys
 
@@ -53,7 +54,7 @@ class ParserTarget(object):
         if tag == NS + 'line':
             self.line = self._get_data()
         elif tag == NS + 'message':
-            self.message = self._get_data()
+            self.message = re.sub(' {2,}', ' ', self._get_data())
         elif tag == NS + 'uri':
             self.uri = self._get_data()
             if self.uri.startswith('file:'):

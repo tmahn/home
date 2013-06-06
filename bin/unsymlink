@@ -7,7 +7,7 @@ set -eu
 
 for FILE in "${@}"; do
     if [ -h "${FILE}" ]; then
-       TMPFILE="$(mktemp)"
+       TMPFILE="$(mktemp XXXXXXXX)"
        cp -p -- "${FILE}" "${TMPFILE}"
        rm -f -- "${FILE}"
        mv -- "${TMPFILE}" "${FILE}"

@@ -1,8 +1,0 @@
-#!/bin/sh
-
-xrdb $HOME/.Xresources
-xsetroot -solid grey
-
-vncconfig -nowin &
-/opt/kde3/bin/startkde
-vncserver -kill "${DISPLAY}"

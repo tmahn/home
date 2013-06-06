@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# TODO: option to show sizes too
+
 r"""Print a summary of the number of files of each extension type, similar
 to what you'd hack up with
 

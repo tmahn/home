@@ -1,14 +1,17 @@
-" Auto-commands
+"Discuss  Auto-commands
 filetype plugin indent on
 
 augroup cprog
   au!
   autocmd BufRead *
-	\ set formatoptions=tcql autoindent tw=75 comments&
+	\ setlocal formatoptions=tcqln autoindent tw=75 comments&
+        \ formatlistpat=^\\s*\\(\\d\\+[\\]:.)}\t\ ]\\\\|\\[.\\]\\)\\s*
+
+  "     \ formatlistpat=^\\s*\\d\\+[\\]:.)}\t\ ]\\s*
   autocmd BufRead *.c,*.h
-        \ set formatoptions=croql cindent comments=sr:/*,mb:*,el:*/,://
+        \ setlocal formatoptions=croql cindent comments=sr:/*,mb:*,el:*/,://
   autocmd BufRead *.bib
-        \ set nocindent
+        \ setlocal nocindent
   " autocmd BufRead *.tex
   "       \ setlocal errorformat=%E!\ LaTeX\ %trror:\ %m,
   "           \%E!\ %m,
@@ -51,9 +54,9 @@ augroup cprog
                 \ end="\z1\|%stopzone\>"
                 \ contains=@Spell
   autocmd BufRead,BufNewFile *.rb,Rakefile,*.htm,*.html
-        \ set shiftwidth=2 softtabstop=2
-  autocmd BufRead,BufNewFile *.js
-        \ set indentkeys=!^F,o
+        \ setlocal shiftwidth=2 softtabstop=2
+  autocmd BufRead,BufNewFile *.js,*.html
+        \ setlocal indentkeys=!^F,o
 augroup END
 
 autocmd BufRead *.kid
@@ -71,7 +74,7 @@ if v:version>=700
 endif
 
 " Wrap when editing brand-new text files
-autocmd BufNewFile *.txt set tw=75 formatoptions+=t
+autocmd BufNewFile *.txt,*.md setlocal tw=75 formatoptions+=t
 
 " Vim tip 911; but read the comments on that tip before using it
 au BufReadPost * let b:reloadcheck=1
@@ -103,13 +106,26 @@ endif
 if &term == "cygwin"
     highlight Search ctermbg=Black ctermfg=Yellow cterm=reverse,bold
 endif
+highlight Folded term=NONE cterm=NONE ctermbg=230 ctermfg=240
+highlight FoldColumn ctermfg=240 ctermbg=7
+
+set fillchars=fold:\ 
+function MyFoldText()
+    let line = getline(v:foldstart)
+    "let sub = substitute(line, '/\*\|\*/\|{{{\d\=', '', 'g')
+    "return v:folddashes . sub
+    return printf('%4d lines %-3s %s',
+                \ v:foldend - v:foldstart + 1,
+                \ v:folddashes, line)
+endfunction
+set foldtext=MyFoldText()
 
 " Highlight trailing spaces, too-long lines in red in source code
 " the cino+= thing sets (mostly) Two Sigma indent rules
 " if your shiftwidth and tabstop and friends are set correctly
 " set verbose=9
 autocmd BufReadPost *.cc,*.cpp,*.cxx,*.C,*.java,*.c
-    \ set cino+=(s,W1,U1,u0
+    \ setlocal cino+=(s,W1,U1,u0
 autocmd BufReadPost *.java
     \ syntax region javaComment start=+/\*+ end=+\*/+
     \ contains=@javaCommentSpecial,javaTodo,@Spell,Error
@@ -192,8 +208,6 @@ set <kDivide>=Oo
 
 "" Settings
 set backspace=2
-set backup
-set backupdir=~/misc/bak
 set directory=~/.vimtmp
 set encoding=utf-8
 set expandtab
@@ -218,8 +232,14 @@ set statusline=%<%f\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P
 set t_vb=
 set tabstop=8
 set title
+au BufWritePre /private/var/tmp/hosts.* setlocal noundofile
+au BufWritePre hg-editor-*.txt setlocal noundofile
+au BufWritePre svn-commit*.tmp setlocal noundofile
+set undodir=.undo
+set undodir+=~/misc/undo
+set undofile
 set vb
-set viminfo='20,\"50,%
+set viminfo='20,\"50
 set visualbell t_vb=
 set whichwrap+=h,l,<,>,[,]
 
@@ -232,13 +252,18 @@ runtime! ftplugin/man.vim
 let &errorformat="ERROR:\ %f:%l:%c:\ %m," . &errorformat
 let &errorformat="iconv:\ %f:%l:%c:\ %m," . &errorformat
 let &errorformat="l.%l \ %m," . &errorformat
-" Error formats for pathscale compilers (or maybe icc... don't remember)
-set errorformat+=%E%f(%l):\ error\ #%n:\ %m
-set errorformat+=%E%f(%l):\ error:\ %m,%-Z%p^,%-C%.%#
 " This isn't quite right, but will be helpful for perl.
 set errorformat+=%m\ at\ %f\ line\ %l\\,\ near\ \"%.%#\"
 set errorformat+=%m\ at\ %f\ line\ %l\\,%.%#
 set errorformat+=%m\ at\ %f\ line\ %l.
+" GNU error format
+set errorformat+=%f:%l.%c-%*\\d.%*\\d:\ %m
+" Python tracebacks
+set errorformat+=%-C\ \ \ \ \ %\\\ %#\^
+set errorformat+=%C\ \ \ \ %m
+set errorformat+=%A\ \ File\ \"%f\"\\,\ line\ %l%.%#
+    " look for an Error: or Exception:
+set errorformat+=%+Z%[A-Za-z0-9_]%\\+E%[A-Za-z0-9_]%\\+:\ %\\@=%m
 
 "" Paths
 set path+=/usr/include/g++-3
@@ -250,6 +275,7 @@ set path+=/usr/include/mingw
 set path+=/usr/include/c++/3.3.1
 set path+=/usr/include/c++/3.3.1/i686-pc-mingw32
 set path+=/opt/local/include
+set path+=/opt/X11/include
 set path+=/opt/local/Library/Frameworks/Python.framework/Versions/2.6/include/python2.6
 set path+=/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Headers
 
@@ -265,5 +291,27 @@ endif
 " nmap <Esc>n nz<CR>
 " nmap <Esc>N Nz<CR>
 
+" Indent Python in the Google way.
+" from http://vimingwithbuttar.googlecode.com/hg/hacks.vim
+autocmd FileType python setlocal indentexpr=GetPythonIndent(v:lnum)
+autocmd FileType python setlocal indentexpr=GetPythonIndent(v:lnum)
+
+let s:maxoff = 100 " maximum number of lines to look backwards.
+
+let pyindent_nested_paren="&sw*2"
+let pyindent_open_paren="&sw*2"
+
+autocmd FileType python let pyindent_nested_paren="&sw*2"
+autocmd FileType python let pyindent_open_paren="&sw*2"
+" END -- Indent Python in the Google way.
+
+au BufWinLeave outline.txt mkview
+au BufRead outline.txt silent loadview
+" au BufWinLeave msc.tex mkview
+" au BufRead msc.tex silent loadview
+
 let perl_include_pod = 1
 let g:js_indent_log = 0
+
+autocmd FileType tex setlocal indentexpr=
+autocmd FileType tex hi texItalStyle cterm=none ctermfg=52

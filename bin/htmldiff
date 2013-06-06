@@ -1,17 +1,20 @@
 #!/bin/bash
+set -eu
 
-# would probably be a lot cleaner using the --{start,end}-{insert,delete}
-# options to wdiff
-
-wdiff -dn \
-    | sed \
+sed \
         -e 's/&/\&amp;/g' \
         -e 's/</\&lt;/g' \
         -e 's/>/\&gt;/g' \
-    | sed -e \
-        's/\[-/<font color="red"><s>/g' \
-        -e 's/-\]/<\/s><\/font>/g' \
-        -e 's/{+/<font color="blue">/g' \
-        -e 's/+}/<\/font>/g' \
-        -e 's/\\r/<br>/g' \
-        -e 's/$/<br>/g'
+    | wdiff -dn \
+        --start-insert='<font color="blue">' \
+        --end-insert='</font>' \
+        --start-delete='<font color="red"><s>' \
+        --end-delete='</font></s>' \
+    | tr '\r' '\n' \
+    | sed -e 's/$/<br>/g' \
+    | eval sed "$(for i in $(gseq 40 -1 1); do
+                        echo -n "-e 's/^$(for j in $(gseq 1 $i);
+                            do echo -n ' ';
+                        done)/$(for j in $(gseq 1 $i);
+                            do echo -n '\&nbsp;';
+                        done)/g' "; done)"
