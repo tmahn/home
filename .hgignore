@@ -1,8 +1,2 @@
 syntax: glob
 
-.vim/spell/*.dic
-.vim/spell/*.aff
-.vim/spell/dictionary.lst
-.vim/spell/README*.txt
-.vim/spell/*.sug
-.vim/spell/*.spl

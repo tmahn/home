@@ -3,46 +3,15 @@ filetype plugin indent on
 
 augroup cprog
   au!
-  autocmd BufRead *
+  autocmd BufRead,BufNewFile *
 	\ setlocal formatoptions=tcqln autoindent tw=75 comments&
         \ formatlistpat=^\\s*\\(\\d\\+[\\]:.)}\t\ ]\\\\|\\[.\\]\\)\\s*
-
-  "     \ formatlistpat=^\\s*\\d\\+[\\]:.)}\t\ ]\\s*
   autocmd BufRead *.c,*.h
         \ setlocal formatoptions=croql cindent comments=sr:/*,mb:*,el:*/,://
   autocmd BufRead *.bib
         \ setlocal nocindent
-  " autocmd BufRead *.tex
-  "       \ setlocal errorformat=%E!\ LaTeX\ %trror:\ %m,
-  "           \%E!\ %m,
-  "           "\%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#,
-  "           \%+W%.%#\ at\ lines\ %l--%*\\d,
-  "           "\%WLaTeX\ %.%#Warning:\ %m,
-  "           \%Cl.%l\ %m,
-  "           \%+C\ \ %m.,
-  "           \%+C%.%#-%.%#,
-  "           \%+C%.%#[]%.%#,
-  "           \%+C[]%.%#,
-  "           \%+C%.%#%[{}\\]%.%#,
-  "           \%+C<%.%#>%.%#,
-  "           \%C\ \ %m,
-  "           \%-GSee\ the\ LaTeX%m,
-  "           \%-GType\ \ H\ <return>%m,
-  "           \%-G\ ...%.%#,
-  "           \%-G%.%#\ (C)\ %.%#,
-  "           \%-G(see\ the\ transcript%.%#),
-  "           \%-G\\s%#,
-  "           \%+O(%*[^()])%r,
-  "           \%+O%*[^()](%*[^()])%r,
-  "           \%+P(%f%r,
-  "           \%+P\ %\\=(%f%r,
-  "           \%+P%*[^()](%f%r,
-  "           \%+P[%\\d%[^()]%#(%f%r,
-  "           \%+Q)%r,
-  "           \%+Q%*[^()])%r,
-  "           \%+Q[%\\d%*[^()])%r
   autocmd BufRead *.tex
-        \ let &errorformat="iconv:\ %f:%l:%c:\ %m," . &errorformat
+        \ setlocal errorformat="iconv:\ %f:%l:%c:\ %m," . &errorformat
   autocmd BufRead *.tex
         \ syn region texZone
                 \ start="\\begin{program}"
@@ -57,6 +26,9 @@ augroup cprog
         \ setlocal shiftwidth=2 softtabstop=2
   autocmd BufRead,BufNewFile *.js,*.html
         \ setlocal indentkeys=!^F,o
+  " :setfileytype only sets filetype if it isn’t already set
+  autocmd BufNewFile,BufRead *.md
+        \ set filetype=markdown | syntax clear
 augroup END
 
 autocmd BufRead *.kid
@@ -97,7 +69,7 @@ if &term == "xterm" || &term == "xterm-256color"
     highlight Visual ctermbg=183
 endif
 if &term == "xterm-color"
-    " test: collr color. colour 
+    " test: collr color. colour
     set background=light
     highlight SpellBad ctermbg=NONE ctermfg=magenta cterm=NONE
     highlight SpellCap ctermbg=NONE ctermfg=cyan cterm=NONE
@@ -129,10 +101,9 @@ autocmd BufReadPost *.cc,*.cpp,*.cxx,*.C,*.java,*.c
 autocmd BufReadPost *.java
     \ syntax region javaComment start=+/\*+ end=+\*/+
     \ contains=@javaCommentSpecial,javaTodo,@Spell,Error
-if $VIM_HIGHLIGHT_LONG_LINES != ""
-    highlight TooLongLineError ctermbg=198 ctermfg=190
-    autocmd BufReadPost * match TooLongLineError /\%>80v/
-endif
+" This would be useful if it only applied to source code
+"highlight TooLongLineError ctermfg=240
+"autocmd BufReadPost * match TooLongLineError /\%>80v/
 highlight TrailingSpaceError ctermbg=196
 if v:version>=700
     autocmd BufReadPost * 2match TrailingSpaceError /\s\+$/
@@ -161,16 +132,9 @@ imap <Nul> <Space>
 imap <Esc>[3;2~ <C-h>
 cmap <Esc>[3;2~ <C-h>
 
-" This makes tab and shift-tab indent and unindent
-" You might need to add \"Shift<Key>Tab: string(\033[Z) \n\" to your VT100
-" translations for S-Tab to work in an xterm
-" nnoremap <Tab> >>
-nnoremap <S-Tab> <LT><LT>
-" vnoremap <Tab> >
-vnoremap <S-Tab> <LT>
 " Tab should indent (jump up to the next indent increment multiple), and
 " shift-tab should unindent
-"inoremap <Tab> <C-T>
+" inoremap <Tab> <C-T>
 inoremap <S-Tab> <C-D>
 
 " Emacs compatibility
@@ -207,6 +171,9 @@ set <kMultiply>=Oj
 set <kDivide>=Oo
 
 "" Settings
+if !isdirectory($HOME . "/.vimtmp")
+    call mkdir($HOME . "/.vimtmp", "", 0700)
+endif
 set backspace=2
 set directory=~/.vimtmp
 set encoding=utf-8
@@ -236,10 +203,11 @@ au BufWritePre /private/var/tmp/hosts.* setlocal noundofile
 au BufWritePre hg-editor-*.txt setlocal noundofile
 au BufWritePre svn-commit*.tmp setlocal noundofile
 set undodir=.undo
-set undodir+=~/misc/undo
+set undodir+=~/.vimtmp
 set undofile
 set vb
 set viminfo='20,\"50
+set viewdir=~/.vimtmp/view
 set visualbell t_vb=
 set whichwrap+=h,l,<,>,[,]
 
@@ -290,6 +258,10 @@ endif
 " For browsing by regexes...
 " nmap <Esc>n nz<CR>
 " nmap <Esc>N Nz<CR>
+
+autocmd FileType make
+    \ setlocal list listchars=tab:t\ 
+    \ softtabstop=4
 
 " Indent Python in the Google way.
 " from http://vimingwithbuttar.googlecode.com/hg/hacks.vim
