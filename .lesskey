@@ -1,7 +1,0 @@
-#command
-\e[5~	back-screen
-\e[6~	forw-screen
-
-#line-edit
-\e\b	word-backspace
-\e\177	word-backspace

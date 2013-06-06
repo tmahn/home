@@ -117,14 +117,6 @@ export LESS='-iM -z-3'
 if less --help |grep -q -- --mouse-support; then
     export LESS="${LESS} --mouse-support"
 fi
-MY_LESSKEY="${HOME}/.less"
-if [ "${LESSKEY}" != "${MY_LESSKEY}" ]; then
-    export SYSTEM_LESSKEY="${LESSKEY}"
-fi
-export LESSKEY="${MY_LESSKEY}"
-if [ "${LESSKEY}key" -nt "${LESSKEY}" ]; then
-   lesskey
-fi
 export PERLDOC_PAGER="less -fr"
 export RI="--format bs"
 export PYTHONSTARTUP=~/.pyrc
