@@ -65,8 +65,13 @@ if &term == "xterm" || &term == "xterm-256color"
     " Turn on 256 colours for xterms
     set t_Co=256 t_Sf=<Esc>[38;5;%p1%m t_Sb=<Esc>[48;5;%p1%m
     " Very bright search highlighting
-    highlight Search ctermbg=190
+    highlight Search ctermbg=226
+    highlight IncSearch ctermbg=226 ctermfg=0 cterm=bold
     highlight Visual ctermbg=183
+    highlight StatusLineNC ctermfg=0 ctermbg=252 cterm=NONE
+    highlight StatusLine ctermfg=0 ctermbg=252 cterm=bold
+    highlight SpellCap ctermbg=254
+    highlight SpellLocal ctermbg=254
 endif
 if &term == "xterm-color"
     " test: collr color. colour
