@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-"""%(prog) [options] KLCFILE
+u"""%(prog) [options] KLCFILE
 
 Read a .KLC file saved by Microsoft Keyboard Layout Creator, and print
 an equivalent xkb_symbol description.
@@ -184,7 +184,7 @@ def main(args=None):
     if options.compose_file is not None:
         with open(options.compose_file, 'w') as compose_file:
             for key in layout.deadkeys:
-                print >> compose_file, key.to_xcompose_str()
+                print >> compose_file, key.to_xcompose_str().encode('UTF-8')
 
 if __name__ == '__main__':
     sys.exit(main())
