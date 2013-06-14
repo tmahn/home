@@ -1,0 +1,5 @@
+# This is sourced by the /usr/sbin/lightdm-session script on Ubuntu
+# See http://askubuntu.com/a/150488 <-- Thorough and understandable!
+
+xset b off
+make -C ~/.xkb install
