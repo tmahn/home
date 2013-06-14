@@ -4,6 +4,9 @@
 # print a warning. Run bash --login -xv to get a dump.
 readonly _HOME_BASHRC_ALREADY_READ=1
 
+unset LC_ALL
+export LANG=en_CA.UTF-8
+
 unalias -a
 
 function check_exit_status ()
@@ -84,6 +87,27 @@ t a')"
   return 0
 }
 
+# PATH parts, specified in order of preference, and only added if they exist
+for p in \
+  ~/bin \
+  ~/Library/Python/2.7/bin \
+  /opt/texlive2012/bin/x86_64-darwin \
+  /opt/homebrew/bin \
+  ;
+do
+  if [ -d "${p}" ]; then
+     EXTRA_PATH="${EXTRA_PATH}:${p}"
+  fi
+done
+EXTRA_PATH="${EXTRA_PATH#:}"
+PATH="${EXTRA_PATH}:${PATH}"
+for m in \
+  /opt/texlive2012/texmf/doc/man \
+  ;
+do
+  MANPATH="${m}:${MANPATH}"
+done
+
 alias cd=cd_func
 
 ## Aliases
@@ -92,9 +116,12 @@ alias erase=rm
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
+if grep --help 2>&1 | grep -q color; then
+  alias grep='grep --color=auto'
+fi
 alias ls='ls -AF'
 if type -p gls >& /dev/null; then
-  alias ls="gls --block-size=\"'1\" -A --color=auto"
+  alias ls="gls --block-size=\"'1\" -AF --color=auto"
 fi
 alias import="echo \"You thought you were in a python shell, didn't you?\"
               false"
@@ -121,9 +148,6 @@ export PERLDOC_PAGER="less -fr"
 export RI="--format bs"
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
-
-unset LC_ALL
-export LANG=en_CA.UTF-8
 
 export CVS_RSH=ssh
 
@@ -154,6 +178,7 @@ case "${TERM}" in
             export LESS_TERMCAP_md=$'\e[35m'
             export LESS_TERMCAP_us=$'\e[38;5;19m'
             export LESS_TERMCAP_ue=$'\e[0m'
+            export GREP_COLOR='48;5;226'
             ;;
 
     xterm*)
@@ -186,27 +211,6 @@ shopt -s histappend
 # command, so place the history command on something unlikely to be typed.
 histchars=$'\177^#'
 export -n HISTFILE HISTSIZE HISTFILESIZE HISTIGNORE HISTTIMEFORMAT
-
-# PATH parts, specified in order of preference, and only added if they exist
-for p in \
-  ~/bin \
-  ~/Library/Python/2.7/bin \
-  /opt/texlive2012/bin/x86_64-darwin \
-  /opt/homebrew/bin \
-  ;
-do
-  if [ -d "${p}" ]; then
-     EXTRA_PATH="${EXTRA_PATH}:${p}"
-  fi
-done
-EXTRA_PATH="${EXTRA_PATH#:}"
-PATH="${EXTRA_PATH}:${PATH}"
-for m in \
-  /opt/texlive2012/texmf/doc/man \
-  ;
-do
-  MANPATH="${m}:${MANPATH}"
-done
 
 # Needs to be last command in file
 #
