@@ -45,17 +45,17 @@ XTerm.toolBar: false
 *VT100.color13: magenta3
 *VT100.color14: cyan3
 
-/* Words, but with unicode support */
+! Words, but with unicode support
 *VT100.on2Clicks: regex [[:alnum:]._~-]+
-/* Paths and URLs */
+! Paths and URLs
 *VT100.on3Clicks: regex ([[:alpha:]]+:\/\/)?([[:alnum:]!#+,./=?@_~-]|(%[[:xdigit:]][[:xdigit:]]))+
 
-/* Mac keyboard shortcuts for X11:
- * Command-C/V for copy/paste
- * Command-N for a new terminal in the current directory
- * Shift-Command-R to reset the screen
- * Command-/ for autocomplete, but only for matching at the very beginning
- *     of whitespace-delimited tokens */
+! Mac keyboard shortcuts for X11:
+!   Command-C/V for copy/paste
+!   Command-N for a new terminal in the current directory
+!   Shift-Command-R to reset the screen
+!   Command-/ for autocomplete, but only for matching at the very beginning
+!     of whitespace-delimited tokens */
 *VT100.translations: #override \
 	!Super<KeyPress>n: spawn-new-terminal() \n\
 	!Super<KeyPress>c: copy-selection(CLIPBOARD) \n\
