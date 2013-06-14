@@ -87,27 +87,56 @@ t a')"
   return 0
 }
 
-# PATH parts, specified in order of preference, and only added if they exist
-for p in \
+add_to_path() {
+    # add_to_path VAR DIR...
+    #
+    # Adds each DIR that exists on disk to the front of the colon-separated
+    # list $VAR. If DIR Is already in the list, it is moved to the front.
+    #
+    # For example,
+    #   add_to_path PATH ~/bin /opt/local/bin
+    # is like doing
+    #   PATH=~/bin:/opt/local/bin:${PATH}
+    # except that the directories will be added to the front of $PATH only
+    # if they exist, and will not appear multiple times in $PATH.
+
+    path_name="${1}"
+    shift
+    eval local path=\"\${"${path_name}"}\"
+
+    # Add leading and trailing colon to match on :/path-path:
+    local path="${path%:}:"
+    path=":${path#:}"
+    local extra_parts=
+
+    for arg in "${@}"; do
+        if [ -d "${arg}" ]; then
+            # Need to loop because // cannot remove overlapping duplicates
+            # like :foo:foo:
+            while [ "${path}" != "${path//:${arg}:/:}" ]; do
+                path="${path//:${arg}:/:}"
+            done
+            extra_parts="${extra_parts}:${arg}"
+        fi
+    done
+    extra_parts="${extra_parts#:}"
+    path="${path%:}"
+    path="${path#:}"
+
+    path="${extra_parts}:${path}"
+    # Clean again in case either part was empty
+    path="${path%:}"
+    path="${path%#}"
+    eval "${path_name}"="\${path}"
+}
+
+add_to_path PATH \
   ~/bin \
   ~/Library/Python/2.7/bin \
   ~/.local/bin \
   /opt/texlive2012/bin/x86_64-darwin \
   /opt/homebrew/bin \
   ;
-do
-  if [ -d "${p}" ]; then
-     EXTRA_PATH="${EXTRA_PATH}:${p}"
-  fi
-done
-EXTRA_PATH="${EXTRA_PATH#:}"
-PATH="${EXTRA_PATH}:${PATH}"
-for m in \
-  /opt/texlive2012/texmf/doc/man \
-  ;
-do
-  MANPATH="${m}:${MANPATH}"
-done
 
 alias cd=cd_func
 
