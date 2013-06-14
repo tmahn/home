@@ -48,8 +48,10 @@ def symlink_files(repo, target):
                 os.symlink(target_link, dstfile)
 
 def main():
-    symlink_files(path('~/home').expanduser(), path('~').expanduser())
-    symlink_files(path('~/home-private').expanduser(), path('~').expanduser())
+    for p in [path('~/home').expanduser(),
+              path('~/home-private').expanduser()]:
+        if p.exists():
+            symlink_files(p, path('~').expanduser())
 
 if __name__ == '__main__':
     main()
