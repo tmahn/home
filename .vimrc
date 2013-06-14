@@ -262,6 +262,8 @@ endif
 autocmd FileType make
     \ setlocal list listchars=tab:t\ 
     \ softtabstop=4
+autocmd FileChangedRO *
+    \ setlocal nomodifiable
 
 " Indent Python in the Google way.
 " from http://vimingwithbuttar.googlecode.com/hg/hacks.vim
