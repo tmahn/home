@@ -91,6 +91,7 @@ t a')"
 for p in \
   ~/bin \
   ~/Library/Python/2.7/bin \
+  ~/.local/bin \
   /opt/texlive2012/bin/x86_64-darwin \
   /opt/homebrew/bin \
   ;
