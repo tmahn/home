@@ -4,13 +4,20 @@ ignore = ~/.hgignore_global
 ssh = ssh -C
 
 [extensions]
+blackbox =
 color =
 convert =
 fetch =
 hgk =
+# mq provides strip
+mq =
 pager =
 progress =
 record =
+
+[blackbox]
+maxsize=500KB
+maxfiles=2
 
 [pager]
 pager = less -R
