@@ -28,6 +28,7 @@ XTerm.toolBar: false
 *VT100.font5: -misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1
 *VT100.font6: -misc-fixed-medium-r-normal--20-200-75-75-c-100-iso10646-1
 
+*VT100.boldColors: false
 *VT100.foreground: black
 *VT100.background: rgb:F2/F2/F2
 *VT100.color0: black
