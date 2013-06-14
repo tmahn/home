@@ -123,6 +123,8 @@ fi
 alias ls='ls -AF'
 if type -p gls >& /dev/null; then
   alias ls="gls --block-size=\"'1\" -AF --color=auto"
+elif ls --version 2>71 | grep -q GNU; then
+  alias ls="ls --block-size=\"'1\" -AF --color=auto"
 fi
 alias import="echo \"You thought you were in a python shell, didn't you?\"
               false"
