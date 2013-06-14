@@ -2,15 +2,23 @@
 
 set -eu
 
-PROG="$(basename -- "${0}")"
-
 case "${OSTYPE}" in
-    (cygwin) O=(cygstart);;
-    (linux)  O=(kfmclient exec);;
-    (linux-gnu) O=(setsid gnome-open);;
-    (darwin*)O=(open);;
-    (*)      echo "${PROG}: uhh..." 1>&2
-             exit 1
+    cygwin)
+        O=(cygstart) ;;
+    darwin*)
+        O=(open) ;;
+    *)
+        if type -p xdg-open >& /dev/null; then
+            O=(xdg-open)
+        elif type -p gnome-open >& /dev/null; then
+            O=(gnome-open)
+        elif type -p kfmclient >& /dev/null; then
+            O=(kfmclient exec)
+        else
+            PROG="$(basename -- "${0}")"
+            echo "${PROG}: No opener command found." 1>&2
+            exit 1
+        fi ;;
 esac
 
 # Close standard file descriptors to keep the spawned process from hogging
