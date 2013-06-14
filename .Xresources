@@ -1,0 +1,217 @@
+#ifdef COLOR
+*customization:	-color
+#endif
+
+*MenuButton.shapeStyle: roundedRectangle
+*MenuButton.borderWidth: 1
+
+*beNiceToColormap:  False
+
+*VT100*colorMode: on
+*VT100*boldColors: on
+*VT100*dynamicColors: on
+
+! Uncomment this to use color for underline attribute
+! *VT100*colorULMode: on
+! *VT100*underLine: on
+! *VT100*colorBDMode: on
+! *VT100*colorAttrMode: on
+! *VT100*colorUL: red2
+! *VT100*colorBD: magenta2
+
+xterm*vt100.loginShell: true
+xterm*vt100.saveLines: 10000
+XTerm*scrollBar: false
+XTerm*termName: xterm-256color
+
+/* True-type font support */
+XTerm*VT100.renderFont: false
+XTerm*VT100.faceName: Consolas
+XTerm*VT100.faceSize: 10
+Xterm*VT100.italicULMode: true
+
+!xterm.vt100.font: -*-lucidatypewriter-medium-*-normal-*-14-*-*-*-*-*-*-*
+!xterm.vt100.font: -*-fixed-*-*-*-*-16-*-*-*-*-*-iso8859-*
+XTerm*VT100.font2:	-misc-fixed-medium-r-normal--8-80-75-75-c-50-iso10646-1
+XTerm*VT100.font:	-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso10646-1
+XTerm*VT100.font3:	-misc-fixed-medium-r-normal--14-130-75-75-c-70-iso10646-1
+XTerm*VT100.font4:	-misc-fixed-medium-r-normal--13-120-75-75-c-80-iso10646-1
+XTerm*VT100.font5:	-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1
+XTerm*VT100font6:	-misc-fixed-medium-r-normal--20-200-75-75-c-100-iso10646-1
+
+!xterm.vt100.geometry: 80x35
+xterm*backarrowKeyIsErase : true
+xterm*vt100.backarrowKey: false
+xterm*vt100.background: rgb:F2/F2/F2
+xterm*vt100.foreground: black
+
+XTerm*Logging:  true
+XTerm*Logfile:  |xtermlogger
+
+xterm*vt100.utf8: 2
+xterm*vt100.locale: false
+xterm*toolBar: false
+
+xterm*vt100.color0: black
+xterm*vt100.color1: red4
+xterm*vt100.color2: green4
+xterm*vt100.color3: yellow4
+xterm*vt100.color4: blue4
+xterm*vt100.color5: magenta4
+xterm*vt100.color6: cyan4
+
+/* bold versions of above */
+xterm*vt100.color9:  red3
+xterm*vt100.color10: green3
+xterm*vt100.color11: yellow3
+xterm*vt100.color12: blue3
+xterm*vt100.color13: magenta3
+xterm*vt100.color14: cyan3
+
+XTerm*metaSendsEscape: true
+
+/** XXX If I were doing this again, I'd use the modifyOtherKeys resource
+ ** and use the same escape sequences that that ouputs */
+/* In order to be able to use Control-x where x is outside "a-z@[]_\", we
+ * have to make up our own control codes. */
+XTerm*VT100.translations: #override \
+	! Shift<Key>Tab:	string(\033[Z) \n\
+	! Ctrl<Key>1:	string(\033[[c1) \n\
+	! Ctrl<Key>2:	string(\033[[c2) \n\
+	! Ctrl<Key>3:	string(\033[[c3) \n\
+	! Ctrl<Key>4:	string(\033[[c4) \n\
+	! Ctrl<Key>5:	string(\033[[c5) \n\
+	! Ctrl<Key>6:	string(\033[[c6) \n\
+	! Ctrl<Key>7:	string(\033[[c7) \n\
+	! Ctrl<Key>8:	string(\033[[c8) \n\
+	! Ctrl<Key>9:	string(\033[[c9) \n\
+	! Ctrl<Key>0:	string(\033[[c0) \n\
+	! Ctrl<Key>-:	string(\033[[c-) \n\
+	! Ctrl<Key>=:	string(\033[[c=) \n\
+	! Ctrl<Key>/:	string(\033[[c/) \n\
+	! Shift Ctrl<Key>1:	string(\033[[C1) \n\
+	! Shift Ctrl<Key>2:	string(\033[[C2) \n\
+	! Shift Ctrl<Key>3:	string(\033[[C3) \n\
+	! Shift Ctrl<Key>4:	string(\033[[C4) \n\
+	! Shift Ctrl<Key>5:	string(\033[[C5) \n\
+	! Shift Ctrl<Key>6:	string(\033[[C6) \n\
+	! Shift Ctrl<Key>7:	string(\033[[C7) \n\
+	! Shift Ctrl<Key>8:	string(\033[[C8) \n\
+	! Shift Ctrl<Key>9:	string(\033[[C9) \n\
+	! Shift Ctrl<Key>0:	string(\033[[C0) \n\
+	! Shift Ctrl<Key>=:	string(\033[[C+) \n\
+	! Shift Ctrl<Key>?:	string(\033[[C?) \n\
+	! Shift Ctrl<Key>/:	string(\033[[C/) \n\
+        /* We bind Alt-Space [n,x,r] to minimize, maximize, and restore,
+         * because that’s what we’ve been doing every since windows 3.1
+         * The ‘$ ’ is funky; according to the manual,
+         *
+         *   “In key sequences, a circumflex (^) is an abbreviation for
+         *    the Control modifier, a dollar sign ($) is an abbreviation
+         *    for Meta, and a backslash (\) can be used to quote any
+         *    character, in particular a double quote, a circumflex
+         *    (^), a dollar sign ($), and another backslash (\).”
+         *
+         * Unfortunately, until we figure out more about X, this causes us
+         * to lose the Alt-Space key. */ \
+        "$ n": 	                iconify() \n\
+        "$ x": 	                maximize() \n\
+        "$ r": 	                restore() \n\
+        /* We might not need these if we used #augment... not sure. */ \
+        "n": 	                insert() \n\
+        "x": 	                insert() \n\
+        "r": 	                insert() \n\
+        /* Just playing around here */ \
+        "$ t":                  set-altscreen(toggle) \n\
+        "t":                    insert() \n\
+        "$ v":                  insert-selection(PRIMARY) \n\
+     /* "$ d":                  spawn-new-terminal() \n\ */ \
+        "$ f":                  hard-reset() \n\
+     /* "$ /":                  dabbrev-expand() \n\ */ \
+        "v":                    insert() \n\
+        "d":                    insert() \n\
+        "f":                    insert() \n\
+        "/":                    insert() \n\
+
+oclock.customization: -color
+
+*.shapeWindow: True
+
+xfontsel*menu.options.showUnselectable:False
+xfontsel*scaledFonts: true
+
+/* Ghostview spartan layout */
+!gv.control.MButton.font:		-*-Helvetica-Medium-R-Normal--*-120-*-*-P-*-ISO8859-1
+!gv.control.MButton.font:	-microsoft-microsoft sans serif-medium-r-normal-*-12-*-*-*-*-*-*-*
+gv*orientationButton*forcedWidth:	72
+gv*upsidedown.Label:			Up-Down
+gv.?.processButton.label:		\ working
+
+!##### Main Layout
+
+gv*control.layout:			\
+|v{					\
+  f=4					\
+  sss=2					\
+  pbh=(100*(|height processButton))	\
+  pbs1=($pbh/($pbh+1))			\
+  $f					\
+  |h{					\
+    $f					\
+    |v{ 				\
+      titleButton<+200-[1]*-100%>	\
+      1					\
+      dateButton<+200-[1]*-100%>	\
+      4					\
+      |h{				\
+        2<+[1]>				\
+        locator<*-100%>			\
+        1<+[1]>				\
+      }					\
+      4					\
+      fileButton<+50*-100%>		\
+      1					\
+      stateButton<+50*-100%>		\
+      1					\
+      pageButton<+50*-100%>		\
+      1					\
+      orientationButton<+50-100*-100%>	\
+      1					\
+      scaleButton<+50*-100%>		\
+      1					\
+      pagemediaButton<+50-[1]*-100%>	\
+      (4*$pbs1)				\
+      |h{				\
+        0<+[1]>				\
+        processButton<+50*-100%>	\
+        0<+[1]>				\
+      }					\
+      4					\
+      |h{				\
+        0<+[1]>				\
+        pannerFrame<*-100%>		\
+        0<+[1]>				\
+      }					\
+      4					\
+      |h{				\
+        prevPage<+60*-100%>		\
+        1				\
+        nextPage<+60*-100%>		\
+      }					\
+      4					\
+      |h{				\
+        0<+30>				\
+        newtocScroll<*+200[1]-[1]>	\
+        4				\
+        newtocFrame<-[1]*+200[1]-[1]>	\
+        0<+30>				\
+      }					\
+    }					\
+    $f					\
+    |v{					\
+      viewFrame<+[2]-100%*+9999-100%>	\
+    }					\
+    $f					\
+  }					\
+  $f					\
+}
