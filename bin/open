@@ -6,7 +6,7 @@ case "${OSTYPE}" in
     cygwin)
         O=(cygstart) ;;
     darwin*)
-        O=(open) ;;
+        O=(/usr/bin/open) ;;
     *)
         if type -p xdg-open >& /dev/null; then
             O=(xdg-open)
