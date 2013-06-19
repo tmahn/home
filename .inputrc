@@ -29,5 +29,10 @@ set input-meta off
 "\e[OD": ""
 
 $if python
-"\t": complete
+    "\t": complete
+$endif
+
+$if Bash
+    set mark-directories on
+    set mark-symlinked-directories on
 $endif
