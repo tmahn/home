@@ -28,8 +28,11 @@ augroup cprog
         \ setlocal indentkeys=!^F,o
   " :setfileytype only sets filetype if it isn’t already set
   autocmd BufNewFile,BufRead *.md
-        \ set filetype=markdown | syntax clear
+        \ setlocal filetype=markdown | syntax clear
 augroup END
+
+autocmd BufNewFile,BufRead *.lytex
+        \ setlocal filetype=tex
 
 autocmd BufRead *.kid
         \ setfiletype xml
@@ -267,6 +270,8 @@ endif
 autocmd FileType make
     \ setlocal list listchars=tab:t\ 
     \ softtabstop=4
+autocmd FileType ruby
+    \ setlocal sw=2
 autocmd BufReadPost *
     \ if &readonly |
     \     set nomodifiable |
