@@ -163,7 +163,7 @@ alias xelatex='xelatex -interaction=nonstopmode'
 alias tree='tree -aF'
 
 ## Variables for export
-export LS_COLORS='no=00:fi=00:di=34:ln=36:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=32:'
+export LS_COLORS='no=00:fi=00:di=34:ln=36:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=32:ow=48;5;158:'
 export LSCOLORS="exgxfxdxcxdaDa"
 export CLICOLOR=1
 
