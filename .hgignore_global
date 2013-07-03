@@ -1,0 +1,16 @@
+syntax:glob
+
+x1
+x1.*
+*.pyc
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+*.DS_Store
+*.o
+Thumbs.db
+*.orig
+*.rej
+tmp

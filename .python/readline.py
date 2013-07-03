@@ -31,7 +31,7 @@ def __readline_shim_setup():
         paths = sys.path
 
         mod_dir = dirname(filename)
-        paths = filter(lambda x: x != mod_dir, sys.path)
+        paths = list(filter(lambda x: x != mod_dir, sys.path))
 
         while paths:
             real_module = imp.find_module(name, paths)
@@ -55,9 +55,11 @@ def __readline_shim_setup():
         readline.read_history_file(HIST_FILE)
     atexit.register(lambda: readline.write_history_file(HIST_FILE))
 
-    # And getting all our hacks together -- clean up sys.path again
-    import sitecustomize
-    sitecustomize.customize()
+    # Stock python on Mac OS uses libedit under a readline interface, and
+    # needs to be told to re-read ~/.editrc. But doing that makes up- and
+    # down-arrow keys for history not work on linux.
+    if sys.platform == 'darwin' and readline.__file__.startswith('/System'):
+         readline.read_init_file()
 
 # Bindings in this module leak through to the real readline, so we create
 # only one with an unlikely name and remove it after.

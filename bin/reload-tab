@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# TODO:
+# - handle spaces in filenames
+# - handle http:// arguments
+
+set -eu
+
+if (( $# != 1 )); then
+    echo RTFSRC 1>&2
+    exit 1
+fi
+
+ABSPATH="$(cd "$(dirname -- "${1}")" && pwd -P)/$(basename -- "${1}")"
+
+osascript -e '
+on run argv
+    set progressURL to "file://localhost" & item 1 of argv
+
+    tell application "Google Chrome"
+    	
+    	-- reload tab if visible
+    	repeat with w in windows
+    		repeat with t in tabs of w
+			if URL of t = progressURL or URL of t starts with progressURL & "#" then
+    				reload t
+    				if w is visible then
+    					tell current application to log "reloaded"
+    				end if
+    			end if
+    		end repeat
+    	end repeat
+    	
+    end tell
+
+end run' "${ABSPATH}"

@@ -1,18 +1,11 @@
-# .bashrc
-
-set +o allexport
-# Use "man initfiles" for more documentation.
-# Do not take the following lines out unless you're really sure of
-# what you are doing.
+# ~/.bashrc: executed by bash for interactive non-login shells
 
 # If this file is accidentally sourced multiple times, the next line will
 # print a warning. Run bash --login -xv to get a dump.
 readonly _HOME_BASHRC_ALREADY_READ=1
 
-defaultsdir=/usr/local/lib/initfiles
-if [ -r "$defaultsdir/system-bashrc" ]; then
-   source "$defaultsdir/system-bashrc"
-fi
+unset LC_ALL
+export LANG=en_CA.UTF-8
 
 unalias -a
 
@@ -35,7 +28,10 @@ function check_exit_status ()
     fi
     return 0
 }
+PROMPT_COMMAND="check_exit_status; $PROMPT_COMMAND"
+PROMPT_COMMAND="${PROMPT_COMMAND%; }"
 
+## This was found on the internet many years ago
 cd_func ()
 {
   local x2 the_new_dir adir index
@@ -46,9 +42,11 @@ cd_func ()
     return 0
   fi
 
-  set -- "$(echo $1 |sed -e ':a;s/\.\.\./\.\.\/\.\./g;t a')"
-  the_new_dir=$1
-  [[ -z $1 ]] && the_new_dir=$HOME
+  set -- "$(echo "$1" |sed -e ':a
+s@\.\.\.@../..@g
+t a')"
+  the_new_dir="$1"
+  [[ -z "$1" ]] && the_new_dir="$HOME"
 
   if [[ ${the_new_dir:0:1} == '-' ]]; then
     #
@@ -89,82 +87,58 @@ cd_func ()
   return 0
 }
 
-## FUCK!
-# Replace default completion routine because it keeps trying to add '.d' to
-# everything
-function _cd_ () 
-{ 
-    local c=${COMP_WORDS[COMP_CWORD]};
-    local s g=0;
-    local IFS='
-';
-    shopt -q extglob && g=1;
-    test $g -eq 0 && shopt -s extglob;
-    case "$(complete -p $1)" in 
-        mkdir)
+add_to_path() {
+    # add_to_path VAR DIR...
+    #
+    # Adds each DIR that exists on disk to the front of the colon-separated
+    # list $VAR. If DIR Is already in the list, it is moved to the front.
+    #
+    # For example,
+    #   add_to_path PATH ~/bin /opt/local/bin
+    # is like doing
+    #   PATH=~/bin:/opt/local/bin:${PATH}
+    # except that the directories will be added to the front of $PATH only
+    # if they exist, and will not appear multiple times in $PATH.
 
-        ;;
-        *)
-            s="-S/"
-        ;;
-    esac;
-    case "$c" in 
-        \$\(*\))
-            eval COMPREPLY=(${c})
-        ;;
-        \$\(*)
-            COMPREPLY=($(compgen -c -P '$(' -S ')'	-- ${c#??}))
-        ;;
-        \`*\`)
-            eval COMPREPLY=(${c})
-        ;;
-        \`*)
-            COMPREPLY=($(compgen -c -P '\`' -S '\`' -- ${c#?}))
-        ;;
-        \$\{*\})
-            eval COMPREPLY=(${c})
-        ;;
-        \$\{*)
-            COMPREPLY=($(compgen -v -P '${' -S '}'	-- ${c#??}))
-        ;;
-        \$*)
-            COMPREPLY=($(compgen -v -P '$' $s	-- ${c#?}))
-        ;;
-        \~*/*)
-            COMPREPLY=($(compgen -d $s		-- "${c}"))
-        ;;
-        \~*)
-            COMPREPLY=($(compgen -u $s		-- "${c}"))
-        ;;
-    esac;
-    case "$1" in 
-        mkdir)
-            if test "$c" != "." -a "$c" != ".."; then
-                #for x in $(compgen -f -S .d -- "${c%.}");
-                for x in $(compgen -f -- "${c%.}");
-                do
-                    if test -d "${x}" -o -d "${x%.d}"; then
-                        continue;
-                    fi;
-                    COMPREPLY=(${COMPREPLY[@]} ${x});
-                done;
-            fi
-        ;;
-    esac;
-    test $g -eq 0 && shopt -u extglob
+    path_name="${1}"
+    shift
+    eval local path=\"\${"${path_name}"}\"
+
+    # Add leading and trailing colon to match on :/path-path:
+    local path="${path%:}:"
+    path=":${path#:}"
+    local extra_parts=
+
+    for arg in "${@}"; do
+        if [ -d "${arg}" ]; then
+            # Need to loop because // cannot remove overlapping duplicates
+            # like :foo:foo:
+            while [ "${path}" != "${path//:${arg}:/:}" ]; do
+                path="${path//:${arg}:/:}"
+            done
+            extra_parts="${extra_parts}:${arg}"
+        fi
+    done
+    extra_parts="${extra_parts#:}"
+    path="${path%:}"
+    path="${path#:}"
+
+    path="${extra_parts}:${path}"
+    # Clean again in case either part was empty
+    path="${path%:}"
+    path="${path%#}"
+    eval "${path_name}"="\${path}"
 }
 
-add-ssh-agent() {
-    local SOCK_CMD_FILE=~/.ssh/agent/${HOSTNAME}/sock
-    if [ -S "$SOCK_CMD_FILE" ]; then
-        export SSH_AUTH_SOCK="$SOCK_CMD_FILE"
-        # disabled by default so that a stray 'ssh-agent -k' won't bring
-        # down the master ssh-agent
-        # export SSH_AGENT_PID="$(<${SOCK_CMD_FILE%sock}pid)"
-    elif [ -f "$SOCK_CMD_FILE" ] && [ -s "$SOCK_CMD_FILE" ]; then
-        . "$SOCK_CMD_FILE"
-    fi
-}
+add_to_path PATH \
+  ~/bin \
+  ~/Library/Python/2.7/bin \
+  ~/.local/bin \
+  /opt/texlive2012/bin/x86_64-darwin \
+  /opt/homebrew/bin \
+  ;
+
+alias cd=cd_func
 
 ## Aliases
 
@@ -172,80 +146,51 @@ alias erase=rm
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
-alias ls='ls -AF --color=auto'
+if grep --help 2>&1 | grep -q color; then
+  alias grep='grep --color=auto'
+fi
+alias ls='ls -AF'
+if type -p gls >& /dev/null; then
+  alias ls="gls --block-size=\"'1\" -AF --color=auto"
+elif ls --version 2>&1 | grep -q GNU; then
+  alias ls="ls --block-size=\"'1\" -AF --color=auto"
+fi
 alias import="echo \"You thought you were in a python shell, didn't you?\"
               false"
-
-# builtins
-alias cd=cd_func
-
-# Use the real 'which'
-if alias -p |grep -q '^alias which='
-then
-    unalias which
-fi
+alias latex='latex -interaction=nonstopmode'
+alias pdflatex='pdflatex -interaction=nonstopmode'
+alias xelatex='xelatex -interaction=nonstopmode'
+alias tree='tree -aF'
 
 ## Variables for export
-export LS_COLORS='no=00:fi=00:di=34:ln=36:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=32:*.tar=31:*.tgz=31:*.arj=31:*.taz=31:*.lzh=31:*.zip=31:*.z=31:*.Z=31:*.gz=31:*.bz2=31:*.deb=31:*.rpm=31:*.jpg=35:*.png=35:*.gif=35:*.bmp=35:*.ppm=35:*.tga=35:*.xbm=35:*.xpm=35:*.tif=35:*.png=35:*.mpg=35:*.avi=35:*.fli=35:*.gl=35:*.dl=35:'
+export LS_COLORS='no=00:fi=00:di=34:ln=36:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=32:ow=48;5;158:'
+export LSCOLORS="exgxfxdxcxdaDa"
+export CLICOLOR=1
 
 unset LD_ASSUME_KERNEL
 export EDITOR=vim
 export VISUAL=vim
-mkdir -p -m 700 ~/.vimtmp
-mkdir -p -m 700 ~/misc/bak
 export BLOCK_SIZE=1
+export PAGER=less
 export LESS='-iM -z-3'
 if less --help |grep -q -- --mouse-support; then
     export LESS="${LESS} --mouse-support"
 fi
-MY_LESSKEY="${HOME}/.less"
-if [ "${LESSKEY}" != "${MY_LESSKEY}" ]; then
-    export SYSTEM_LESSKEY="${LESSKEY}"
-fi
-export LESSKEY="${MY_LESSKEY}"
-if [ "${LESSKEY}key" -nt "${LESSKEY}" ]; then
-   lesskey
-fi
-export CONFIG_SITE="$HOME/.config.site"
 export PERLDOC_PAGER="less -fr"
 export RI="--format bs"
-export CFLAGS='-Wall'
-export LDFLAGS='-lm'
-export CC='gcc'
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
-export LC_ALL=en_CA.utf-8 # C
-# nroff (a shell script) only looks for UTF-8 (all uppercase) in LC_ALL,
-# and then looks for utf-8 in LESSCHARSET
-export LESSCHARSET=utf-8
-if [ "$OSTYPE" = "cygwin" ]; then
-    export SMLNJ_CYGWIN_RUNTIME=true
-fi
 
-# Personal time zone
-PERSONAL_TZ="${HOME}/Andrew_Neitsch"
-PERSONAL_TZC="${PERSONAL_TZ}.tzc"
-if [ "${PERSONAL_TZ}" -nt "${PERSONAL_TZC}" ] \
-    && type -p personaltz > /dev/null
-then
-    personaltz "${PERSONAL_TZ}"
-fi
-if [ -f "${PERSONAL_TZC}" ]; then
-    export TZ="${PERSONAL_TZC}"
-fi
-
+export CVS_RSH=ssh
 
 ## Shell settings
 
 shopt -s cdspell checkwinsize dotglob checkhash
+# Stop expansions like ~/.* from including ~/..
+export GLOBIGNORE="*/.:*/.."
 
-# Limits
 umask 022 # rw-r--r--
 
-# Prompt
-PROMPT_COMMAND=check_exit_status
-
-# Misc
 MAILCHECK=-1
 
 ## Terminal
@@ -254,79 +199,50 @@ MAILCHECK=-1
 if [ -t 0 ];
 then
     stty sane
+    stty stop ''
+    stty start ''
+    stty werase ''
 fi
 
 case "${TERM}" in
-    xterm*)
     # http://nion.modprobe.de/blog/archives/572-less-colors-for-man-pages.html
-	    export LESS_TERMCAP_md=$'\e[38;5;54m';;
+    xterm-256color)
+            export LESS_TERMCAP_md=$'\e[35m'
+            export LESS_TERMCAP_us=$'\e[38;5;19m'
+            export LESS_TERMCAP_ue=$'\e[0m'
+            export GREP_COLOR='48;5;226'
+            ;;
+
+    xterm*)
+	    export LESS_TERMCAP_md=$'\e[35m';;
     dumb)
 	    # The default cygwin prompt sets the xterm title, which gets
 	    # mangled in xemacs shell mode.
 	    PS1="${PS1#\\[\\e\]0;\\w\\a\\\]}";;
 esac
 
-
-# For site-specific customizations, we map hostnames to 'sites', and then
-# source ~/.bashrc.site/$site
-#
-# Site-specific files may want to use functions defined here.
-function _bashrc_linux_style_prompt() {
-    PS1="${HOSTNAME%.*.*}"':\w>'
-    case "${LOGNAME}" in
-        *neitsch) ;;
-        *) PS1='\u@'"${PS1}" ;;
-    esac
-    # Xterm titles
-    if [ "x${TERM}" = "xxterm" ]
-    then
-        PS1="\[\e[94m\]${PS1}\[\e[0m\]\[\033]0;"
-        PS1="${PS1}\$(date \"+%b %e %H:%M\") ${THEHOST}: \w\007\]"
-        if [ "x${LOGNAME}" = "xroot" ]
-        then
-            PS1="\[\e[48;5;201m\]${PS1}\[\e[0m\] "
-        fi
-    fi
-}
-
-function _bashrc_clean_path() {
-    # Given the name of a variable that contains a colon-separated list,
-    # remove duplicates and blanks from that list and export it.
-    eval local PATHTOCLEAN="\${${1}}"
-    PATHTOCLEAN="$(echo -n "${PATHTOCLEAN}" | awk '
-            BEGIN	  		{ RS = ":" }
-            !seen[$0] && $0 != "" 	{ seen[$0] = 1;
-                                          printf("%s:", $0)}')"
-    PATHTOCLEAN="${PATHTOCLEAN%:}"
-    eval export "${1}=\${PATHTOCLEAN}"
-}
-
-function _handle_site() {
-    local SITE="$1"
-    local SITE_FILE="${HOME}/.bashrc.site/$SITE.sh"
-    if [ -n "$SITE" ] && [ -r "$SITE_FILE" ]; then
-        . "$SITE_FILE"
-    fi
-}
-
-if [ "${OSTYPE#linux}" != "${OSTYPE}" ]; then
-    _handle_site linux
-fi
-if [ -e "${HOME}/ts" ]; then
-    _handle_site ts
-fi
-
-_bashrc_clean_path PATH
-_bashrc_clean_path MANPATH
-_bashrc_clean_path INFOPATH
-_bashrc_clean_path LD_LIBRARY_PATH
+PS1="\u@\h:\w\$ "
+TERM_EXTRA="\e]2;\D{%a %b %e %l:%m %p}\a"
+case "${TERM}" in
+   xterm-256color)
+     PS1="\[\e[38;5;18m\]${PS1}\[\e[0m${TERM_EXTRA}\]" ;;
+   xterm*)
+     PS1="\[\e[34m\]${PS1}\[\e[0m${TERM_EXTRA}\]" ;;
+   *) ;;
+esac
 
 # History settings
 HISTFILE=~/.bash_history
-HISTSIZE=10000000
+HISTSIZE=100000
 HISTFILESIZE=${HISTSIZE}
-HISTIGNORE=ignorespace
-export -n HISTFILE HISTSIZE HISTFILESIZE HISTIGNORE
+HISTCONTROL=ignorespace
+# This is only used by the output of the history builtin
+HISTTIMEFORMAT="%a %Y-%m-%d %H:%M:%S "
+shopt -s histappend
+# I type exclamation marks in strings more often than I use the ! history
+# command, so place the history command on something unlikely to be typed.
+histchars=$'\177^#'
+export -n HISTFILE HISTSIZE HISTFILESIZE HISTIGNORE HISTTIMEFORMAT
 
 # Needs to be last command in file
 #

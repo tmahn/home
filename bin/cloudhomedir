@@ -1,0 +1,57 @@
+#!/usr/bin/env python2.7
+
+# v1: symlink files in ~/home into ~, making directories as needed
+
+from __future__ import print_function
+
+import os
+
+from path import path
+
+IGNORED_PATH_PARTS = ['.hg', 'doc', 'notes.txt']
+
+def _raise(e):
+    raise e
+
+def symlink_files(repo, target):
+    for root, dirs, files in os.walk(repo, onerror=_raise):
+
+        if root == '.':
+            continue
+
+        for ign in IGNORED_PATH_PARTS:
+            if ign in dirs:
+                dirs.remove(ign)
+
+        relroot = root.relpath(repo)
+        dst = target.joinpath(relroot)
+        if not dst.isdir():
+            dst.mkdir()
+        for file in files:
+            if file in IGNORED_PATH_PARTS:
+                continue
+
+            dstfile = dst.joinpath(file)
+            target_link = root.joinpath(file).relpath(dst)
+
+            if os.path.lexists(dstfile):
+                if not os.path.islink(dstfile):
+                    print("Error", dstfile,
+                          "already exists and is a regular file.")
+                else:
+                    dstlink = os.readlink(dstfile)
+                    if dstlink != target_link:
+                        print("Error", dstfile, "already exists",
+                              "but points to", dstlink)
+            else:
+                print("Linking", target_link, "to", dstfile)
+                os.symlink(target_link, dstfile)
+
+def main():
+    for p in [path('~/home').expanduser(),
+              path('~/home-private').expanduser()]:
+        if p.exists():
+            symlink_files(p, path('~').expanduser())
+
+if __name__ == '__main__':
+    main()
