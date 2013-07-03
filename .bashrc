@@ -134,7 +134,7 @@ add_to_path PATH \
   ~/bin \
   ~/Library/Python/2.7/bin \
   ~/.local/bin \
-  /opt/texlive2012/bin/x86_64-darwin \
+  /opt/texlive2013/bin/x86_64-darwin \
   /opt/homebrew/bin \
   ;
 
