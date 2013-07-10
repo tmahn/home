@@ -213,6 +213,7 @@ au BufWritePre svn-commit*.tmp setlocal noundofile
 set undodir=.undo
 set undodir+=~/.vimtmp
 set undofile
+set undolevels=10000
 set vb
 set viminfo='20,\"50
 set viewdir=~/.vimtmp/view
@@ -274,7 +275,7 @@ autocmd FileType ruby
     \ setlocal sw=2
 autocmd BufReadPost *
     \ if &readonly |
-    \     set nomodifiable |
+    \     setlocal nomodifiable |
     \ endif
 
 " Indent Python in the Google way.
