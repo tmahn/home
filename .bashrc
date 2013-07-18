@@ -127,16 +127,31 @@ add_to_path() {
     # Clean again in case either part was empty
     path="${path%:}"
     path="${path%#}"
-    eval "${path_name}"="\${path}"
+    eval export "${path_name}"="\${path}"
 }
 
 add_to_path PATH \
-  ~/bin \
-  ~/Library/Python/2.7/bin \
-  ~/.local/bin \
-  /opt/texlive2013/bin/x86_64-darwin \
-  /opt/homebrew/bin \
-  ;
+    ~/bin \
+    ~/Library/Python/2.7/bin \
+    ~/.local/bin \
+    /opt/texlive2013/bin/x86_64-darwin \
+    /opt/homebrew/bin \
+    ;
+
+# Homebrew defaults to deleting all info pages
+# https://github.com/mxcl/homebrew/commit/557f500d11f2
+export HOMEBREW_KEEP_INFO=1
+
+add_to_path INFOPATH \
+    /opt/homebrew/share/info \
+    ;
+
+MANPATH="$(manpath)"
+add_to_path MANPATH \
+    /Library/Java/JavaVirtualMachines/*/Contents/Home/man \
+    /usr/llvm-gcc-*/share/man \
+    ~/Library/Python/*/lib/python/site-packages/*.egg/share/man \
+    ;
 
 alias cd=cd_func
 
