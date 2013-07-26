@@ -34,57 +34,57 @@ PROMPT_COMMAND="${PROMPT_COMMAND%; }"
 ## This was found on the internet many years ago
 cd_func ()
 {
-  local x2 the_new_dir adir index
-  local -i cnt
+    local x2 the_new_dir adir index
+    local -i cnt
 
-  if [[ $1 ==  "--" ]]; then
-    dirs -v
-    return 0
-  fi
+    if [[ $1 ==  "--" ]]; then
+        dirs -v
+        return 0
+    fi
 
-  set -- "$(echo "$1" |sed -e ':a
+    set -- "$(echo "$1" |sed -e ':a
 s@\.\.\.@../..@g
 t a')"
-  the_new_dir="$1"
-  [[ -z "$1" ]] && the_new_dir="$HOME"
+    the_new_dir="$1"
+    [[ -z "$1" ]] && the_new_dir="$HOME"
 
-  if [[ ${the_new_dir:0:1} == '-' ]]; then
-    #
-    # Extract dir N from dirs
-    index=${the_new_dir:1}
-    [[ -z $index ]] && index=1
-    adir=$(dirs +$index)
-    [[ -z $adir ]] && return 1
-    the_new_dir=$adir
-  fi
-
-  #
-  # '~' has to be substituted by ${HOME}
-  [[ ${the_new_dir:0:1} == '~' ]] && the_new_dir="${HOME}${the_new_dir:1}"
-
-  #
-  # Now change to the new dir and add to the top of the stack
-  pushd "${the_new_dir}" > /dev/null
-  [[ $? -ne 0 ]] && return 1
-  the_new_dir=$(pwd)
-
-  #
-  # Trim down everything beyond 11th entry
-  popd -n +15 2>/dev/null 1>/dev/null
-
-  #
-  # Remove any other occurence of this dir, skipping the top of the stack
-  for ((cnt=1; cnt <= 10; cnt++)); do
-    x2=$(dirs +${cnt} 2>/dev/null)
-    [[ $? -ne 0 ]] && return 0
-    [[ ${x2:0:1} == '~' ]] && x2="${HOME}${x2:1}"
-    if [[ "${x2}" == "${the_new_dir}" ]]; then
-      popd -n +$cnt 2>/dev/null 1>/dev/null
-      cnt=cnt-1
+    if [[ ${the_new_dir:0:1} == '-' ]]; then
+        #
+        # Extract dir N from dirs
+        index=${the_new_dir:1}
+        [[ -z $index ]] && index=1
+        adir=$(dirs +$index)
+        [[ -z $adir ]] && return 1
+        the_new_dir=$adir
     fi
-  done
 
-  return 0
+    #
+    # '~' has to be substituted by ${HOME}
+    [[ ${the_new_dir:0:1} == '~' ]] && the_new_dir="${HOME}${the_new_dir:1}"
+
+    #
+    # Now change to the new dir and add to the top of the stack
+    pushd "${the_new_dir}" > /dev/null
+    [[ $? -ne 0 ]] && return 1
+    the_new_dir=$(pwd)
+
+    #
+    # Trim down everything beyond 11th entry
+    popd -n +15 2>/dev/null 1>/dev/null
+
+    #
+    # Remove any other occurence of this dir, skipping the top of the stack
+    for ((cnt=1; cnt <= 10; cnt++)); do
+        x2=$(dirs +${cnt} 2>/dev/null)
+        [[ $? -ne 0 ]] && return 0
+        [[ ${x2:0:1} == '~' ]] && x2="${HOME}${x2:1}"
+        if [[ "${x2}" == "${the_new_dir}" ]]; then
+            popd -n +$cnt 2>/dev/null 1>/dev/null
+            cnt=cnt-1
+        fi
+    done
+
+    return 0
 }
 
 add_to_path() {
@@ -162,13 +162,7 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
 if grep --help 2>&1 | grep -q color; then
-  alias grep='grep --color=auto'
-fi
-alias ls='ls -AF'
-if type -p gls >& /dev/null; then
-  alias ls="gls --block-size=\"'1\" -AF --color=auto"
-elif ls --version 2>&1 | grep -q GNU; then
-  alias ls="ls --block-size=\"'1\" -AF --color=auto"
+    alias grep='grep --color=auto'
 fi
 alias import="echo \"You thought you were in a python shell, didn't you?\"
               false"
@@ -176,6 +170,12 @@ alias latex='latex -interaction=nonstopmode'
 alias pdflatex='pdflatex -interaction=nonstopmode'
 alias xelatex='xelatex -interaction=nonstopmode'
 alias tree='tree -aF'
+alias ls='ls -AF'
+if type -p gls >& /dev/null; then
+    alias ls="gls --block-size=\"'1\" -AF --color=auto"
+elif ls --version 2>&1 | grep -q GNU; then
+    alias ls="ls --block-size=\"'1\" -AF --color=auto"
+fi
 
 ## Variables for export
 export LS_COLORS='no=00:fi=00:di=34:ln=36:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=32:ow=48;5;158:'
