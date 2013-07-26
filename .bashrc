@@ -170,11 +170,51 @@ alias latex='latex -interaction=nonstopmode'
 alias pdflatex='pdflatex -interaction=nonstopmode'
 alias xelatex='xelatex -interaction=nonstopmode'
 alias tree='tree -aF'
-alias ls='ls -AF'
+
 if type -p gls >& /dev/null; then
-    alias ls="gls --block-size=\"'1\" -AF --color=auto"
+    LS_CMD=gls
 elif ls --version 2>&1 | grep -q GNU; then
-    alias ls="ls --block-size=\"'1\" -AF --color=auto"
+    LS_CMD=ls
+else
+    alias ls='ls -AF'
+fi
+
+if [ -n "${LS_CMD}" ]; then
+    # Process argument list and insert --si if -h is given
+    ls() {
+        local ARGS=()
+        local process=true
+        local dash_h_seen=false
+        for A in "${@}"; do
+            if ! $process; then
+                ARGS+=("${A}")
+                continue
+            fi
+
+            if [ "${A}" = "--" ]; then
+                process=false
+                if $dash_h_seen; then
+                    ARGS+=("--si")
+                fi
+            fi
+
+            if (( ${#A} >= 2 )); then
+                if [ "${A:0:1}" = "-" ] && [ "${A:1:1}" != "-" ]; then
+                    for (( i = 0; i < ${#A}; i++ )); do
+                        if [ "${A:i:1}" = "h" ]; then
+                            dash_h_seen=true
+                        fi
+                    done
+                fi
+            fi
+
+            ARGS+=("${A}")
+        done
+        if $process && $dash_h_seen; then
+            ARGS+=("--si")
+        fi
+        "${LS_CMD}" --block-size=\'1 -AF --color=auto "${ARGS[@]}"
+    }
 fi
 
 ## Variables for export
