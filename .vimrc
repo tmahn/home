@@ -207,12 +207,14 @@ set statusline=%<%f\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P
 set t_vb=
 set tabstop=8
 set title
-au BufWritePre /private/var/tmp/hosts.* setlocal noundofile
-au BufWritePre hg-editor-*.txt setlocal noundofile
-au BufWritePre svn-commit*.tmp setlocal noundofile
-set undodir=.undo
-set undodir+=~/.vimtmp
-set undofile
+if v:version>=703
+    au BufWritePre /private/var/tmp/hosts.* setlocal noundofile
+    au BufWritePre hg-editor-*.txt setlocal noundofile
+    au BufWritePre svn-commit*.tmp setlocal noundofile
+    set undodir=.undo
+    set undodir+=~/.vimtmp
+    set undofile
+endif
 set undolevels=10000
 set vb
 set viminfo='20,\"50
