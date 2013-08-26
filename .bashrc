@@ -243,7 +243,7 @@ alias tree='tree -aF'
 if type -p gls >& /dev/null; then
     LS_CMD=gls
 elif ls --version 2>&1 | grep -q GNU; then
-    LS_CMD=ls
+    LS_CMD=/bin/ls
 else
     alias ls='ls -AF'
 fi
