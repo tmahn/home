@@ -199,11 +199,17 @@ add_to_path PATH \
     ~/.local/bin \
     /opt/texlive2013/bin/x86_64-darwin \
     /opt/homebrew/bin \
+    /opt/vagrant/bin \
     ;
 
 # Homebrew defaults to deleting all info pages
 # https://github.com/mxcl/homebrew/commit/557f500d11f2
 export HOMEBREW_KEEP_INFO=1
+
+# Keep Vagrant VMs where they won’t clog Time Machine
+case "${OSTYPE}" in
+    darwin*) export VAGRANT_VMWARE_CLONE_DIRECTORY=~/Virtual\ Machines.localized/Vagrant
+esac
 
 add_to_path INFOPATH \
     /opt/homebrew/share/info \
