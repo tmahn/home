@@ -241,12 +241,12 @@ alias xelatex='xelatex -interaction=nonstopmode'
 alias tree='tree -aF'
 
 if type -p gls >& /dev/null; then
-    LS_CMD=gls
+    GNU_LS_CMD=gls
 elif ls --version 2>&1 | grep -q GNU; then
-    LS_CMD="$(type -p ls)"
+    GNU_LS_CMD="$(type -p ls)"
 fi
 
-if [ -n "${LS_CMD}" ]; then
+if [ -n "${GNU_LS_CMD}" ]; then
     # Process argument list and insert --si if -h is given
     ls() {
         local ARGS=()
@@ -280,7 +280,7 @@ if [ -n "${LS_CMD}" ]; then
         if $process && $dash_h_seen; then
             ARGS+=("--si")
         fi
-        "${LS_CMD}" --block-size=\'1 -AF --color=auto "${ARGS[@]}"
+        "${GNU_LS_CMD}" --block-size=\'1 -AF --color=auto "${ARGS[@]}"
     }
 else
     alias ls='ls -AF'
