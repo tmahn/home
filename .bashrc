@@ -243,9 +243,7 @@ alias tree='tree -aF'
 if type -p gls >& /dev/null; then
     LS_CMD=gls
 elif ls --version 2>&1 | grep -q GNU; then
-    LS_CMD=/bin/ls
-else
-    alias ls='ls -AF'
+    LS_CMD="$(type -p ls)"
 fi
 
 if [ -n "${LS_CMD}" ]; then
@@ -284,6 +282,8 @@ if [ -n "${LS_CMD}" ]; then
         fi
         "${LS_CMD}" --block-size=\'1 -AF --color=auto "${ARGS[@]}"
     }
+else
+    alias ls='ls -AF'
 fi
 
 ## Variables for export
