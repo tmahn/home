@@ -281,7 +281,7 @@ if [ -n "${GNU_LS_CMD}" ]; then
         if $process && $dash_h_seen; then
             ARGS+=("--si")
         fi
-        "${GNU_LS_CMD}" --block-size=\'1 -AF --color=auto "${ARGS[@]}"
+        "${GNU_LS_CMD}" "--block-size='1" -AF --color=auto "${ARGS[@]}"
     }
 else
     alias ls='ls -AF'
