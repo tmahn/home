@@ -196,6 +196,7 @@ add_to_path() {
 add_to_path PATH \
     ~/bin \
     ~/Library/Python/2.7/bin \
+    ~/.gem/ruby/2.0.0/bin \
     ~/.local/bin \
     /opt/texlive2013/bin/x86_64-darwin \
     /opt/homebrew/bin \
