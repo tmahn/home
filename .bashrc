@@ -209,7 +209,10 @@ export HOMEBREW_KEEP_INFO=1
 
 # Keep Vagrant VMs where they won’t clog Time Machine
 case "${OSTYPE}" in
-    darwin*) export VAGRANT_VMWARE_CLONE_DIRECTORY=~/Virtual\ Machines.localized/Vagrant
+    darwin*)
+        export VAGRANT_VMWARE_CLONE_DIRECTORY=~/Virtual\ Machines.localized/Vagrant
+        export VAGRANT_DEFAULT_PROVIDER=vmware_fusion
+        ;;
 esac
 
 add_to_path INFOPATH \
