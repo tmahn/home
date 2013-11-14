@@ -309,6 +309,15 @@ export RI="--format bs"
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
 
+for possible_gem_home in \
+    ~/.gem/ruby/2.0.0 \
+        ; do
+    if [ -d "${possible_gem_home}" ]; then
+        export GEM_HOME="${possible_gem_home}"
+        break
+    fi
+done
+
 export CVS_RSH=ssh
 
 ## Shell settings
