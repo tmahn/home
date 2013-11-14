@@ -29,7 +29,7 @@ augroup cprog
   " :setfileytype only sets filetype if it isn’t already set
   autocmd BufNewFile,BufRead *.md
         \ setlocal filetype=markdown | syntax clear
-  autocmd BufNewFile,BufRead Vagrantfile
+  autocmd BufNewFile,BufRead Vagrantfile,*.thor
         \ setlocal filetype=ruby
 augroup END
 
