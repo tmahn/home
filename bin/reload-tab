@@ -15,14 +15,14 @@ ABSPATH="$(cd "$(dirname -- "${1}")" && pwd -P)/$(basename -- "${1}")"
 
 osascript -e '
 on run argv
-    set progressURL to "file://localhost" & item 1 of argv
+    set fileURL to "file://" & item 1 of argv
 
     tell application "Google Chrome"
     	
     	-- reload tab if visible
     	repeat with w in windows
     		repeat with t in tabs of w
-			if URL of t = progressURL or URL of t starts with progressURL & "#" then
+			if URL of t = fileURL or URL of t starts with fileURL & "#" then
     				reload t
     				if w is visible then
     					tell current application to log "reloaded"
