@@ -116,7 +116,7 @@ autocmd BufReadPost *.java
 "autocmd BufReadPost * match TooLongLineError /\%>80v/
 highlight TrailingSpaceError ctermbg=196
 if v:version>=700
-    autocmd BufReadPost * 2match TrailingSpaceError /\s\+$/
+    autocmd BufNewFile,BufReadPost * 2match TrailingSpaceError /\s\+$/
 endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                                                 Test lines               
