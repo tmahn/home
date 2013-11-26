@@ -277,6 +277,8 @@ autocmd FileType make
     \ softtabstop=4
 autocmd FileType ruby
     \ setlocal sw=2
+autocmd FileType gitconfig
+    \ setlocal sw=8 noexpandtab
 autocmd BufReadPost *
     \ if &readonly |
     \     setlocal nomodifiable |
