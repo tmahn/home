@@ -198,9 +198,11 @@ add_to_path PATH \
     ~/Library/Python/2.7/bin \
     ~/.gem/ruby/2.0.0/bin \
     ~/.local/bin \
+    /Library/Java/JavaVirtualMachines/jdk*/Contents/Home/bin \
     /opt/texlive2013/bin/x86_64-darwin \
     /opt/homebrew/bin \
     /opt/vagrant/bin \
+    /usr/libexec \
     ;
 
 # Homebrew defaults to deleting all info pages
