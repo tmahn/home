@@ -11,9 +11,62 @@ if (( $# != 1 )); then
     exit 1
 fi
 
+BROWSER=com.apple.safari
+
+if [ -e ~/Library/Preferences/com.apple.LaunchServices.plist ]; then
+    BROWSER="$(python -c "
+# coding UTF-8
+import json
+import os.path
+import subprocess
+
+plutil = subprocess.Popen(['plutil', '-convert', 'json', '-o', '-', '-r',
+    os.path.expanduser('~/Library/Preferences/com.apple.LaunchServices.plist')],
+    stdout=subprocess.PIPE)
+plutil_out, _ = plutil.communicate()
+
+launch_services_prefs = json.loads(plutil_out)
+for entry in launch_services_prefs['LSHandlers']:
+    # This isn’t quite right, because in theory you could have different
+    # defaults for http: URLs vs. .html files. But when I set .html files
+    # to Always Open  With, say firefox, the plist doesn’t seem to update.
+    if entry.get(u'LSHandlerURLScheme', None) == u'http':
+        print entry.get(u'LSHandlerRoleAll')
+")"
+fi
+
 ABSPATH="$(cd "$(dirname -- "${1}")" && pwd -P)/$(basename -- "${1}")"
 
-osascript -e '
+case "${BROWSER}" in
+    *.safari)
+        echo safari
+        echo $ABSPATH
+exec osascript -e '
+on run argv
+
+    set fileURL to "file://" & item 1 of argv
+
+    tell application "Safari"
+    	set numWindows to count of windows
+    	repeat with windowNumber from 1 to numWindows
+    		set curWindow to window windowNumber
+    		if curWindow is visible then
+    			set numTabs to (count of tabs of curWindow)
+    			repeat with tabNumber from 1 to numTabs
+    				set curTab to tab tabNumber of curWindow
+    				if URL of curTab = fileURL then
+    					set URL of curTab to fileURL
+    				end if
+    			end repeat
+    		end if
+    	end repeat
+
+    end tell
+
+end run' "${ABSPATH}"
+        ;;
+    *.chrome)
+exec osascript -e '
 on run argv
     set fileURL to "file://" & item 1 of argv
 
@@ -34,3 +87,8 @@ on run argv
     end tell
 
 end run' "${ABSPATH}"
+        ;;
+    *)
+        echo "$0: Don’t know how to reload tabs for $BROWSER" 1>&2
+        exit 1
+esac
