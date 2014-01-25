@@ -209,14 +209,6 @@ add_to_path PATH \
 # https://github.com/mxcl/homebrew/commit/557f500d11f2
 export HOMEBREW_KEEP_INFO=1
 
-# Keep Vagrant VMs where they won’t clog Time Machine
-case "${OSTYPE}" in
-    darwin*)
-        export VAGRANT_VMWARE_CLONE_DIRECTORY=~/Virtual\ Machines.localized/Vagrant
-        export VAGRANT_DEFAULT_PROVIDER=vmware_fusion
-        ;;
-esac
-
 add_to_path INFOPATH \
     /opt/homebrew/share/info \
     ;
@@ -319,6 +311,14 @@ for possible_gem_home in \
         break
     fi
 done
+
+# Keep Vagrant VMs where they won’t clog Time Machine
+case "${OSTYPE}" in
+    darwin*)
+        export VAGRANT_VMWARE_CLONE_DIRECTORY=~/Virtual\ Machines.localized/Vagrant
+        export VAGRANT_DEFAULT_PROVIDER=vmware_fusion
+        ;;
+esac
 
 export CVS_RSH=ssh
 
