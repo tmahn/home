@@ -373,7 +373,7 @@ case "${TERM}" in
 esac
 
 PS1="\u@\h:\w\\\$ "
-TERM_EXTRA="\e]2;\D{%a %b %e %k:%M}\a"
+TERM_EXTRA="\e]2;\D{%a %b %e %k:%M:%S}\a"
 case "${TERM}" in
    xterm-256color)
      PS1="\[\e[38;5;18m\]${PS1}\[\e[0m${TERM_EXTRA}\]" ;;
