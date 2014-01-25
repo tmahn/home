@@ -194,6 +194,7 @@ set hidden
 set hlsearch
 set ignorecase
 set incsearch
+set isfname-==
 set modelines=5
 set mouse=a
 set nocompatible
