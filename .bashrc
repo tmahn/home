@@ -167,13 +167,20 @@ add_to_path() {
     shift
     eval local path=\"\${"${path_name}"}\"
 
-    # Add leading and trailing colon to match on :/path-path:
+    # Add leading and trailing colon to allow matching on :/path-path:
     local path="${path%:}:"
     path=":${path#:}"
     local extra_parts=
+    local p
 
     for arg in "${@}"; do
         if [ -d "${arg}" ]; then
+            p="${extra_parts}:"
+            if [ "${p}" != "${p//:${arg}:/:}" ]; then
+                # Skip duplicate argument
+                continue
+            fi
+
             # Need to loop because // cannot remove overlapping duplicates
             # like :foo:foo:
             while [ "${path}" != "${path//:${arg}:/:}" ]; do
@@ -193,12 +200,18 @@ add_to_path() {
     eval export "${path_name}"="\${path}"
 }
 
+JAVA_HOME="$(/usr/libexec/java_home -Fv 1.7 2>/dev/null)"
+
+if [ -n "${JAVA_HOME}" ]; then
+    export JAVA_HOME
+fi
+
 add_to_path PATH \
     ~/bin \
     ~/Library/Python/2.7/bin \
     ~/.gem/ruby/2.0.0/bin \
     ~/.local/bin \
-    /Library/Java/JavaVirtualMachines/jdk*/Contents/Home/bin \
+    "${JAVA_HOME}/bin" \
     /opt/texlive2013/bin/x86_64-darwin \
     /opt/homebrew/bin \
     /opt/vagrant/bin \
@@ -215,7 +228,6 @@ add_to_path INFOPATH \
 
 MANPATH="$(manpath)"
 add_to_path MANPATH \
-    /Library/Java/JavaVirtualMachines/*/Contents/Home/man \
     /usr/llvm-gcc-*/share/man \
     ~/Library/Python/*/lib/python/site-packages/*.egg/share/man \
     ;
