@@ -39,8 +39,6 @@ ABSPATH="$(cd "$(dirname -- "${1}")" && pwd -P)/$(basename -- "${1}")"
 
 case "${BROWSER}" in
     *.safari)
-        echo safari
-        echo $ABSPATH
 exec osascript -e '
 on run argv
 
