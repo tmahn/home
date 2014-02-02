@@ -355,6 +355,13 @@ then
     stty werase ''
 fi
 
+# IntelliJ’s terminal supports 256 colours, but sets TERM to plain xterm
+if [ "${TERM}" = xterm ] \
+        && ps -o command "${PPID}" 2>/dev/null | grep -q IntelliJ;
+then
+    TERM="xterm-256color"
+fi
+
 case "${TERM}" in
     # http://nion.modprobe.de/blog/archives/572-less-colors-for-man-pages.html
     xterm-256color)
