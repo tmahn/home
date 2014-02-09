@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE keyboard PUBLIC "" "file://localhost/System/Library/DTDs/KeyboardLayout.dtd">
-<!--Last edited by Ukelele version 2.2.3 on 2012-11-13 at 14:23 (MST)-->
-<keyboard group="0" id="3426" name="CA - International Compose - minimum" maxout="1">
+<!--Last edited by Ukelele version 2.2.7 on 2014-02-08 at 20:11 (MST)-->
+<keyboard group="0" id="3498" name="CA - International Compose - minimum" maxout="1">
     <layouts>
         <layout first="0" last="17" modifiers="f4" mapSet="16c"/>
         <layout first="18" last="18" modifiers="f4" mapSet="984"/>
@@ -44,23 +44,23 @@
     <keyMapSet id="16c">
         <keyMap index="0">
             <key code="0" action="13"/>
-            <key code="1" output="s"/>
-            <key code="2" output="d"/>
+            <key code="1" action="s"/>
+            <key code="2" action="d"/>
             <key code="3" output="f"/>
             <key code="4" output="h"/>
-            <key code="5" output="g"/>
+            <key code="5" action="g"/>
             <key code="6" output="z"/>
             <key code="7" output="x"/>
-            <key code="8" output="c"/>
+            <key code="8" action="c"/>
             <key code="9" output="v"/>
             <key code="10" output="§"/>
-            <key code="11" output="b"/>
+            <key code="11" action="b"/>
             <key code="12" output="q"/>
             <key code="13" output="w"/>
             <key code="14" action="14"/>
-            <key code="15" output="r"/>
+            <key code="15" action="r"/>
             <key code="16" action="19"/>
-            <key code="17" output="t"/>
+            <key code="17" action="t"/>
             <key code="18" output="1"/>
             <key code="19" output="2"/>
             <key code="20" output="3"/>
@@ -80,8 +80,8 @@
             <key code="34" action="15"/>
             <key code="35" output="p"/>
             <key code="36" output="&#x000D;"/>
-            <key code="37" output="l"/>
-            <key code="38" output="j"/>
+            <key code="37" action="l"/>
+            <key code="38" action="j"/>
             <key code="39" output="&#x0027;"/>
             <key code="40" output="k"/>
             <key code="41" output=";"/>
@@ -396,7 +396,7 @@
             <key code="14" action="0"/>
             <key code="15" output="®"/>
             <key code="16" output="¥"/>
-            <key code="17" output="t"/>
+            <key code="17" output="™"/>
             <key code="18" output="¡"/>
             <key code="19" output="™"/>
             <key code="20" output="£"/>
@@ -419,7 +419,7 @@
             <key code="37" output="¬"/>
             <key code="38" output="∆"/>
             <key code="39" output="æ"/>
-            <key code="40" output="˚"/>
+            <key code="40" action="˚"/>
             <key code="41" output="…"/>
             <key code="42" output="«"/>
             <key code="43" output="≤"/>
@@ -534,11 +534,11 @@
             <key code="40" output=""/>
             <key code="41" action="Ú"/>
             <key code="42" output="»"/>
-            <key code="43" output="¯"/>
+            <key code="43" output="←"/>
             <key code="44" output="¿"/>
             <key code="45" output="˜"/>
             <key code="46" output="Â"/>
-            <key code="47" output="˘"/>
+            <key code="47" output="→"/>
             <key code="48" output="&#x0009;"/>
             <key code="49" output=" "/>
             <key code="50" output="`"/>
@@ -1042,6 +1042,7 @@
         </action>
         <action id="5">
             <when state="none" output=" "/>
+            <when state="Keysymbols" output="␣"/>
             <when state="State 1" output="´"/>
             <when state="State 2" output="`"/>
             <when state="State 3" output="ˆ"/>
@@ -1095,6 +1096,7 @@
         </action>
         <action id="13">
             <when state="none" output="a"/>
+            <when state="Keysymbols" output="⌘"/>
             <when state="State 1" output="á"/>
             <when state="State 2" output="à"/>
             <when state="State 3" output="â"/>
@@ -1103,6 +1105,7 @@
         </action>
         <action id="14">
             <when state="none" output="e"/>
+            <when state="Keysymbols" output="⎋"/>
             <when state="State 1" output="é"/>
             <when state="State 2" output="è"/>
             <when state="State 3" output="ê"/>
@@ -1121,6 +1124,7 @@
         </action>
         <action id="17">
             <when state="none" output="o"/>
+            <when state="Keysymbols" output="⌥"/>
             <when state="State 1" output="ó"/>
             <when state="State 2" output="ò"/>
             <when state="State 3" output="ô"/>
@@ -1138,12 +1142,52 @@
             <when state="none" output="y"/>
             <when state="State 4" output="ÿ"/>
         </action>
+        <action id="b">
+            <when state="none" output="b"/>
+            <when state="Keysymbols" output="⌫"/>
+        </action>
+        <action id="c">
+            <when state="none" output="c"/>
+            <when state="Keysymbols" output="⌃"/>
+        </action>
+        <action id="d">
+            <when state="none" output="d"/>
+            <when state="Keysymbols" output="⌦"/>
+        </action>
+        <action id="g">
+            <when state="none" output="g"/>
+            <when state="Keysymbols" output="⎇"/>
+        </action>
+        <action id="j">
+            <when state="none" output="j"/>
+            <when state="Keysymbols" output="⏏"/>
+        </action>
+        <action id="l">
+            <when state="none" output="l"/>
+            <when state="Keysymbols" output="⇪"/>
+        </action>
+        <action id="r">
+            <when state="none" output="r"/>
+            <when state="Keysymbols" output="↩"/>
+        </action>
+        <action id="s">
+            <when state="none" output="s"/>
+            <when state="Keysymbols" output="⇧"/>
+        </action>
+        <action id="t">
+            <when state="none" output="t"/>
+            <when state="Keysymbols" output="⇥"/>
+        </action>
         <action id="Ú">
             <when state="none" next="COLON"/>
+        </action>
+        <action id="˚">
+            <when state="none" next="Keysymbols"/>
         </action>
     </actions>
     <terminators>
         <when state="COLON" output="Ĵ"/>
+        <when state="Keysymbols" output=""/>
         <when state="State 1" output="´"/>
         <when state="State 2" output="`"/>
         <when state="State 3" output="ˆ"/>
