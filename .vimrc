@@ -248,6 +248,7 @@ set errorformat+=%A\ \ File\ \"%f\"\\,\ line\ %l%.%#
 set errorformat+=%+Z%[A-Za-z0-9_]%\\+E%[A-Za-z0-9_]%\\+:\ %\\@=%m
 " Skip the default error format that matches timestamps in compile output
 set errorformat-=%f:%l:%m
+set errorformat+=%f:%l:\ %m
 
 "" Paths
 set path+=/usr/include/g++-3
