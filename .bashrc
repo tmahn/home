@@ -9,6 +9,10 @@ export LANG=en_CA.UTF-8
 
 unalias -a
 
+if [ -e "${HOME}/.bashrc.local" ]; then
+    . "${HOME}/.bashrc.local"
+fi
+
 # Mac OS Unicode support for Terminal.app and bash
 #
 # This overrides the default update_terminal_cwd() function, which sends an
