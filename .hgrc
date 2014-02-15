@@ -3,8 +3,12 @@ username = Andrew Neitsch <andrew@neitsch.ca>
 ignore = ~/.hgignore_global
 ssh = ssh -C
 
+[diff]
+showfunc = 1
+
 [extensions]
 blackbox =
+churn =
 color =
 convert =
 fetch =
