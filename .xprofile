@@ -3,3 +3,4 @@
 
 xset b off
 make -C ~/.xkb install
+vmware-user &
