@@ -226,7 +226,7 @@ add_to_path INFOPATH \
     /opt/homebrew/share/info \
     ;
 
-MANPATH="$(manpath)"
+MANPATH="$(manpath 2>/dev/null)"
 add_to_path MANPATH \
     /usr/llvm-gcc-*/share/man \
     ~/Library/Python/*/lib/python/site-packages/*.egg/share/man \
