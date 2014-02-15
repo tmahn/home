@@ -55,13 +55,15 @@ XTerm.toolBar: false
 !   Command-N for a new terminal in the current directory
 !   Shift-Command-R to reset the screen
 !   Command-/ for autocomplete, but only for matching at the very beginning
-!     of whitespace-delimited tokens */
+!     of whitespace-delimited tokens
+! See Appendix F of the X Toolkit Intrinsics Reference Manual
+! https://archive.org/details/xtoolkitintrirefman05oreimiss
 *VT100.translations: #override \
-	!Super<KeyPress>n: spawn-new-terminal() \n\
-	!Super<KeyPress>c: copy-selection(CLIPBOARD) \n\
-	!Super<KeyPress>v: insert-selection(CLIPBOARD) \n\
-	!Shift Super<KeyPress>r: hard-reset() \n\
-	!Super<KeyPress>/: dabbrev-expand() \n\
+	:Super<KeyPress>n: spawn-new-terminal() \n\
+	:Super<KeyPress>c: copy-selection(CLIPBOARD) \n\
+	:Super<KeyPress>v: insert-selection(CLIPBOARD) \n\
+	:Super<KeyPress>R: hard-reset() \n\
+	:Super<KeyPress>/: dabbrev-expand() \n\
 
 xfontsel*menu.options.showUnselectable: false
 xfontsel*scaledFonts: true
