@@ -337,8 +337,11 @@ export CVS_RSH=ssh
 ## Shell settings
 
 shopt -s cdspell checkwinsize dotglob checkhash
+shopt -u extglob
 # Stop expansions like ~/.* from including ~/..
 export GLOBIGNORE="*/.:*/.."
+# Only use built-in filename completion
+complete -r
 
 umask 022 # rw-r--r--
 
