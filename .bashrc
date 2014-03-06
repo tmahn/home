@@ -48,6 +48,9 @@ update_terminal_cwd () {
     fi
 
     eval "$(python -sSEc '
+import sys
+sys.path.remove("")
+
 import os
 import unicodedata
 import urllib
