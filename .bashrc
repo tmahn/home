@@ -221,6 +221,7 @@ add_to_path PATH \
     "${JAVA_HOME}/bin" \
     /opt/texlive2013/bin/x86_64-darwin \
     /opt/homebrew/bin \
+    /opt/homebrew/sbin \
     /opt/vagrant/bin \
     /usr/libexec \
     ;
