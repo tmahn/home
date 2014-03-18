@@ -207,7 +207,7 @@ add_to_path() {
     eval export "${path_name}"="\${path}"
 }
 
-JAVA_HOME="$(/usr/libexec/java_home -Fv 1.7 2>/dev/null)"
+JAVA_HOME="$(/usr/libexec/java_home -Fv 1.8 2>/dev/null)"
 
 if [ -n "${JAVA_HOME}" ]; then
     export JAVA_HOME
