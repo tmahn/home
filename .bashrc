@@ -321,6 +321,7 @@ if less --help |grep -q -- --mouse-support; then
 fi
 export PERLDOC_PAGER="less -fr"
 export RI="--format bs"
+export RUBYLIB=~/.ruby
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
 
