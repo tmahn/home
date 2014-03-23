@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require 'date'
+
+is_integer = proc { |x| x =~ /^\d+$/ }
+
+if ARGV.length < 1 or ARGV.length > 2 or !ARGV.map(&is_integer).all?
+  $stdout.write "Error: RTFSRC\n"
+  exit 1
+end
+
+def short_date d
+  d.strftime("%B %e").sub('  ', ' ')
+end
+
+def long_date d
+  d.strftime("%A %B %e").sub('  ', ' ')
+end
+
+week, year = ARGV
+year = DateTime.now.year if year.nil?
+
+d = Date.parse("#{year}w#{sprintf '%02d', week}", "%Y-%V")
+
+week_start = short_date(d - 1)
+week_end = short_date(d + 5)
+puts "#{year} Week #{week}, #{week_start}–#{week_end}"
+(-1...6).each do |delta|
+  puts long_date(d + delta)
+end
