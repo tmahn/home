@@ -1,0 +1,26 @@
+#!/usr/bin/env python2.7
+
+import codecs
+import string
+import sys
+import unicodedata
+
+start_of_line = True
+
+source = codecs.lookup('UTF-8').streamreader(sys.stdin)
+while 1:
+    char = source.read(1)
+    if not char:
+        break
+
+    if char in string.printable:
+        sys.stdout.write(char)
+        if char not in '\n\r':
+            start_of_line = False
+    else:
+        if not start_of_line:
+            sys.stdout.write('\n')
+
+        sys.stdout.write('U+%04x %c %s\n' % (
+            ord(char), char, unicodedata.name(char)))
+        start_of_line = True
