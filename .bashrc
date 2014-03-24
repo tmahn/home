@@ -98,7 +98,7 @@ function check_exit_status ()
     fi
     return 0
 }
-PROMPT_COMMAND="check_exit_status; $PROMPT_COMMAND"
+PROMPT_COMMAND="check_exit_status; history -a; $PROMPT_COMMAND"
 PROMPT_COMMAND="${PROMPT_COMMAND%; }"
 
 ## This was found on the internet many years ago
@@ -407,7 +407,7 @@ ORIG_PS1="${PS1}"
 HISTFILE=~/.bash_history
 HISTSIZE=100000
 HISTFILESIZE=${HISTSIZE}
-HISTCONTROL=ignorespace
+HISTCONTROL=ignorespace:ignoredups
 # This is only used by the output of the history builtin
 HISTTIMEFORMAT="%a %Y-%m-%d %H:%M:%S "
 shopt -s histappend
