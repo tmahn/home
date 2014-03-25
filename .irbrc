@@ -16,17 +16,11 @@ IRB.conf[:SAVE_HISTORY] = 1000
 require 'rdoc/ri/driver'
 
 # simulate `ri -a` when using IRB’s help() method
-module IrbHacks
-  @@orig_default_options = RDoc::RI::Driver.default_options
-
-  def self.orig_default_options
-    @@orig_default_options
-  end
-end
-
 class RDoc::RI::Driver
-  def self.default_options
-    options = ::IrbHacks.orig_default_options
+  old_default_options = method(:default_options)
+
+  define_singleton_method(:default_options) do
+    options = old_default_options.call()
     options[:show_all] = true
     options
   end
