@@ -247,6 +247,7 @@ set errorformat+=%A\ \ File\ \"%f\"\\,\ line\ %l%.%#
     " look for an Error: or Exception:
 set errorformat+=%+Z%[A-Za-z0-9_]%\\+E%[A-Za-z0-9_]%\\+:\ %\\@=%m
 " Ruby backtraces
+set errorformat+=%*\\s#%*\\s%f:%l:%m
 set errorformat+=%+E%>%[A-Z]%*[a-z]Error:%m
 set errorformat+=%Z\ \ \ \ %f:%l:%m
 set errorformat+=\ \ \ \ %f:%l:%m
