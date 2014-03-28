@@ -322,6 +322,9 @@ fi
 export PERLDOC_PAGER="less -fr"
 export RI="--format bs"
 export RUBYLIB=~/.ruby
+# Pseudo word wrap instead of truncation.
+# https://github.com/erikhuda/thor/commit/1f91d12fce7
+export THOR_COLUMNS=100000
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
 
