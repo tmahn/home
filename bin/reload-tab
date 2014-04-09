@@ -35,14 +35,22 @@ for entry in launch_services_prefs['LSHandlers']:
 ")"
 fi
 
-ABSPATH="$(cd "$(dirname -- "${1}")" && pwd -P)/$(basename -- "${1}")"
+if [ -e "${1}" ]; then
+    ABSPATH="$(cd "$(dirname -- "${1}")" && pwd -P)/$(basename -- "${1}")"
+else
+    ABSPATH="${1}"
+fi
 
 case "${BROWSER}" in
     *.safari)
 exec osascript -e '
 on run argv
 
-    set fileURL to "file://" & item 1 of argv
+    if (item 1 of argv) starts with "http:" then
+        set fileURL to item 1 of argv
+    else
+        set fileURL to "file://" & item 1 of argv
+    end if
 
     tell application "Safari"
     	set numWindows to count of windows
