@@ -223,6 +223,7 @@ add_to_path PATH \
     /opt/homebrew/bin \
     /opt/homebrew/sbin \
     /opt/vagrant/bin \
+    /opt/go/bin \
     /usr/libexec \
     ;
 
@@ -327,6 +328,8 @@ export RUBYLIB=~/.ruby
 export THOR_COLUMNS=100000
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
+export GOROOT=/opt/go
+export GOPATH=~/.go
 
 for possible_gem_home in \
     ~/.gem/ruby/2.0.0 \

@@ -1,3 +1,7 @@
+if isdirectory($GOROOT)
+    set runtimepath+=$GOROOT/misc/vim
+endif
+
 "Discuss  Auto-commands
 filetype plugin indent on
 
@@ -31,6 +35,8 @@ augroup cprog
         \ setlocal filetype=markdown | syntax clear
   autocmd BufNewFile,BufRead Vagrantfile,*.thor
         \ setlocal filetype=ruby
+  autocmd BufNewFile,BufRead *.go
+        \ setlocal tabstop=4 filetype=go smartindent
 augroup END
 
 autocmd BufNewFile,BufRead *.lytex
@@ -250,7 +256,7 @@ set errorformat+=%+Z%[A-Za-z0-9_]%\\+E%[A-Za-z0-9_]%\\+:\ %\\@=%m
 set errorformat+=%*\\s#%*\\s%f:%l:%m
 set errorformat+=%+E%>%[A-Z]%*[a-z]Error:%m
 set errorformat+=%Z\ \ \ \ %f:%l:%m
-set errorformat+=\ \ \ \ %f:%l:%m
+set errorformat+=%^\ \ \ \ %f:%l:%m
 " Skip the default error format that matches timestamps in compile output
 set errorformat-=%f:%l:%m
 set errorformat+=%f:%l:\ %m
