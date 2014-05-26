@@ -411,7 +411,7 @@ ORIG_PS1="${PS1}"
 
 # History settings
 HISTFILE=~/.bash_history
-HISTSIZE=100000
+HISTSIZE=500000
 HISTFILESIZE=${HISTSIZE}
 HISTCONTROL=ignorespace:ignoredups
 # This is only used by the output of the history builtin
