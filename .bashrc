@@ -309,6 +309,7 @@ fi
 export LS_COLORS='no=00:fi=00:di=34:ln=36:pi=40;33:so=35:do=35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=32:ow=48;5;158:'
 export LSCOLORS="exgxfxdxcxdaDa"
 export CLICOLOR=1
+export GCC_COLORS=1
 
 unset LD_ASSUME_KERNEL
 export EDITOR=vim
