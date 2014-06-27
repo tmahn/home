@@ -3,3 +3,5 @@
 [user]
 	name = Andrew Neitsch
 	email = andrew@neitsch.ca
+[alias]
+	current-branch = !git branch | grep ^* | cut -c3-
