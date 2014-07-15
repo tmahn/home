@@ -3,5 +3,8 @@
 [user]
 	name = Andrew Neitsch
 	email = andrew@neitsch.ca
+[gc]
+	reflogExpireUnreachable = 36524
+	reflogExpire = 36524
 [alias]
 	current-branch = !git branch | grep ^* | cut -c3-
