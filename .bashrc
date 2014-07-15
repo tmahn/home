@@ -240,6 +240,9 @@ MANPATH="$(manpath 2>/dev/null)"
 add_to_path MANPATH \
     /usr/llvm-gcc-*/share/man \
     ~/Library/Python/*/lib/python/site-packages/*.egg/share/man \
+    /opt/homebrew/lib/node_modules/*/man \
+    /opt/homebrew/lib/erlang/man \
+    /Library/Frameworks/R.framework/Resources \
     ;
 
 alias cd=cd_func
