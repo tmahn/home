@@ -191,7 +191,7 @@ if !isdirectory($HOME . "/.vimtmp")
     call mkdir($HOME . "/.vimtmp", "", 0700)
 endif
 set backspace=2
-set directory=~/.vimtmp
+set directory=.,~/.vimtmp
 set encoding=utf-8
 set expandtab
 set ffs=unix,dos
