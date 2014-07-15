@@ -14,7 +14,7 @@ fi
 BROWSER=com.apple.safari
 
 if [ -e ~/Library/Preferences/com.apple.LaunchServices.plist ]; then
-    BROWSER="$(python -c "
+    SYS_BROWSER="$(python -c "
 # coding UTF-8
 import json
 import os.path
@@ -33,6 +33,9 @@ for entry in launch_services_prefs['LSHandlers']:
     if entry.get(u'LSHandlerURLScheme', None) == u'http':
         print entry.get(u'LSHandlerRoleAll')
 ")"
+    if [ -n "${SYS_BROWSER}" ]; then
+        BROWSER="${SYS_BROWSER}"
+    fi
 fi
 
 if [ -e "${1}" ]; then
