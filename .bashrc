@@ -214,6 +214,7 @@ if [ -n "${JAVA_HOME}" ]; then
 fi
 
 add_to_path PATH \
+    ~/work/bin \
     ~/bin \
     ~/Library/Python/2.7/bin \
     ~/.gem/ruby/2.0.0/bin \
