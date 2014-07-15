@@ -257,6 +257,8 @@ set errorformat+=%*\\s#%*\\s%f:%l:%m
 set errorformat+=%+E%>%[A-Z]%*[a-z]Error:%m
 set errorformat+=%Z\ \ \ \ %f:%l:%m
 set errorformat+=%^\ \ \ \ %f:%l:%m
+set errorformat+=\	from\ %f:%l:%m
+set errorformat+=%f:%l:%mError)
 " Skip the default error format that matches timestamps in compile output
 set errorformat-=%f:%l:%m
 set errorformat+=%[0-9/:\ -]%#\ %f:%l:\ %m
