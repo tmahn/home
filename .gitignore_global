@@ -4,3 +4,9 @@
 *.bbl
 *.blg
 *.log
+Gemfile.lock
+
+*.rej
+*.orig
+.*.sw?
+.chef
