@@ -328,6 +328,7 @@ export RUBYLIB=~/.ruby
 # Pseudo word wrap instead of truncation.
 # https://github.com/erikhuda/thor/commit/1f91d12fce7
 export THOR_COLUMNS=100000
+export PERL_MM_USE_DEFAULT=1
 export PYTHONSTARTUP=~/.pyrc
 export PYTHONPATH=~/.python
 export GOROOT=/opt/go
