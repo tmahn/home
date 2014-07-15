@@ -259,6 +259,7 @@ set errorformat+=%Z\ \ \ \ %f:%l:%m
 set errorformat+=%^\ \ \ \ %f:%l:%m
 " Skip the default error format that matches timestamps in compile output
 set errorformat-=%f:%l:%m
+set errorformat+=%[0-9/:\ -]%#\ %f:%l:\ %m
 set errorformat+=%f:%l:\ %m
 
 "" Paths
