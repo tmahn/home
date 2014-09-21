@@ -9,4 +9,9 @@ Gemfile.lock
 *.rej
 *.orig
 .*.sw?
+.sw?
 .chef
+
+x1
+
+notes.txt

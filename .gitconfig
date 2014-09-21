@@ -1,10 +1,19 @@
 [core]
 	excludesfile = ~/.gitignore_global
+	abbrev = 12
 [user]
 	name = Andrew Neitsch
 	email = andrew@neitsch.ca
+[push]
+	default = current
 [gc]
 	reflogExpireUnreachable = 36524
 	reflogExpire = 36524
 [alias]
 	current-branch = !git branch | grep ^* | cut -c3-
+	amend-now = !env GIT_AUTHOR_DATE=$(date +%s) \
+		GIT_COMMITTER_DATE=$(date +%s) \
+		git commit --amend
+
+[format]
+	pretty = format:%C(yellow)%H%Creset tree %t%n%an <%ae>%n%ai   parents %p%n%n%s%n%n%-b%n
