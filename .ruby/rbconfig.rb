@@ -25,6 +25,6 @@ end
 module RbConfig
   _bad_options = /-multiply_definedsuppress/
 
-  CONFIG.each { |k, v| v.gsub!(_bad_options, '') }
+  CONFIG.each { |k, v| CONFIG[k] = v.gsub(_bad_options, '') }
   MAKEFILE_CONFIG.each { |k, v| v.gsub!(_bad_options, '') }
 end
