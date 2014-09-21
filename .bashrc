@@ -224,6 +224,7 @@ add_to_path PATH \
     /opt/homebrew/bin \
     /opt/homebrew/sbin \
     /opt/vagrant/bin \
+    /opt/packer \
     /opt/go/bin \
     /usr/libexec \
     ;
@@ -353,6 +354,7 @@ case "${OSTYPE}" in
         export VAGRANT_DEFAULT_PROVIDER=vmware_fusion
         ;;
 esac
+export PACKER_CACHE_DIR=~/Downloads
 
 export CVS_RSH=ssh
 
