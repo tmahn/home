@@ -1,3 +1,5 @@
 #!/bin/bash
 
-exec gdate -d "2001-01-01 $1 seconds UTC"
+DATE="$1"
+shift
+exec gdate -d "2001-01-01 $DATE seconds UTC" "${@}"
