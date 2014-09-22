@@ -15,3 +15,4 @@ Thumbs.db
 *.rej
 tmp
 .*.sw?
+.sw?

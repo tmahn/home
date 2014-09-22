@@ -13,5 +13,17 @@ Gemfile.lock
 .chef
 
 x1
+x1.*
+*.pyc
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+*.o
+Thumbs.db
+*.orig
+*.rej
+tmp
 
 notes.txt
