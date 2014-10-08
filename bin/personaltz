@@ -157,7 +157,8 @@ class PersonalTZ(object):
 
     @staticmethod
     def _parse_times(strs):
-        times = unix_pipe(["date", "+%s", "-f", "-"], '\n'.join(strs))
+        date_cmd = 'date' if sys.platform != 'darwin' else 'gdate'
+        times = unix_pipe([date_cmd, "+%s", "-f", "-"], '\n'.join(strs))
         times = times.strip().split('\n')
         times = map(int, times)
 
