@@ -14,6 +14,7 @@
 	amend-now = !env GIT_AUTHOR_DATE=$(date +%s) \
 		GIT_COMMITTER_DATE=$(date +%s) \
 		git commit --amend
+	word-color-diff = diff --word-diff=color
 
 [format]
 	pretty = format:%C(yellow)%H%Creset tree %t%n%an <%ae>%n%ai   parents %p%n%n%s%n%n%-b%n
