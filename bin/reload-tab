@@ -13,7 +13,7 @@ fi
 
 BROWSER=com.apple.safari
 
-if [ -e ~/Library/Preferences/com.apple.LaunchServices.plist ]; then
+if [ -e ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist ]; then
     SYS_BROWSER="$(python -c "
 # coding UTF-8
 import json
@@ -21,7 +21,7 @@ import os.path
 import subprocess
 
 plutil = subprocess.Popen(['plutil', '-convert', 'json', '-o', '-', '-r',
-    os.path.expanduser('~/Library/Preferences/com.apple.LaunchServices.plist')],
+    os.path.expanduser('~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist')],
     stdout=subprocess.PIPE)
 plutil_out, _ = plutil.communicate()
 
