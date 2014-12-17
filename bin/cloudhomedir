@@ -8,7 +8,7 @@ import os
 
 from path import path
 
-IGNORED_PATH_PARTS = ['.hg', 'doc', 'notes.txt', '.DS_Store']
+IGNORED_PATH_PARTS = ['.git', '.hg', 'doc', 'notes.txt', '.DS_Store']
 
 def _raise(e):
     raise e
