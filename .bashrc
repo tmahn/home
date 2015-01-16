@@ -329,6 +329,8 @@ fi
 export PERLDOC_PAGER="less -fr"
 export RI="--format bs"
 export RUBYLIB=~/.ruby
+export BUNDLE_JOBS="$(python2.7 -c 'import multiprocessing; \
+    print multiprocessing.cpu_count()')"
 # Pseudo word wrap instead of truncation.
 # https://github.com/erikhuda/thor/commit/1f91d12fce7
 export THOR_COLUMNS=100000
