@@ -17,4 +17,4 @@
 	word-color-diff = diff --word-diff=color
 
 [format]
-	pretty = format:%C(yellow)%H%Creset tree %t%n%an <%ae>%n%ai   parents %p%n%n%B
+	pretty = format:%C(auto,yellow)%H%C(auto,reset) tree %t%n%an <%ae>%n%ai   parents %p%n%n%B

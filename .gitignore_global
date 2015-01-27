@@ -11,6 +11,7 @@ Gemfile.lock
 .*.sw?
 .sw?
 .chef
+.vagrant
 
 x1
 x1.*
