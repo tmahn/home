@@ -6,6 +6,8 @@
 	email = andrew@neitsch.ca
 [push]
 	default = current
+[color]
+	ui = auto
 [gc]
 	reflogExpireUnreachable = 36524
 	reflogExpire = 36524
