@@ -219,6 +219,7 @@ add_to_path PATH \
     ~/Library/Python/2.7/bin \
     ~/.gem/ruby/2.0.0/bin \
     ~/.local/bin \
+    ~/node_modules/.bin \
     "${JAVA_HOME}/bin" \
     /opt/texlive2013/bin/x86_64-darwin \
     /opt/homebrew/bin \
@@ -244,6 +245,7 @@ add_to_path MANPATH \
     /opt/homebrew/lib/node_modules/*/man \
     /opt/homebrew/lib/erlang/man \
     /Library/Frameworks/R.framework/Resources \
+    /usr/local/lib/node_modules/*/man \
     ;
 
 alias cd=cd_func
