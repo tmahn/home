@@ -37,6 +37,10 @@ augroup cprog
         \ setlocal filetype=ruby
   autocmd BufNewFile,BufRead *.go
         \ setlocal tabstop=4 filetype=go smartindent
+  autocmd BufNewFile,BufRead *
+        \ if getline(1) =~# '^#.*chef-apply.*' |
+        \  set ft=ruby |
+        \ endif
 augroup END
 
 autocmd BufNewFile,BufRead *.lytex
