@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+gem 'bundler'
+gem 'chef'
+gem 'chef-vault'
+gem 'knife-opc'
+gem 'knife-acl'
+gem 'knife-reporting'
