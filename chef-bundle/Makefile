@@ -1,33 +1,29 @@
-binstubs: bundle binstub.in
-	rm -rf bin
-	mkdir -p bin
-	for F in \
-		vendor/bundle/ruby/2.0.0/gems/*/bin/chef* \
-		vendor/bundle/ruby/2.0.0/gems/*/bin/knife* \
-		; \
-	do \
-	    PROG="$${F##*/}"; \
-	    GEM="$${F#*/gems/}"; \
-	    GEM="$${GEM%/bin/*}"; \
-	    GEM="$${GEM%-[0-9.]*}"; \
-	    sed -e s/@GEM@/$$GEM/g \
-		-e s/@PROG@/$$PROG/g \
-		< binstub.in > "bin/$${PROG}"; \
-	    chmod +x "bin/$${PROG}"; \
-	done
-	touch $@
+SHELL=/bin/bash -eu
 
-bundle: Gemfile
-	$(MAKE) clean
+install:
 	bundle install --local
-	bundle install --deployment
-	GEM_HOME=vendor/bundle/ruby/2.0.0 \
-	    gem install bundler --no-user-install --no-ri --no-rdoc
-	touch $@
+	for F in $$(bundle show --paths); do \
+	    rsync -a "$${F}/lib/" lib/; \
+	done
+	for F in $$(bundle show --paths); do \
+	    if [ -d "$${F}/bin" ]; then \
+		rsync -a "$${F}/bin/" gembin/; \
+	    fi; \
+	done
+	mkdir -p bin
+	for F in gembin/*; do \
+	    if [ "$${F#gembin/chef}" != "$${F}" ] \
+		|| [ "$${F#gembin/knife}" != "$${F}" ]; \
+	    then \
+		G="bin/$${F#gembin/}"; \
+		echo '#!/bin/bash' > "$${G}"; \
+		echo 'GEM_HOME= GEM_PATH= RUBYLIB="$(PWD)/lib" \' >> "$${G}"; \
+		echo '    exec ruby $(PWD)/'"$$F"' "$${@}"' >> "$${G}"; \
+		chmod +x "$${G}"; \
+	    fi; \
+	done
 
 clean:
-	rm -rf bundle binstubs
-	rm -f Gemfile.lock
-	rm -rf .bundle
-	rm -rf vendor
+	rm -rf lib
 	rm -rf bin
+	rm -rf gembin
