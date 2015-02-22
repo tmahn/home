@@ -63,7 +63,8 @@ on run argv
     			set numTabs to (count of tabs of curWindow)
     			repeat with tabNumber from 1 to numTabs
     				set curTab to tab tabNumber of curWindow
-    				if URL of curTab = fileURL or URL of curTab starts with fileURL & "#" then
+    				set curURL to URL of curTab as string
+    				if curURL = fileURL or curURL starts with fileURL & "#" then
                                        do JavaScript "window.location.reload()" in curTab
     				end if
     			end repeat
