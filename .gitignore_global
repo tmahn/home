@@ -3,7 +3,12 @@
 *.aux
 *.bbl
 *.blg
+*.nav
+*.snm
+*.vrb
 *.log
+*.toc
+*-skim.pdf
 Gemfile.lock
 
 *.rej
