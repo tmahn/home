@@ -98,8 +98,12 @@ function check_exit_status ()
     fi
     return 0
 }
-PROMPT_COMMAND="check_exit_status; history -a; $PROMPT_COMMAND"
+PROMPT_COMMAND="check_exit_status; $PROMPT_COMMAND"
 PROMPT_COMMAND="${PROMPT_COMMAND%; }"
+
+DEBUG_COMMAND="history -a; $DEBUG_COMMAND"
+DEBUG_COMMAND="${DEBUG_COMMAND%; }"
+trap '$DEBUG_COMMAND' DEBUG
 
 ## This was found on the internet many years ago
 cd_func ()
@@ -218,7 +222,6 @@ add_to_path PATH \
     ~/chef-bundle/bin \
     ~/bin \
     ~/Library/Python/2.7/bin \
-    ~/.gem/ruby/2.0.0/bin \
     ~/.local/bin \
     ~/node_modules/.bin \
     "${JAVA_HOME}/bin" \
@@ -242,6 +245,7 @@ add_to_path INFOPATH \
 MANPATH="$(manpath 2>/dev/null)"
 add_to_path MANPATH \
     /usr/llvm-gcc-*/share/man \
+    /usr/local/MacGPG2/share/man \
     ~/Library/Python/*/lib/python/site-packages/*.egg/share/man \
     /opt/homebrew/lib/node_modules/*/man \
     /opt/homebrew/lib/erlang/man \
@@ -343,14 +347,30 @@ export PYTHONPATH=~/.python
 export GOROOT=/opt/go
 export GOPATH=~/.go
 
-for possible_gem_home in \
-    ~/.gem/ruby/2.0.0 \
-        ; do
-    if [ -d "${possible_gem_home}" ]; then
-        export GEM_HOME="${possible_gem_home}"
-        break
-    fi
+# Ordering here is tricky: First load chruby because it resets RUBIES
+if [ -e /opt/homebrew/share/chruby/chruby.sh ]; then
+    . /opt/homebrew/share/chruby/chruby.sh
+fi
+mkdir -p ~/.rubies
+mac_system_ruby="/System/Library/Frameworks/Ruby.framework/Versions/2.0/usr"
+if [ -d "${mac_system_ruby}" ] && ! [ -e ~/.rubies/system-2.0 ]; then
+    ln -s "${mac_system_ruby}" ~/.rubies/system-2.0
+fi
+for possible_ruby in \
+    /opt/homebrew/Cellar/ruby/* \
+    ; \
+do
+    RUBIES+=("${possible_ruby}")
 done
+
+# Then load auto, which will process .ruby-version in current directory
+if [ -e /opt/homebrew/share/chruby/auto.sh ]; then
+    old_traps="$(trap -p)"
+    . /opt/homebrew/share/chruby/auto.sh
+    DEBUG_COMMAND="chruby_auto ; $DEBUG_COMMAND"
+    DEBUG_COMMAND="${DEBUG_COMMAND%; }"
+    eval "${old_traps}"
+fi
 
 # Keep Vagrant VMs where they won’t clog Time Machine
 case "${OSTYPE}" in
